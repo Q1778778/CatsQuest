@@ -1,0 +1,8 @@
+### Starting build.
+# Target: color_convert.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:color_convert.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules color_convert.ml > color_convert.ml.depends
+# Target: color_convert.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o color_convert.cmo color_convert.ml
+# Target: color_convert.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:color_convert.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo -o color_convert.byte
+# Compilation successful.

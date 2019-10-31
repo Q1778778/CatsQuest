@@ -1,0 +1,4 @@
+"Rule: ocaml: ml -> cmo & cmi (%=color_convert )": "\178\227\127\207\144\140\157Cp\149o3\2359M\175"
+"Rule: ocaml dependencies ml (%=color_convert )": "\197\250\1999\135p\218~\147\146&vg%\190j"
+"Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/color_convert.ml": "\"\127G\153N_o\162'\209\234\023\005X\136+"
+"Rule: ocaml: cmo* -> byte (%=color_convert )": "\157\221\b\148\134\002C\157d\152m\167M\209\166\138"
