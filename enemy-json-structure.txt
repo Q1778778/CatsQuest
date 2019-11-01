@@ -1,0 +1,16 @@
+@author Wentao Guo
+@netid wg247
+
+The following is the structure of enemy.json.
+
+name: string (*name of an enemy*)
+
+description: string ("description of an ememy")
+
+HP: int (*total health of an enemy*)
+
+level: int (*level of an ememy*)
+
+experience: int (*the experience can be gained after defeating one enemy*)
+
+strength: int (*an effective damage to the player's health*)
