@@ -1,0 +1,33 @@
+{
+  "size": {
+    "rows": 10,
+    "cols": 10
+  },
+  "foods": [
+    {
+      "name": "bread",
+      "location": {
+        "row": 6,
+        "col": 4
+      },
+      "strength": 10,
+      "health": 10
+    }
+  ],
+  "weapons": [
+    {
+      "name": "glock",
+      "location": {
+        "row": 2,
+        "col": 5
+      }
+    },
+    {
+      "name": "dagger",
+      "location": {
+        "row": 3,
+        "col": 3
+      }
+    }
+  ]
+}

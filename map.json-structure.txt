@@ -1,0 +1,25 @@
+@author Michael Zhou 
+@netid mgz27
+
+The following is the structure of map.json:
+
+size: (*the size of the map*)
+  rows: int (*# of rows in the map*)
+  cols: int (*# of rows in the map*)
+
+food: 
+  name: string (*name of the food item*)
+  location: (*initial location of the item when map is loaded*)
+    row: int 
+    col: int 
+  strength: int (*amount of gain in strength*)
+  health: int (*amount of gain in health*)
+
+weapon: 
+  name: string (*name of the weapon item*)
+  location: (*initial location of the item when map is loaded*)
+    row: int 
+    col: int 
+
+foods: food list (*list of food items initially placed in the map*)
+weapons: weapon list (*list of weapon items initially placed in the map*)
