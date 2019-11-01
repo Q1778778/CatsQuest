@@ -1,0 +1,16 @@
+@author Michael Zhou 
+@netid mgz27
+
+The following is the structure of player.json:
+
+location: (*initial location of the player*)
+  row: int
+  col: int
+
+level: int (*initial level of the player*)
+
+strength: int (*initial strength of player*)
+
+health: int (*initial health of player*)
+
+qualifying experience: int (*the minimum amount of experience PER LEVEL*)
