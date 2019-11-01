@@ -1,14 +1,31 @@
 ### Starting build.
+# Target: gui.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:gui.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules gui.ml > gui.ml.depends
 # Target: color_convert.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:color_convert.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules color_convert.ml > color_convert.ml.depends # cached
 # Target: color_convert.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o color_convert.cmo color_convert.ml # cached
-# Target: color_convert.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:color_convert.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo -o color_convert.byte # cached
-# Target: gui.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:gui.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules gui.ml > gui.ml.depends
 # Target: gui.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o gui.cmo gui.ml
++ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o gui.cmo gui.ml
+File "gui.ml", line 110, characters 4-98:
+110 | ....match b with
+111 |     |Action_button _->() 
+112 |     |Dialog_sense s->parse  (Next_con s)
+113 |     |Bnone->()...
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Refresh
+File "gui.ml", line 119, characters 4-282:
+119 | ....match b with
+120 |     |Action_button ((x,y,w,h),t)->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
+121 |                                      (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
+122 |                                     =true then parse  (Command t) else ()
+123 |     |Dialog_sense _->()
+124 |     |Bnone->()...
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Refresh
 # Target: gui.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:gui.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics gui.cmo -o gui.byte
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo gui.cmo -o gui.byte
 # Compilation successful.

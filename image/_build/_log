@@ -1,0 +1,16 @@
+### Starting build.
+Backtrace:
+                      - Failed to build the target color_convert.byte
+                          - Building color_convert.byte:
+                              - Building color_convert.cmo:
+                                  - Failed to build all of these:
+                                      - Building color_convert.ml:
+                                          - Failed to build all of these:
+                                              - Building color_convert.mly
+                                              - Building color_convert.mll
+                                      - Building color_convert.mli:
+                                          - Building color_convert.mly
+                                      - Building color_convert.mlpack
+                                      - Building color_convert.mli:
+                                          - Building color_convert.mly
+# Compilation unsuccessful.
