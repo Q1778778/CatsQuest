@@ -53,4 +53,5 @@ let from_json=
 
 let t=from_json
 
-let cute_cat= array_color (List.find (fun x->x.name="cute cat") t).matrix
+let cute_cat= 
+  (array_color (List.find (fun x->x.name="cute cat") t).matrix)
