@@ -14,3 +14,6 @@ strength: int (*initial strength of player*)
 health: int (*initial health of player*)
 
 qualifying experience: int (*the minimum amount of experience PER LEVEL*)
+
+keys: string list (*keyboard buttons that control the players' movements,
+e.g. ["left", "right", "up", "down"]*)
