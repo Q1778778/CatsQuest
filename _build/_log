@@ -10,5 +10,10 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 # Target: gui.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o gui.cmo gui.ml
 # Target: gui.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:gui.byte, link, ocaml, program, quiet, traverse }
+<<<<<<< HEAD
 ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo gui.cmo -o gui.byte
 # Compilation successful.
+=======
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo gui.cmo -o gui.byte # cached
+# Compilation successful.
+>>>>>>> efa0d89e75cdfbef0ad4f161c71ca102ec93e790
