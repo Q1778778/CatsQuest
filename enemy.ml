@@ -2,6 +2,7 @@ module type EnemySig = sig
   type t
   (* Static fields                  *)
   (* Onle getters exist             *)
+  val get_id: t -> string
   val get_name: t -> string
   val get_description: t -> string
   val get_experience: t -> int
@@ -14,12 +15,12 @@ module type EnemySig = sig
   (* Both setters and getters exist *)
 
   (* Setters                        *)
-  val set_move: t -> float * float -> t
-  val set_hp: t -> int -> t
+  val set_move: t -> int * int -> t
+  val reduce_hp: t -> int -> t
 
   (* Getters                        *)
   val get_hp: t -> int
-  val get_pos: t -> float * float  
+  val get_pos: t -> int * int  
 end
 
 module type EnemyAugmentedSig = sig
@@ -41,9 +42,11 @@ module Goblin: EnemySig = struct
     strength: int;
     level: int;
     (*dynamic fields *)
-    pos: float * float;
+    pos: int * int;
     hp: int;
   }
+
+  let get_id s = s.id
 
   let get_name s = s.name 
 
@@ -61,7 +64,7 @@ module Goblin: EnemySig = struct
 
   let set_move s d = {s with pos = d}
 
-  let set_hp s d = {s with hp = d}
+  let reduce_hp s d = {s with hp = s.hp - d}
 end
 
 
@@ -87,11 +90,12 @@ module Witch : EnemyAugmentedSig = struct
     (*new field in augmented enemy *)
     skills: skills;
     (*dynamic fields *)
-    pos: float * float;
+    pos: int * int;
     hp: int;
-
   }
   (* the same as goblin *)
+  let get_id s = s.id
+
   let get_name s = s.name 
 
   let get_description s = s.descr
@@ -108,7 +112,7 @@ module Witch : EnemyAugmentedSig = struct
 
   let set_move s d = {s with pos = d}
 
-  let set_hp s d = {s with hp = d}
+  let reduce_hp s d = {s with hp = s.hp - d}
 
   (* new methods *)
   let get_skills_description s = s.skills.descr
