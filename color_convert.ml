@@ -10,6 +10,11 @@ type images ={
   one_image: oimage list;
 }
 
+type eimage={
+  name_data:string;
+  image_data: Graphics.color array array;
+}
+
 let rec list_color (lst:int list list list) acc int2=
   match lst with 
   |h::t->
@@ -53,8 +58,14 @@ let cat=
 
 let player=images_of_json (Yojson.Basic.from_file "player_image.json")
 
+let minion=images_of_json (Yojson.Basic.from_file "minion-image.json")
+
 let cute_cat= 
   (array_color (List.find (fun x->x.name="cute cat") cat).matrix)
 
 let the_player= 
   (array_color (List.find (fun x->x.name="player") player).matrix)
+
+let the_minion=(array_color (List.find (fun x->x.name="minion") minion).matrix)
+
+let enemy_data=[{name_data="minion";image_data=the_minion}]
