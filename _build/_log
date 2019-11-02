@@ -1,2 +1,12 @@
-### Starting build.
-# Compilation successful.
+"Rule: ocaml: ml -> cmo & cmi (%=color_convert )": "\196\230\168\195J\005\164\242\026g\147\255\195`\133\200"
+"Rule: ocaml dependencies ml (%=gui )": "\157\012\156\019\254\231\"\250\2540\169uF\205\185M"
+"Rule: ocaml dependencies ml (%=color_convert )": "G\220(\205dA\146. \234[\232\163\206\249\128"
+"Rule: ocaml dependencies ml (%=combat )": "\161\214\030^\128\1790\2525\242s>H\003\250\142"
+"Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/color_convert.ml": "\190MdR\153\019\142\186\180\209w\026\149T\133X"
+"Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/gui.ml": "\1325\233gH\201\149\237\220\230\006\n\219z\143\234"
+"Rule: ocaml: ml -> cmo & cmi (%=gui )": "\133]\169\252\177l._\148\026:\007\151b\022\014"
+"Rule: ocaml: cmo* -> byte (%=combat )": "\234\020\018\186\181\176\201ooDc\164\237\203\193\027"
+"Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/combat.ml": "\001\1766\194\138\225\170#\147p\019\203B\n1\250"
+"Rule: ocaml: cmo* -> byte (%=color_convert )": "6\207\170\bd\204\160\030\1729\251\175t\027\023a"
+"Rule: ocaml: cmo* -> byte (%=gui )": "V\178]\189\163\151\216#v\"\213\226\250\250\190\164"
+"Rule: ocaml: ml -> cmo & cmi (%=combat )": "S\241\191\228\192\230mI\230z\169\166\018\1819\012"
