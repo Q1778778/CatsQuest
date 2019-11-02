@@ -1,11 +1,10 @@
 {
   "size": {
-    "rows": 10.0,
-    "cols": 10.0
+    "rows": 10,
+    "cols": 10
   },
   "foods": [
     {
-      "id": 0,
       "location": {
         "row": 6,
         "col": 4
@@ -16,17 +15,15 @@
   ],
   "weapons": [
     {
-      "id": 1,
       "location": {
-        "row": 2.0,
-        "col": 5.0
+        "row": 2,
+        "col": 5
       }
     },
     {
-      "id": 2,
       "location": {
-        "row": 3.0,
-        "col": 3.0
+        "row": 3,
+        "col": 3
       }
     }
   ]

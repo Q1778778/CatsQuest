@@ -13,7 +13,11 @@ strength: int (*initial strength of player*)
 
 health: int (*initial health of player*)
 
-qualifying experience: int (*the minimum amount of experience PER LEVEL*)
+experience: int (*experience value of player*)
 
 keys: string list (*keyboard buttons that control the players' movements,
 e.g. ["left", "right", "up", "down"]*)
+
+In order to advance to the next level, a player needs an experience of 
+(player's current level) * 100 or above for a single level. 
+The maximum strength and health of a player is 100.
