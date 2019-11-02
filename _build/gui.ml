@@ -24,6 +24,9 @@ type state={
   mutable skill: string list;
 }
 
+type enemy={
+  mutable health: int;
+}
 
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
              difficulty="empty";ecombat="none"}
@@ -159,7 +162,7 @@ let draw_enemy name x y r color=
   Graphics.set_color color;
   Graphics.fill_circle x y r;
   let pixel=(String.length name)-1 in
-  Graphics.moveto (x-pixel*2) (y-r/2);
+  Graphics.moveto (x-pixel*3) (y-r/2);
   Graphics.set_color black;
   Graphics.draw_string name;
   cplace.ecircle<-Enemy (name,x,y,r)::(cplace.ecircle)
@@ -234,6 +237,7 @@ let rec combat name=
   let image_of_e=find_enemy_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar 100 name;
+  draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
   combat name
 
@@ -242,7 +246,7 @@ let combat_mon()=if cplace.ecombat<>"none" then
   else ()
 
 let ms1_demo()=
-  draw_enemy "minion" 600 400 10 red 
+  draw_enemy "minion" 600 400 20 red 
 
 let rec init () =
   cplace.fbutton<-[];

@@ -3,3 +3,4 @@
 #require "Yojson";;
 #load "color_convert.cmo";;
 #load "gui.cmo";;
+#load "enemy.cmo";;
