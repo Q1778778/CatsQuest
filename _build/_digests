@@ -4,4 +4,5 @@
 "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/color_convert.ml": "\210JA\1793\129\238A\152Ok\001*R\\\021"
 "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/gui.ml": "r\181\225\174\163\155\023\016%\007\241\127\189Hl6"
 "Rule: ocaml: ml -> cmo & cmi (%=gui )": "\146uU\173\207z\016E\253\"\207eMd\029y"
+"Rule: ocaml: cmo* -> byte (%=color_convert )": "\181\200\011\021\000\170t=~Y_\198\176\180\003\157"
 "Rule: ocaml: cmo* -> byte (%=gui )": "\183\173\238\200g\163D&\226Qv\024\165\179\001\234"

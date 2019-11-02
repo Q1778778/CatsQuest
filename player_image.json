@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "images": [
     {
       "name": "player",
@@ -7,14 +6,3 @@
     }
   ]
 }
-=======
-  "location": {
-    "row": 0,
-    "col": 0
-  },
-  "level": 1,
-  "strength": 100,
-  "health": 100,
-  "qualifying experience": 100
-}
->>>>>>> 4b6805feee2431777c206145a68af7f9b095f118
