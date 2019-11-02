@@ -16,8 +16,6 @@ module Player = struct
     keys : string list;
   }
 
-  exception OutOfBounds of int * int
-
   let location p = p.location
 
   let health p = p.health
