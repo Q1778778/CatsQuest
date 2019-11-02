@@ -1,2 +1,5 @@
 #directory "_build";;
 #require "Graphics";;
+#require "Yojson";;
+#load "color_convert.cmo";;
+#load "gui.cmo";;

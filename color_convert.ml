@@ -48,10 +48,13 @@ let images_of_json json=
   json|> member"images"|>to_list|>List.map image_of_images
 
 
-let from_json=
-  images_of_json (Yojson.Basic.from_file "image.json")
+let cat=
+  images_of_json (Yojson.Basic.from_file "cute cat.json")
 
-let t=from_json
+let player=images_of_json (Yojson.Basic.from_file "player_image.json")
 
 let cute_cat= 
-  (array_color (List.find (fun x->x.name="cute cat") t).matrix)
+  (array_color (List.find (fun x->x.name="cute cat") cat).matrix)
+
+let the_player= 
+  (array_color (List.find (fun x->x.name="player") player).matrix)
