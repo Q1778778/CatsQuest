@@ -51,7 +51,7 @@ let images_of_json json=
 let cat=
   images_of_json (Yojson.Basic.from_file "cute cat.json")
 
-let player=images_of_json (Yojson.Basic.from_file "player.json")
+let player=images_of_json (Yojson.Basic.from_file "player_image.json")
 
 let cute_cat= 
   (array_color (List.find (fun x->x.name="cute cat") cat).matrix)
