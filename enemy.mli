@@ -49,4 +49,3 @@ end
 module Witch : EnemyAugmentedSig
 module Minion :EnemySig
 module Goblin : EnemySig
-module EnemyGeneral : EnemySig -> EnemySig
