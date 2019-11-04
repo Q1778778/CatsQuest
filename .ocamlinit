@@ -1,5 +1,9 @@
 #directory "_build";;
 #require "Graphics";;
 #require "Yojson";;
+#require "ANSITerminal";;
 #load "color_convert.cmo";;
 #load "gui.cmo";;
+#load "enemy.cmo";;
+#load "map.cmo";;
+#load "player.cmo"

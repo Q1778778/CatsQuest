@@ -1,9 +1,10 @@
-open Map
+
 open Yojson.Basic.Util
+
 module Player = struct
+
   (** The abstract type of values representing keyboard keys. *)
   type key = Up | Down | Left | Right | W | A | S | D | Space | Null
-
 
   type t = {
     location : int * int;
@@ -14,28 +15,18 @@ module Player = struct
     keys : string list;
   }
 
-  (**[to_tuple a b j] converts a json representation [j] into a tuple of ints
-     [(i,j)], where [i] is the value associated with key [a] 
-     and [j] is the value associated with key [b]. If [a] is not a defined key
-     in [j], [(Null, [j])] will be returned. 
-     Requires: [j] is a valid json representation.*)
-  let to_tuple a b j = (j |> member a |> to_int, j |> member b |> to_int)
+  let constructor 
+      ~row ~col ?strength:(strength=10) ?health:(health=100) 
+      ?level:(level=1) ?experience:(experience=0) ~keys = 
+    {
+      location = (row,col);
+      strength = strength;
+      health = health;
+      level = level;
+      experience = experience;
+      keys = keys
+    }
 
-  (**[weapon_of_json j] is the the weapon the [j] represents. 
-     Requires: [j] is a valid json representation.*)
-  let weapon_of_json j = {
-    id = j |> member "id" |> to_int;
-    weapon_loc = j |> member "location" |> to_tuple "rows" "cols"
-  }
-
-  (**[food_of_json j] is the the food the [j] represents. 
-     Requires: [j] is a valid json representation.*)
-  let food_of_json j = {
-    idn = j |> member "id" |> to_int;
-    food_loc = j |> member "location" |> to_tuple "rows" "cols";
-    strength = j |> member "strength" |> to_int;
-    health = j |> member "health" |> to_int;
-  }
   let location p = p.location
 
   let health p = p.health
@@ -66,17 +57,6 @@ module Player = struct
     | "space" -> Space
     | _ -> Null
 
-  (**[player_of_json j] is the the player the [j] represents. 
-     Requires: [j] is a valid json representation.*)
-  let player_of_json j = {
-    location =  j |> member "location" |> to_tuple "row" "col";
-    strength = j |> member "strength" |> to_int;
-    health = j |> member "health" |> to_int;
-    level = j |> member "level" |> to_int;
-    experience = 0;
-    keys = j |> member "keys" |> to_list |> filter_string;
-  }
-
   type result = Legal of t | Illegal of string
 
   (* [move p m r c] is a new state for which the player [p] moves north,
@@ -85,14 +65,12 @@ module Player = struct
   let move p m row_diff col_diff = 
     let row = row p in 
     let col = col p in
-    if bound_check m row col then 
+    if Maps.bound_check m row col then 
       Legal {
         p with 
         location = (row+row_diff, col+col_diff)
       }
     else Illegal "Cannot move out of the map!"
-
-  let location p = p.location
 
   let move_north p m = move p m (-1) 0
 
@@ -114,12 +92,4 @@ module Player = struct
     else Illegal ("cannot advance level without experience " ^ 
                   (experience_qual |> string_of_int))
 
-  (* [attack p e] returns a new player state [r] after which player [p] attacks
-     an enemy [e]. [r] is [Legal p'] if the enemy successfully gets attacked, 
-     and Illegal otherwise. *)
-  (* let attack p e = 
-     let enemy_loc = neighbors p |> 
-     List.find (fun l -> exists_enemy p.map_state l) in 
-     let enemy = get_enemy 
-  *)
 end

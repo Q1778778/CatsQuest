@@ -21,6 +21,16 @@ module type EnemySig = sig
   (* Getters                        *)
   val get_hp: t -> int
   val get_pos: t -> int * int  
+<<<<<<< HEAD
+=======
+  val constructor:
+    ?pos:int * int ->
+    ?level:int ->
+    ?exp:int ->
+    ?strength:int ->
+    ?hp:int ->
+    id:string -> name:string -> descr:string -> t
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 module type EnemyAugmentedSig = sig
@@ -30,6 +40,17 @@ module type EnemyAugmentedSig = sig
   val get_skills_description: s -> string
   val get_skills_strength: s -> int
   include EnemySig with type t := s
+<<<<<<< HEAD
+=======
+  val constructor :
+    ?pos:int * int ->
+    ?level:int ->
+    ?exp:int ->
+    ?skills_strength:int ->
+    ?strength:int ->
+    ?hp:int ->
+    id:string -> name:string -> descr:string -> skills_descr: string -> s
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 module Goblin: EnemySig = struct
@@ -65,6 +86,24 @@ module Goblin: EnemySig = struct
   let set_move s d = {s with pos = d}
 
   let reduce_hp s d = {s with hp = s.hp - d}
+<<<<<<< HEAD
+=======
+
+  let constructor 
+      ?pos:(pos = 1,1) ?level:(level=5) 
+      ?exp:(exp=5) ?strength:(strength=20) ?hp:(hp=70) 
+      ~id ~name  ~descr : t =
+    {
+      id = id;
+      name = name;
+      descr = descr;
+      exp = exp;
+      level = level;
+      pos = pos;
+      strength = strength;
+      hp = hp;
+    }
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 
@@ -93,6 +132,10 @@ module Witch : EnemyAugmentedSig = struct
     pos: int * int;
     hp: int;
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
   (* the same as goblin *)
   let get_id s = s.id
 
@@ -118,4 +161,29 @@ module Witch : EnemyAugmentedSig = struct
   let get_skills_description s = s.skills.descr
 
   let get_skills_strength s = s.skills.strength
+<<<<<<< HEAD
+=======
+
+  let constructor 
+      ?pos:(pos = 1,1) ?level:(level=5) 
+      ?exp:(exp=5) ?skills_strength:(skills_strength=50)
+      ?strength:(strength=20) ?hp:(hp=70) 
+      ~id:(id:string)  
+      ~name:(name:string)
+      ~descr:(descr:string)  
+      ~skills_descr : s =
+    {
+      id = id;
+      name = name;
+      descr = descr;
+      exp = exp;
+      level = level;
+      pos = pos;
+      strength = strength;
+      hp = hp;
+      skills = { descr = skills_descr;
+                 strength = skills_strength;}
+    }
+
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end

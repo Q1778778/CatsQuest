@@ -1,0 +1,12 @@
+{
+  "name": "witch",
+  "description": "Witch lives in a cave and she usually stays inside forest.\n Be ware of her magic powers!",
+  "HP": 70,
+  "level": 5,
+  "experience": 100,
+  "strength": 20,
+  "special skills": {
+    "description": "witch's magics from the hell is an advocate for devil",
+    "strength": 50
+  }
+}

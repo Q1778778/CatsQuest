@@ -25,8 +25,10 @@ type state={
 }
 
 
+
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
              difficulty="empty";ecombat="none"}
+
 let cstate={health=100;skill=["push"]}
 
 let lblue=Graphics.rgb 82 219 255
@@ -234,6 +236,7 @@ let rec combat name=
   let image_of_e=find_enemy_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar 100 name;
+  draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
   combat name
 
@@ -242,7 +245,7 @@ let combat_mon()=if cplace.ecombat<>"none" then
   else ()
 
 let ms1_demo()=
-  draw_enemy "minion" 600 400 10 red 
+  draw_enemy "minion" 600 400 20 red 
 
 let rec init () =
   cplace.fbutton<-[];
