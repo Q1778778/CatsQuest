@@ -4,6 +4,7 @@
 #require "ANSITerminal";;
 #load "color_convert.cmo";;
 #load "gui.cmo";;
-#load "enemy.cmo";;
-#load "map.cmo";;
-#load "player.cmo"
+#load_rec "enemy.cmo";;
+#load "maps.cmo";;
+#load_rec "player.cmo";;
+#load "engine.cmo";;

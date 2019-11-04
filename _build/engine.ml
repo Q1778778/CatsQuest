@@ -103,7 +103,18 @@ let main_engine_enemy : unit -> enemy list =
       with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
         raise (Failure " none of enemy did not exist"))
 
-
+let main_engine_map : unit -> (item list * (int * int)) = 
+  let rec read_map handler =
+    match Unix.readdir handler with
+    | exception _ -> Unix.closedir handler; 
+      failwith "map.json is not in current directory"
+    | s -> if s = "map.json"
+      then 
+        let rows = s |> Yojson.Basic.from_file |> member "size" |> member "rows" |> to_int in
+        let cols = s |> Yojson.Basic.from_file |> member "size" |> member "cols" |> to_int in
+        [Eaten], (rows, cols)
+      else (read_map handler) in
+  fun () -> (read_map (Unix.opendir "."))
 
 (*let main () = 
    match Yojson.Basic.from_file "map.json" |> Yojson.Basic.from_json with

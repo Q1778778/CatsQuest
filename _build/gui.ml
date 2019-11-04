@@ -1,4 +1,5 @@
 open Graphics
+open Enemy
 
 type stage=
   |Combat
@@ -157,6 +158,10 @@ let combat_four_botton c =
          grey black 1060 10 130 85 "None"in
      c.fbutton<-([first]))
 
+let get_enemy id=
+  let lst =Engine.main_engine_enemy()in 
+  ()
+
 let draw_enemy name x y r color=
   Graphics.set_color color;
   Graphics.fill_circle x y r;
@@ -228,7 +233,7 @@ let rec find_enemy_data name (lst:Color_convert.eimage list)=
   |h::t->find_enemy_data name t 
   |[]->failwith "can not find the image"
 
-let rec combat name=
+let rec combat name =
   status_bar cstate;
   normal_four_botton cplace;
   health_bar cstate.health;
@@ -238,7 +243,7 @@ let rec combat name=
   enemy_health_bar 100 name;
   draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
-  combat name
+  combat name 
 
 let combat_mon()=if cplace.ecombat<>"none" then 
     (Graphics.clear_graph();combat cplace.ecombat)

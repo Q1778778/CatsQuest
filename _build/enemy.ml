@@ -21,8 +21,6 @@ module type EnemySig = sig
   (* Getters                        *)
   val get_hp: t -> int
   val get_pos: t -> int * int  
-<<<<<<< HEAD
-=======
   val constructor:
     ?pos:int * int ->
     ?level:int ->
@@ -30,7 +28,6 @@ module type EnemySig = sig
     ?strength:int ->
     ?hp:int ->
     id:string -> name:string -> descr:string -> t
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 module type EnemyAugmentedSig = sig
@@ -40,8 +37,6 @@ module type EnemyAugmentedSig = sig
   val get_skills_description: s -> string
   val get_skills_strength: s -> int
   include EnemySig with type t := s
-<<<<<<< HEAD
-=======
   val constructor :
     ?pos:int * int ->
     ?level:int ->
@@ -50,7 +45,6 @@ module type EnemyAugmentedSig = sig
     ?strength:int ->
     ?hp:int ->
     id:string -> name:string -> descr:string -> skills_descr: string -> s
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 module Goblin: EnemySig = struct
@@ -86,8 +80,6 @@ module Goblin: EnemySig = struct
   let set_move s d = {s with pos = d}
 
   let reduce_hp s d = {s with hp = s.hp - d}
-<<<<<<< HEAD
-=======
 
   let constructor 
       ?pos:(pos = 1,1) ?level:(level=5) 
@@ -103,7 +95,6 @@ module Goblin: EnemySig = struct
       strength = strength;
       hp = hp;
     }
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
 end
 
 
@@ -132,10 +123,7 @@ module Witch : EnemyAugmentedSig = struct
     pos: int * int;
     hp: int;
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
   (* the same as goblin *)
   let get_id s = s.id
 
@@ -161,8 +149,6 @@ module Witch : EnemyAugmentedSig = struct
   let get_skills_description s = s.skills.descr
 
   let get_skills_strength s = s.skills.strength
-<<<<<<< HEAD
-=======
 
   let constructor 
       ?pos:(pos = 1,1) ?level:(level=5) 
@@ -185,5 +171,9 @@ module Witch : EnemyAugmentedSig = struct
                  strength = skills_strength;}
     }
 
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
+end
+
+module EnemyGeneral (Enemy: EnemySig):EnemySig = struct
+  type g = Enemy.t
+  include Enemy
 end
