@@ -59,14 +59,16 @@ module Weapon : W = struct
     weapon_description : string;
     id : int;
     weapon_loc : int * int;
+    strength: int;
   }
 
   let constructor 
-      ~row ~col ~name ~id ~description = {
+      ~row ~col ~name ~id ~description ~strength = {
     weapon_name = name;
     id = id;
     weapon_description = description;
-    weapon_loc = (row,col)
+    weapon_loc = (row,col);
+    strength = strength;
   }
 end
 
