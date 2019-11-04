@@ -19,6 +19,8 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o enemy.cmo enemy.ml # cached
 # Target: gui.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:gui.byte, link, ocaml, program, quiet, traverse }
 ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics color_convert.cmo enemy.cmo gui.cmo -o gui.byte # cached
+# Target: enemy.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:enemy.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics enemy.cmo -o enemy.byte
 # Target: maps.mli.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:mli, file:maps.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules maps.mli > maps.mli.depends # cached
 # Target: maps.cmi, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:maps.mli, interf, ocaml, quiet, traverse }
@@ -40,5 +42,5 @@ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -packag
 # Target: engine.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:engine.byte, link, ocaml, program, quiet, traverse }
 ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics enemy.cmo maps.cmo player.cmo engine.cmo -o engine.byte # cached
 # Target: player.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:player.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics maps.cmo player.cmo -o player.byte
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics maps.cmo player.cmo -o player.byte # cached
 # Compilation successful.

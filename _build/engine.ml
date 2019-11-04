@@ -166,12 +166,11 @@ let main_engine_map : unit -> (item list * (int * int)) =
         let json = s |> Yojson.Basic.from_file in
         let rows = json |> member "size" |> member "rows" |> to_int in
         let cols = json |> member "size" |> member "cols" |> to_int in
-        let weapon_lst = json |> member "weapon" 
+        let weapon_lst = json |> member "weapons" 
                          |> to_list |> weapon_list_builder in
-        let food_lst = json |> member "food" 
+        let food_lst = json |> member "foods" 
                        |> to_list 
                        |> food_list_builder in
-
         (weapon_lst @ food_lst, (rows, cols))
       else read_map handler in
   fun () -> (read_map (Unix.opendir "."))
