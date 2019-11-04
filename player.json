@@ -7,9 +7,9 @@
   "strength": 100,
   "health": 100,
   "keys": [
-    "up",
-    "down",
-    "left",
-    "right"
+    "w",
+    "a",
+    "s",
+    "d"
   ]
 }
