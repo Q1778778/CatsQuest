@@ -24,12 +24,11 @@ type state={
   mutable skill: string list;
 }
 
-type enemy={
-  mutable health: int;
-}
+
 
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
              difficulty="empty";ecombat="none"}
+
 let cstate={health=100;skill=["push"]}
 
 let lblue=Graphics.rgb 82 219 255
