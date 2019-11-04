@@ -1,6 +1,6 @@
 {
   "name": "minion",
-  "descrpition": "Minions usually live in a group and attack any village in their road.\nOne minion might be weak but you don't want to meet with a group of them!",
+  "description": "Minions usually live in a group and attack any village in their road.\nOne minion might be weak but you don't want to meet with a group of them!",
   "HP": 30,
   "level": 2,
   "experience": 20,
