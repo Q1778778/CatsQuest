@@ -15,7 +15,6 @@ type enemy =
   | Minion of Minion.t
   | Delete
 
-
 type player = 
   | Player of Player.t 
   | Died
@@ -28,20 +27,21 @@ type item =
 type map = int * int
 
 type state = {
-  player: player;
+  mutable player: player;
   map: map;
-  items: item list;
-  enemies: enemy list;
+  mutable items: item list;
+  mutable enemies: enemy list;
 }
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
-  let re = Str.regexp_string s2
-  in try ignore (Str.search_forward re s1 0); true
-  with Not_found -> false
+    let re = Str.regexp_string s2
+    in try ignore (Str.search_forward re s1 0); true
+      with Not_found -> false
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
+
    Require:
    !!!!!!!!!!!!!!!!!!!!!!!!!!
    Valid enemy name format:
@@ -78,7 +78,7 @@ let witch_builder j id: enemy =
   )
 
 let goblin_or_minion_builder j id: enemy =
-  Minion (let name = j |> member "name" in
+  Minion (let name = j |> member |> "name" in
           let id = (Int.to_string (id + 1)) in
           let descr = j |> member "description" |> to_string in
           let exp = j |> member "experience" |> to_int in
@@ -112,67 +112,67 @@ let main_engine_player: unit -> (player) =
   let rec read_map handler =
     match Unix.readdir handler with
     | exception _ -> closedir handler; 
-      failwith "player.json is not in current directory"
+                    failwith "player.json is not in current directory"
     | s -> if s = "player.json"
-      then let player_json = s |> from_file in
-        let level = player_json |> member "level" |> to_int in
-        let strength = player_json |> member "strength" |> to_int in
-        let health = player_json |> member "health" |> to_int in
-        let location = player_json |> member "location" in
-        let row = location |> member "row" |> to_int in
-        let col = location |> member "col" |> to_int in
-        Player.constructor ~health ~level ~strength ~location ~row ~col
-      else read_map handler in
+            then let player_json = s |> from_file in
+            let level = player_json |> member "level" |> to_int in
+            let strength = player_json |> member "strength" |> to_int in
+            let health = player_json |> member "health" |> to_int in
+            let location = player_json |> member "location" in
+            let row = location |> member "row" |> to_int in
+            let col = location |> member "col" |> to_int in
+            Player.constructor ~health ~level ~strength ~location ~row ~col
+            else read_map handler in
   fun () -> (read_map (Unix.opendir "."))
 
 let food_list_builder jsons: item list = 
   List.map (fun j -> let id = 
-                       let count = 
-                         let counter = ref 0 in fun () -> incr counter; 
-                           !counter in count () in
-             let health = j |> member "health" |> to_int in
-             let strength = j |> member "strength" |> to_int in
-             let name = j |> member "name" |> to_string in
-             let description = j |> member "description" |> to_string in
-             let location = j |> member "location" in
-             let row = location |> member "row" in
-             let col = location |> member "col" in
-             Maps.Food.constructor ~col ~row ~health 
-               ~description ~name ~id ~strength) jsons
+                    let count = 
+                    let counter = ref 0 in fun () -> incr counter; 
+                      !counter in count () in
+                     let health = j |> member "health" |> to_int in
+                     let strength = j |> member "strength" |> to_int in
+                     let name = j |> member "name" |> to_string in
+                     let description = j |> member "description" |> to_string in
+                     let location = j |> member "location" in
+                     let row = location |> member "row" in
+                     let col = location |> member "col" in
+        Food (Maps.Food.constructor ~col ~row ~health 
+                              ~description ~name ~id ~strength)) jsons
 
 let weapon_list_builder jsons: item list = 
   List.map (fun j -> let id = 
-                       let count = 
-                         let counter = ref 0 in fun () -> incr counter; 
-                           !counter in count () in
-             let health = j |> member "health" |> to_int in
-             let strength = j |> member "strength" |> to_int in
-             let name = j |> member "name" |> to_string in
-             let description = j |> member "description" |> to_string in
-             let location = j |> member "location" in
-             let row = location |> member "row" in
-             let col = location |> member "col" in
-             Maps.Weapon.constructor ~col ~row ~strength 
-               ~description ~name ~id) jsons
+                    let count = 
+                    let counter = ref 0 in fun () -> incr counter; 
+                      !counter in count () in
+                     let health = j |> member "health" |> to_int in
+                     let strength = j |> member "strength" |> to_int in
+                     let name = j |> member "name" |> to_string in
+                     let description = j |> member "description" |> to_string in
+                     let location = j |> member "location" in
+                     let row = location |> member "row" in
+                     let col = location |> member "col" in
+        Weapon (Maps.Weapon.constructor ~col ~row ~strength 
+                                ~description ~name ~id)) jsons
 
 let main_engine_map : unit -> (item list * (int * int)) = 
   let rec read_map handler =
     match Unix.readdir handler with
     | exception _ -> closedir handler; 
-      failwith "map.json is not in current directory"
+                    failwith "map.json is not in current directory"
     | s -> if s = "map.json"
-      then 
-        let json = s |> from_file in
-        let rows = json |> member "size" |> member "rows" |> to_int in
-        let cols = json |> member "size" |> member "cols" |> to_int in
-        let weapon_lst = json |> member "weapon" 
-                         |> to_list |> weapon_list_builder in
-        let food_lst = json |> member "food" 
-                       |> to_list 
-                       |> food_list_builder in
-
-        (weapon_lst @ food_lst, (row, col))
-      else read_map handler in
+            then 
+            let json = s |> from_file in
+            let rows = json |> member "size" |> member "rows" |> to_int in
+            let cols = json |> member "size" |> member "cols" |> to_int in
+            let weapon_lst = json |> member "weapon" 
+                                  |> to_list |> weapon_list_builder in
+            let food_lst = json |> member "food" 
+                                |> to_list 
+                                |> food_list_builder in
+              
+                 (weapon_lst @ food_lst, (row, col))
+            else read_map handler in
   fun () -> (read_map (Unix.opendir "."))
 
 let main: unit -> state =
@@ -183,3 +183,17 @@ let main: unit -> state =
     map = location;
     enemy = main_engine_enemy ();
   }
+
+
+
+let change_item item s = s.(items) <- item
+
+let change_player player s = s.(player) <- player
+
+let change_enemies enemies s = s.(enemies) <- enemies
+
+let get_item_list s = s.items
+
+let get_player s = s.player
+
+let get_enemies s = s.enemies
