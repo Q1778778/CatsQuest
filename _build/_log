@@ -30,17 +30,15 @@ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -packag
 # Target: maps.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:maps.byte, link, ocaml, program, quiet, traverse }
 ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics maps.cmo -o maps.byte # cached
 # Target: engine.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules engine.ml > engine.ml.depends
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules engine.ml > engine.ml.depends # cached
 # Target: player.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules player.ml > player.ml.depends # cached
 # Target: player.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o player.cmo player.ml # cached
 # Target: engine.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o engine.cmo engine.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package Graphics -o engine.cmo engine.ml # cached
 # Target: engine.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:engine.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics enemy.cmo maps.cmo player.cmo engine.cmo -o engine.byte
-+ ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics enemy.cmo maps.cmo player.cmo engine.cmo -o engine.byte
-File "_none_", line 1:
-Error: Required module `Str' is unavailable
-Command exited with code 2.
-# Compilation unsuccessful.
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics enemy.cmo maps.cmo player.cmo engine.cmo -o engine.byte # cached
+# Target: player.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:player.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics maps.cmo player.cmo -o player.byte
+# Compilation successful.

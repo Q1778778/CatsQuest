@@ -14,20 +14,6 @@ val size : t -> int * int
    boundary of the map [m]. *)
 val bound_check : t -> int -> int -> bool
 
-module type W = sig 
-  (** The abstract type of values representing weapons. *)
-  type weapon
-
-  (** Constructor of a weapon *)
-  val constructor : 
-    row:int -> 
-    col:int -> 
-    name:string -> 
-    id:int -> 
-    description:string -> 
-    weapon
-end
-
 module type F = sig 
   (** The abstract type of values representing foods. *)
   type food
@@ -44,6 +30,20 @@ module type F = sig
     food
 end
 
-module Food : F 
+module type W = sig 
+  (** The abstract type of values representing weapons. *)
+  type weapon
 
-module Weapon: W
+  (** Constructor of a weapon *)
+  val constructor : 
+    row:int -> 
+    col:int -> 
+    name:string -> 
+    id:int -> 
+    description:string -> 
+    weapon
+end
+
+module Food :F 
+
+module Weapon :W

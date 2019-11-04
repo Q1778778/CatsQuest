@@ -2,7 +2,7 @@ open Enemy
 open Player
 open Map
 open Yojson.Basic.Util
-
+open Str
 
 
 (*!!!!!!!!!!!!!!!!!!!!!!!!!                                              *)
@@ -35,9 +35,10 @@ type state = {
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
-  let re = Str.regexp_string s2
-  in try ignore (Str.search_forward re s1 0); true
-  with Not_found -> false
+  (*let re = Str.regexp_string s2
+    in try ignore (Str.search_forward re s1 0); true
+    with Not_found -> false*)
+  true
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
@@ -184,6 +185,7 @@ let main (): state =
     enemies = main_engine_enemy ();
   }
 
+let game_state= main()
 
 
 let change_item item (s:state) = s.items <- item
