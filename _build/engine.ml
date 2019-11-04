@@ -35,10 +35,16 @@ type state = {
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
-  (*let re = Str.regexp_string s2
-    in try ignore (Str.search_forward re s1 0); true
-    with Not_found -> false*)
-  true
+  let rec counter count = 
+    (*let re = Str.regexp_string s2
+      in try ignore (Str.search_forward re s1 0); true
+      with Not_found -> false*)
+    if (String.length s1) - count < String.length s2 
+    then false
+    else if (String.sub s1 count (String.length s2)) = s2
+    then true
+    else counter (count + 1) in
+  counter 0
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
@@ -122,13 +128,72 @@ let main_engine_player: unit -> (player) =
         let location = player_json |> member "location" in
         let row = location |> member "row" |> to_int in
         let col = location |> member "col" |> to_int in
-        let keys=[] in
-        let experience= player_json |> member "experience"|> to_int in
+        let keys = player_json |> member "keys" 
+                   |> to_list 
+                   |> List.map (fun x -> Yojson.Basic.to_string x) in
+        let experience = 0 in
         Player.constructor ~health ~level ~strength  ~row ~col ~experience ~keys
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 
+let food_list_builder jsons: item list = 
+  List.map (fun j -> let id = 
+                       let count = 
+                         let counter = ref 0 in fun () -> incr counter; 
+                           !counter in count () in
+             let health = j |> member "health" |> to_int in
+             let strength = j |> member "strength" |> to_int in
+             let name = j |> member "name" |> to_string in
+             let description = j |> member "description" |> to_string in
+             let location = j |> member "location" in
+             let row = location |> member "row"|>to_int in
+             let col = location |> member "col" |>to_int in
+             Food (Maps.Food.constructor ~col ~row ~health 
+                     ~description ~name ~id ~strength)) jsons
 
+let weapon_list_builder jsons: item list = 
+  List.map (fun j -> let id = 
+                       let count = 
+                         let counter = ref 0 in fun () -> incr counter; 
+                           !counter in count () in
+             let name = j |> member "name" |> to_string in
+             let description = j |> member "description" |> to_string in
+             let location = j |> member "location" in
+             let strength = j |> member "strength"|>to_int in
+             let row = location |> member "row"|>to_int in
+             let col = location |> member "col" |>to_int in
+             Weapon (Maps.Weapon.constructor ~strength ~col ~row 
+                       ~description ~name ~id)) jsons
+
+let main_engine_map : unit -> (item list * (int * int)) = 
+  let rec read_map handler =
+    match Unix.readdir handler with
+    | exception _ -> Unix.closedir handler; 
+      failwith "map.json is not in current directory"
+    | s -> if s = "map.json"
+      then 
+        let json = s |> Yojson.Basic.from_file in
+        let rows = json |> member "size" |> member "rows" |> to_int in
+        let cols = json |> member "size" |> member "cols" |> to_int in
+        let weapon_lst = json |> member "weapons" 
+                         |> to_list |> weapon_list_builder in
+        let food_lst = json |> member "foods" 
+                       |> to_list 
+                       |> food_list_builder in
+        (weapon_lst @ food_lst, (rows, cols))
+      else read_map handler in
+  fun () -> (read_map (Unix.opendir "."))
+
+let main (): state =
+  let items, loc = main_engine_map () in
+  {
+    items = items;
+    player = main_engine_player ();
+    map = loc;
+    enemies = main_engine_enemy ();
+  }
+
+let game_state= main()
 
 
 let change_item item (s:state) = s.items <- item

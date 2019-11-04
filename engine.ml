@@ -36,14 +36,14 @@ type state = {
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
   let rec counter count = 
-  (*let re = Str.regexp_string s2
-    in try ignore (Str.search_forward re s1 0); true
-    with Not_found -> false*)
-  if (String.length s1) - count < String.length s2 
-  then false
-  else if (String.sub s1 count (String.length s2)) = s2
-  then true
-  else counter (count + 1) in
+    (*let re = Str.regexp_string s2
+      in try ignore (Str.search_forward re s1 0); true
+      with Not_found -> false*)
+    if (String.length s1) - count < String.length s2 
+    then false
+    else if (String.sub s1 count (String.length s2)) = s2
+    then true
+    else counter (count + 1) in
   counter 0
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
@@ -129,8 +129,8 @@ let main_engine_player: unit -> (player) =
         let row = location |> member "row" |> to_int in
         let col = location |> member "col" |> to_int in
         let keys = player_json |> member "keys" 
-                              |> to_list 
-                              |> List.map (fun x -> Yojson.Basic.to_string x) in
+                   |> to_list 
+                   |> List.map (fun x -> Yojson.Basic.to_string x) in
         let experience = 0 in
         Player.constructor ~health ~level ~strength  ~row ~col ~experience ~keys
       else read_map handler in
@@ -159,7 +159,7 @@ let weapon_list_builder jsons: item list =
              let name = j |> member "name" |> to_string in
              let description = j |> member "description" |> to_string in
              let location = j |> member "location" in
-             let strength = j |> member "strength" in
+             let strength = j |> member "strength"|>to_int in
              let row = location |> member "row"|>to_int in
              let col = location |> member "col" |>to_int in
              Weapon (Maps.Weapon.constructor ~strength ~col ~row 

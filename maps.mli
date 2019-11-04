@@ -41,6 +41,7 @@ module type W = sig
     name:string -> 
     id:int -> 
     description:string -> 
+    strength: int->
     weapon
 end
 
