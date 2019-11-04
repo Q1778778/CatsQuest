@@ -35,10 +35,16 @@ type state = {
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
+  let rec counter count = 
   (*let re = Str.regexp_string s2
     in try ignore (Str.search_forward re s1 0); true
     with Not_found -> false*)
-  true
+  if (String.length s1) - count < String.length s2 
+  then false
+  else if (String.sub s1 count (String.length s2)) = s2
+  then true
+  else counter (count + 1) in
+  counter 0
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
@@ -122,8 +128,10 @@ let main_engine_player: unit -> (player) =
         let location = player_json |> member "location" in
         let row = location |> member "row" |> to_int in
         let col = location |> member "col" |> to_int in
-        let keys=[] in
-        let experience= player_json |> member "experience"|> to_int in
+        let keys = player_json |> member "keys" 
+                              |> to_list 
+                              |> List.map (fun x -> Yojson.Basic.to_string x) in
+        let experience = 0 in
         Player.constructor ~health ~level ~strength  ~row ~col ~experience ~keys
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
@@ -151,9 +159,10 @@ let weapon_list_builder jsons: item list =
              let name = j |> member "name" |> to_string in
              let description = j |> member "description" |> to_string in
              let location = j |> member "location" in
+             let strength = j |> member "strength" in
              let row = location |> member "row"|>to_int in
              let col = location |> member "col" |>to_int in
-             Weapon (Maps.Weapon.constructor ~col ~row 
+             Weapon (Maps.Weapon.constructor ~strength ~col ~row 
                        ~description ~name ~id)) jsons
 
 let main_engine_map : unit -> (item list * (int * int)) = 
@@ -166,9 +175,9 @@ let main_engine_map : unit -> (item list * (int * int)) =
         let json = s |> Yojson.Basic.from_file in
         let rows = json |> member "size" |> member "rows" |> to_int in
         let cols = json |> member "size" |> member "cols" |> to_int in
-        let weapon_lst = json |> member "weapon" 
+        let weapon_lst = json |> member "weapons" 
                          |> to_list |> weapon_list_builder in
-        let food_lst = json |> member "food" 
+        let food_lst = json |> member "foods" 
                        |> to_list 
                        |> food_list_builder in
 
