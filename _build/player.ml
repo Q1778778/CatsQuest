@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+open Map
+open Yojson.Basic.Util
+module Player = struct
+=======
 
 open Yojson.Basic.Util
 
@@ -75,6 +80,7 @@ end
 
 module Player : P = struct
 
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
   (** The abstract type of values representing keyboard keys. *)
   type key = Up | Down | Left | Right | W | A | S | D | Space | Null
 
@@ -184,7 +190,11 @@ module Player : P = struct
   let move p m row_diff col_diff = 
     let row = row p in 
     let col = col p in
+<<<<<<< HEAD
+    if bound_check m row col then 
+=======
     if Maps.bound_check m row col then 
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
       Legal {
         p with 
         location = (row+row_diff, col+col_diff)

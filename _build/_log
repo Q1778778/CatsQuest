@@ -1,4 +1,31 @@
 ### Starting build.
+<<<<<<< HEAD
+# Target: enemy.ml.depends, tags: { package(ANSITerminal), package(oUnit), package(yojson), extension:ml, file:enemy.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -modules enemy.ml > enemy.ml.depends # cached
+# Target: enemy.cmo, tags: { package(ANSITerminal), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:enemy.cmo, file:enemy.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -o enemy.cmo enemy.ml # cached
+# Target: enemy.byte, tags: { package(ANSITerminal), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:enemy.byte, link, ocaml, program, quiet, traverse }
+ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal enemy.cmo -o enemy.byte # cached
+# Target: player.mli.depends, tags: { package(ANSITerminal), package(oUnit), package(yojson), extension:mli, file:player.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -modules player.mli > player.mli.depends # cached
+# Target: map.mli.depends, tags: { package(ANSITerminal), package(oUnit), package(yojson), extension:mli, file:map.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -modules map.mli > map.mli.depends # cached
+# Target: map.cmi, tags: { package(ANSITerminal), package(oUnit), package(yojson), byte, compile, extension:mli, file:map.mli, interf, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -o map.cmi map.mli # cached
+# Target: player.cmi, tags: { package(ANSITerminal), package(oUnit), package(yojson), byte, compile, extension:mli, file:player.mli, interf, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -o player.cmi player.mli # cached
+# Target: player.ml.depends, tags: { package(ANSITerminal), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -modules player.ml > player.ml.depends
+# Target: player.cmo, tags: { package(ANSITerminal), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -o player.cmo player.ml
++ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -o player.cmo player.ml
+File "player.ml", line 1:
+Error: The implementation player.ml does not match the interface player.cmi:
+       The module type `P' is required but not provided
+       File "player.mli", line 2, characters 0-2598: Expected declaration
+Command exited with code 2.
+# Compilation unsuccessful.
+=======
 # Target: color_convert.ml.depends, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), extension:ml, file:color_convert.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package Graphics -modules color_convert.ml > color_convert.ml.depends # cached
 # Target: color_convert.cmo, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, traverse }
@@ -63,3 +90,4 @@ ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -
 # Target: player.byte, tags: { package(ANSITerminal), package(Graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:player.byte, link, ocaml, program, quiet, traverse }
 ocamlfind ocamlc -linkpkg -package oUnit -package yojson -package ANSITerminal -package Graphics maps.cmo player.cmo -o player.byte # cached
 # Compilation successful.
+>>>>>>> 9c03733ef42629255138751123a48c90570a408b
