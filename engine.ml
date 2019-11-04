@@ -15,13 +15,6 @@ type enemy =
   | Minion of Minion.t
   | Delete
 
-module EnemyGeneral (Enemy: EnemySig)(EnemyAug: EnemyAugmentedSig) = struct
-  type t = Enemy.t
-  type s = EnemyAug.s
-  include Enemy
-  include EnemyAug
-end
-
 
 type player = 
   | Player of Player.t 
@@ -85,7 +78,7 @@ let witch_builder j id: enemy =
   )
 
 let goblin_or_minion_builder j id: enemy =
-  Minion (let name = j |> member |> "name" in
+  Minion (let name = j |> member "name" in
           let id = (Int.to_string (id + 1)) in
           let descr = j |> member "description" |> to_string in
           let exp = j |> member "experience" |> to_int in

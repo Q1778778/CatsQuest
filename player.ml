@@ -6,7 +6,7 @@ module type P = sig
   type t
 
   (** The type representing the result of an attempted movement. *)
-  type result = Legal of t | Illegal 
+  type result = Legal of t | Illegal of string
 
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
