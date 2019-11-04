@@ -172,10 +172,3 @@ module Witch : EnemyAugmentedSig = struct
     }
 
 end
-
-module EnemyGeneral (Enemy: EnemySig)(EnemyAug: EnemyAugmentedSig) = struct
-  type tg = Enemy.t
-  type sg = EnemyAug.s
-  include Enemy
-  include EnemyAug
-end

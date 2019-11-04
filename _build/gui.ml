@@ -158,16 +158,6 @@ let combat_four_botton c =
          grey black 1060 10 130 85 "None"in
      c.fbutton<-([first]))
 
-let match_enemy_id (h:Engine.enemy) id=
-  match h with
-  |Engine.Witch s->Witch.get_id id
-
-
-let get_enemy id=
-  let lst =Engine.main_engine_enemy()in 
-  let find_enemy_data eid list=
-    match list with
-    |h::t->()in ()
 
 let draw_enemy name x y r color=
   Graphics.set_color color;
