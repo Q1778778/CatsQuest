@@ -1,5 +1,6 @@
 open Graphics
 open Enemy
+open Player
 
 type stage=
   |Combat
@@ -57,14 +58,19 @@ let dialog text npc name=
   Graphics.draw_string text;
   cplace.dialog<-Dialog_sense name
 
-let health_bar health=
+let get_player_health ()=
+  match Engine.get_player(Engine.init ()) with
+  |Engine.Player s-> (Player.max_health, Player.health s)
+  |Engine.Died ->(Player.max_health, 0)
+
+let health_bar ()=
   whitebox_draw 100 730 300 750 5;
+  let (m,h)=get_player_health() in
   Graphics.set_color red;
-  Graphics.fill_rect 100 730 (health*2) 20;
-  Graphics.set_color white;
-  Graphics.moveto 180 735;
-  Graphics.draw_string ((string_of_int health)^"/100");
+  Graphics.fill_rect 100 730 (h*200/m) 20;
   Graphics.set_color black;
+  Graphics.moveto 180 735;
+  Graphics.draw_string ((string_of_int h)^"/"^string_of_int m);
   Graphics.moveto 40 733;
   Graphics.draw_string"Health:"
 
@@ -233,7 +239,7 @@ let rec find_enemy_data name (lst:Color_convert.eimage list)=
 let rec combat name =
   status_bar cstate;
   normal_four_botton cplace;
-  health_bar cstate.health;
+  health_bar ();
   combat_four_botton cplace;
   let image_of_e=find_enemy_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
@@ -255,7 +261,7 @@ let rec init () =
   cplace.irefresh<-false;
   status_bar cstate;
   normal_four_botton cplace;
-  health_bar cstate.health;
+  health_bar ();
   ms1_demo();
   fensor cplace Normal;
   combat_mon();

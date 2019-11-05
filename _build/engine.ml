@@ -2,7 +2,6 @@ open Enemy
 open Player
 open Map
 open Yojson.Basic.Util
-open Str
 
 
 (*!!!!!!!!!!!!!!!!!!!!!!!!!                                              *)
@@ -184,7 +183,7 @@ let main_engine_map : unit -> (item list * (int * int)) =
       else read_map handler in
   fun () -> (read_map (Unix.opendir "."))
 
-let main (): state =
+let init (): state =
   let items, loc = main_engine_map () in
   {
     items = items;
@@ -193,7 +192,7 @@ let main (): state =
     enemies = main_engine_enemy ();
   }
 
-let game_state= main()
+let game_state= init()
 
 
 let change_item item (s:state) = s.items <- item
