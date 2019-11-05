@@ -84,6 +84,10 @@ module type P = sig
   val extract_skill_strength_single_skill: skill -> int
 
   val extract_skill_description_single_skill: skill -> string
+
+  val skills_list: t-> skill list
+
+  val skill_name: skill->string
 end 
 
 module Player : P = struct
@@ -221,4 +225,9 @@ module Player : P = struct
                      (Printf.sprintf "skill name %s does not exist" name))
     | h::d -> h
 
+  let skills_list t=
+    t.skills
+
+  let skill_name skill=
+    skill.name
 end
