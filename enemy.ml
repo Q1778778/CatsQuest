@@ -39,15 +39,15 @@ module type EnemySig = sig
     id:string -> 
     name:string -> 
     descr:string -> 
-    ?skills: skills option ->
+    ?skills: skills option ->unit->
     t
 end
 
 module Goblin: EnemySig = struct
   type skills = {
-      descr: string;
-      strength: int
-    }
+    descr: string;
+    strength: int
+  }
 
   type t = {
     (*static fields *)
@@ -84,19 +84,19 @@ module Goblin: EnemySig = struct
   let reduce_hp s d = {s with hp = s.hp - d}
 
   (* new methods *)
-  let get_skills_description s = s.skills.descr
+  let get_skills_description s = (Option.get (s.skills)).descr
 
-  let get_skills_strength s = s.skills.strength
+  let get_skills_strength s = (Option.get (s.skills)).strength
 
   let skill_constructor ~skill_descr ~skill_strength = 
-       {
-      descr = description;
-      strength = strength;
+    {
+      descr = skill_descr;
+      strength = skill_strength;
     }
 
   let constructor ~pos ~level 
       ~exp ~strength ~hp 
-      ~id ~name  ~descr ?skills:(skills = None): t =
+      ~id ~name  ~descr ?skills:(skills = None) ()=
     {
       id = id;
       name = name;
