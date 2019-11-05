@@ -127,11 +127,8 @@ let main_engine_player: unit -> (player) =
         let location = player_json |> member "location" in
         let row = location |> member "row" |> to_int in
         let col = location |> member "col" |> to_int in
-        let keys = player_json |> member "keys" 
-                   |> to_list 
-                   |> List.map (fun x -> Yojson.Basic.to_string x) in
         let experience = 0 in
-        Player.constructor ~health ~level ~strength  ~row ~col ~experience ~keys
+        Player.constructor ~health ~level ~strength  ~row ~col ~experience 
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 
