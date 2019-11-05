@@ -158,9 +158,6 @@ let combat_four_botton c =
          grey black 1060 10 130 85 "None"in
      c.fbutton<-([first]))
 
-let get_enemy id=
-  let lst =Engine.main_engine_enemy()in 
-  ()
 
 let draw_enemy name x y r color=
   Graphics.set_color color;

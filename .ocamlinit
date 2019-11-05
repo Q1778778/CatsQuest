@@ -1,5 +1,6 @@
 #directory "_build";;
 #require "Graphics";;
+#require "Str";;
 #require "Yojson";;
 #require "ANSITerminal";;
 #load "color_convert.cmo";;

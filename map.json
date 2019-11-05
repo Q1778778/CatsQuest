@@ -32,7 +32,8 @@
       "location": {
         "row": 2,
         "col": 5
-      }
+      },
+      "strength": 10
     },
     {
       "name": "jade sword",
@@ -40,7 +41,8 @@
       "location": {
         "row": 3,
         "col": 3
-      }
+      },
+      "strength": 20
     }
   ]
 }

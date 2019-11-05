@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-player.ml: List Map Stdlib Yojson
-=======
-player.ml: List Maps Stdlib Yojson
->>>>>>> 9c03733ef42629255138751123a48c90570a408b
+player.ml: Maps Yojson

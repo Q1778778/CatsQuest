@@ -5,8 +5,8 @@ module type P = sig
   (** The abstract type of values representing the player's game state. *)
   type t
 
-  (** The type representing the result of an attempted movement. *)
-  type result = Legal of t | Illegal of string
+  (** The exception representing the result of an illegal movement.*)
+  exception Illegal of string
 
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
@@ -26,43 +26,55 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-  (** [move_north p m] returns the new player state [r] after p moves north.
-      [r] is [Legal p'] if player [p] is able to make the move, and [Illegal]
-      otherwise. *)
-  val move_north : t -> Maps.t -> result
+  (** [move_north p m] updates the player state after [p] moves north,
+      returning [unit].
+      Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_north : t -> Maps.t -> unit
 
-  (** [move_south p m] returns the new player state [r] after p moves south.
-      [r] is [Legal p'] if player [p] is able to make the move, and [Illegal]
-      otherwise. *)
-  val move_south : t -> Maps.t -> result
+  (** [move_south p m] updates the player state after [p] moves south,
+      returning [unit].
+      Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_south : t -> Maps.t -> unit
 
-  (** [move_east p m] returns the new player state [r] after p moves east.
-      [r] is [Legal p'] if player [p] is able to make the move, and [Illegal]
-      otherwise. *)
-  val move_east : t -> Maps.t -> result
+  (** [move_east p m] updates the player state after [p] moves east,
+      returning [unit].
+      Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_east : t -> Maps.t -> unit
 
-  (** [move_west p m] returns the new player state [r] after p moves west.
-      [r] is [Legal p'] if player [p] is able to make the move, and [Illegal]
-      otherwise. *)
-  val move_west : t -> Maps.t -> result
+  (** [move_west p m] updates the player state after [p] moves west,
+      returning [unit].
+      Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_west : t -> Maps.t -> unit
+
+  (** [reduce_health p h] reduces the health of player [p] by [h].
+      Requires: [h] >= 0 *)
+  val reduce_health : t -> int -> unit
+
+  (** [reduce_strength p s] reduces the strength of player [p] by [s].
+      Requires: [s] >= 0 *)
+  val reduce_strength : t -> int -> unit
+
+  (** [increase_experience p e] increases the experience of player [p] by [e].
+      Requires: [e] >= 0 *)
+  val increase_experience : t -> int -> unit 
 
   (** [advance_level p] is [Legal p'] if the player [p] has reached the 
        experience value for that level alone, and [Illegal] otherwise.*)
-  val advance_level : t -> result 
+  val advance_level : t -> unit 
 
 end 
 
-module Player = struct
+module Player : P = struct
 
   (** The abstract type of values representing keyboard keys. *)
   type key = Up | Down | Left | Right | W | A | S | D | Space | Null
 
   type t = {
-    location : int * int;
-    strength : int;
-    health : int;
-    level : int;
-    experience : int;
+    mutable location : int * int;
+    mutable strength : int;
+    mutable health : int;
+    mutable level : int;
+    mutable experience : int;
     keys : string list;
   }
 
@@ -108,20 +120,18 @@ module Player = struct
     | "space" -> Space
     | _ -> Null
 
-  type result = Legal of t | Illegal of string
+  (* type result = Legal of t | Illegal of string *)
+  exception Illegal of string 
 
-  (* [move p m r c] is a new state for which the player [p] moves north,
-     south, east, or west in map [m]; i.e. moves north or south by 
+  (* [move p m r c] changes the player state for which the player [p] 
+     moves north, south, east, or west in map [m]; i.e. moves north or south by 
      [row_diff], moves east or west by [col_diff] *)
   let move p m row_diff col_diff = 
     let row = row p in 
     let col = col p in
     if Maps.bound_check m row col then 
-      Legal {
-        p with 
-        location = (row+row_diff, col+col_diff)
-      }
-    else Illegal "Cannot move out of the map!"
+      p.location <- (row+row_diff, col+col_diff)
+    else raise (Illegal "Cannot move out of the map!")
 
   let move_north p m = move p m (-1) 0
 
@@ -131,16 +141,33 @@ module Player = struct
 
   let move_west p m = move p m 0 (-1)
 
-  let advance_level p = 
+  let reduce_health p h = 
+    assert(h>=0);
+    let new_health = 
+      if p.health - h >= 0 then p.health - h else 0 
+    in p.health <- new_health
+
+  let reduce_strength p s = 
+    assert(s>=0);
+    let new_strength = 
+      if p.strength - s >= 0 then p.strength - s else 0 
+    in p.strength <- new_strength
+
+  let increase_experience p e = 
+    assert (e>=0);
+    p.experience <- p.experience + e
+
+  let advance_level p =  begin
     let lev = p.level in 
     let experience_qual = 100 * lev in 
     if p.experience >= experience_qual then
-      Legal {
-        p with 
-        level = lev + 1;
-        experience = p.experience mod experience_qual;
-      }
-    else Illegal ("cannot advance level without experience " ^ 
-                  (experience_qual |> string_of_int))
-
+      begin
+        p.level <- lev + 1;
+        p.experience <- p.experience mod experience_qual;
+      end
+    else 
+      let error_msg = ("cannot advance level without experience " 
+                       ^ string_of_int experience_qual) in 
+      raise (Illegal error_msg)
+  end
 end
