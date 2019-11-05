@@ -79,8 +79,10 @@ let witch_builder j id: enemy =
     let lst = j |> member "special skills" in
     let skills_descr = lst |> member "description" |> to_string in
     let skills_strength = lst |> member "strength" |> to_int in
+    let skills =
+     Some (Witch.skill_constructor ~skills_descr ~skills_strength) in
     Witch.constructor ~pos ~level ~exp ~name
-      ~skills_strength ~strength ~hp ~id ~descr ~skills_descr 
+      ~skills_strength ~strength ~hp ~id ~descr ~skills
   )
 
 let goblin_or_minion_builder j id: enemy =
