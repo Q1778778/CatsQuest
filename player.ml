@@ -89,7 +89,7 @@ end
 module Player : P = struct
 
   (** The abstract type of values representing keyboard keys. *)
-  type key =  W | A | S | D | Null
+  type key =  Up | Down | Left | Right | Null
   type skill = {
     name: string;
     description: string;
