@@ -3,9 +3,11 @@
 #require "Str";;
 #require "Yojson";;
 #require "ANSITerminal";;
-#load "color_convert.cmo";;
-#load "gui.cmo";;
 #load_rec "enemy.cmo";;
 #load "maps.cmo";;
 #load_rec "player.cmo";;
 #load "engine.cmo";;
+#load "color_convert.cmo";;
+#load "gui.cmo";;
+
+
