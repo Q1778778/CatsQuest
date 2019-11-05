@@ -3,8 +3,8 @@ open Yojson.Basic.Util
 
 module type P = sig
   (** The abstract type of values representing the player's game state. *)
+  type skill
   type t
-
   (** The exception representing the result of an illegal movement.*)
   exception Illegal of string
 
@@ -15,6 +15,7 @@ module type P = sig
 
   val level :t -> int
 
+  exception Unknownskill of string
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
@@ -71,22 +72,47 @@ module type P = sig
 
   val max_health : int
 
+  val skill_constructor: 
+    player:t ->
+    name:string ->
+    description:string -> 
+    strength:int -> 
+    unit
+
+  val get_skill_by_skill_name: t -> string -> skill
+
+  val extract_skill_strength_single_skill: skill -> int
+
+  val extract_skill_description_single_skill: skill -> string
 end 
 
 module Player : P = struct
 
   (** The abstract type of values representing keyboard keys. *)
   type key = Up | Down | Left | Right | W | A | S | D | Space | Null
-
+  type skill = {
+    name: string;
+    description: string;
+    strength: int;
+  }
   type t = {
     mutable location : int * int;
     mutable strength : int;
     mutable health : int;
     mutable level : int;
     mutable experience : int;
+    mutable skills: skill list;
     keys : string list;
   }
 
+  exception Unknownskill of string
+
+  let skill_constructor ~player ~name ~description ~strength = 
+    player.skills <- ({
+        description = description;
+        strength = strength;
+        name = name;
+      }::player.skills)
 
   let constructor 
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
@@ -97,7 +123,13 @@ module Player : P = struct
       health = health;
       level = level;
       experience = experience;
-      keys = keys
+      keys = keys;
+      skills = [{
+          name = "punch";
+          description = "Basic attacks.
+        Player uses fists to challenge the evils!";
+          strength = strength;
+        }]
     }
 
   let location p = p.location
@@ -120,11 +152,7 @@ module Player : P = struct
 
   (**[match_keys s] returns the equivalent enum value for the parsed key
      string [s] from the json file. *)
-  let match_keys = function 
-    | "right" -> Right
-    | "left" -> Left
-    | "up" -> Up
-    | "down" -> Down
+  let match_keys = function
     | "w" -> W
     | "a" -> A
     | "s" -> S
@@ -182,4 +210,15 @@ module Player : P = struct
                        ^ string_of_int experience_qual) in 
       raise (Illegal error_msg)
   end
+
+  let extract_skill_strength_single_skill (skill:skill) = skill.strength
+
+  let extract_skill_description_single_skill skill = skill.description
+
+  let get_skill_by_skill_name t name = 
+    match List.filter (fun x -> x.name = name ) t.skills with
+    | [] -> raise (Unknownskill 
+                     (Printf.sprintf "skill name %s does not exist" name))
+    | h::d -> h
+
 end
