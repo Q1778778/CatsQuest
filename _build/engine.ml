@@ -9,9 +9,9 @@ open Yojson.Basic.Util
 (*instead of contained in json                                           *)
 
 type enemy = 
-  | Witch of Witch.t
-  | Goblin of Goblin.t 
-  | Minion of Minion.t
+  | Witch of Enemy.t
+  | Goblin of Enemy.t 
+  | Minion of Enemy.t
   | Delete
 
 type player = 
@@ -80,8 +80,8 @@ let witch_builder j id: enemy =
     let skill_descr = lst |> member "description" |> to_string in
     let skill_strength = lst |> member "strength" |> to_int in
     let skills =
-      Some (Witch.skill_constructor ~skill_descr ~skill_strength) in
-    Witch.constructor ~pos ~level ~exp ~name
+      Some (Enemy.skill_constructor ~skill_descr ~skill_strength) in
+    Enemy.constructor ~pos ~level ~exp ~name
       ~strength ~hp ~id ~descr ~skills ()
   )
 
@@ -94,7 +94,7 @@ let goblin_or_minion_builder j id: enemy =
           let pos = ((Random.int 10)+1, (Random.int 10)+1) in 
           let strength = j |> member "strength" |> to_int in
           let hp = j |> member "HP" |> to_int in
-          Minion.constructor ~name ~pos ~level ~exp ~strength ~hp ~id ~descr () )
+          Enemy.constructor ~name ~pos ~level ~exp ~strength ~hp ~id ~descr () )
 
 
 let browse_one_enemy_json j id: enemy = 

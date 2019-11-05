@@ -43,7 +43,7 @@ module type EnemySig = sig
     t
 end
 
-module Goblin: EnemySig = struct
+module Enemy: EnemySig = struct
   type skills = {
     descr: string;
     strength: int
@@ -108,12 +108,4 @@ module Goblin: EnemySig = struct
       hp = hp;
       skills = skills
     }
-end
-
-module Minion: EnemySig = struct
-  include Goblin
-end
-
-module Witch : EnemySig = struct
-  include Goblin
 end

@@ -44,6 +44,4 @@ module type EnemySig = sig
 end
 
 
-module Witch : EnemySig
-module Minion :EnemySig
-module Goblin : EnemySig
+module Enemy : EnemySig
