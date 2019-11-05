@@ -8,6 +8,13 @@ module type P = sig
   (** The exception representing the result of an illegal movement.*)
   exception Illegal of string
 
+  val constructor: row:int ->
+    col:int ->
+    ?strength:int ->
+    ?health:int -> ?level:int -> ?experience:int -> keys:string list -> t
+
+  val level :t -> int
+
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
@@ -80,6 +87,7 @@ module Player : P = struct
     keys : string list;
   }
 
+
   let constructor 
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
       ?level:(level=1) ?experience:(experience=0) ~keys = 
@@ -99,6 +107,8 @@ module Player : P = struct
   let experience p = p.experience
 
   let strength p = p.strength
+
+  let level p= p.level
 
   let max_strength = 100
 

@@ -1,6 +1,9 @@
 #directory "_build";;
 #require "Graphics";;
 #require "Str";;
+#thread;;
+#require "threads";;
+#require "threads.posix";;
 #require "Yojson";;
 #require "ANSITerminal";;
 #load_rec "enemy.cmo";;

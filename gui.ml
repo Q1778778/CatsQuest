@@ -26,12 +26,10 @@ type state={
   mutable skill: string list;
 }
 
-
-
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
              difficulty="empty";ecombat="none"}
 
-let cstate={health=100;skill=["push"]}
+let cstate={health=100;skill=["stab"]}
 
 let lblue=Graphics.rgb 82 219 255
 
@@ -56,6 +54,8 @@ let dialog text npc name=
   Graphics.draw_string (name^":");
   Graphics.moveto 200 260;
   Graphics.draw_string text;
+  Graphics.moveto 920 120;
+  Graphics.draw_string "Click to continue #";
   cplace.dialog<-Dialog_sense name
 
 let get_player_health ()=
@@ -63,8 +63,30 @@ let get_player_health ()=
   |Engine.Player s-> (Player.max_health, Player.health s)
   |Engine.Died ->(Player.max_health, 0)
 
+let get_player_level ()=
+  match Engine.get_player(Engine.init ()) with
+  |Engine.Player s->  (Player.level s)
+  |Engine.Died ->0
+
+let get_player_expeience ()=
+  match Engine.get_player(Engine.init ()) with
+  |Engine.Player s->  (Player.experience s)
+  |Engine.Died ->0
+
+let experience_bar ()=
+  Graphics.set_color black;
+  whitebox_draw 130 20 150 190 5;
+  Graphics.moveto 115 6;
+  Graphics.draw_string "Experience";
+  let upper_bound=(get_player_level()*100)in
+  Graphics.set_color green;
+  Graphics.fill_rect 130 20 20 (170*(get_player_expeience())/upper_bound);
+  ()
+
 let health_bar ()=
   whitebox_draw 100 730 300 750 5;
+  Graphics.set_color white;
+  Graphics.fill_rect 100 730 200 20;
   let (m,h)=get_player_health() in
   Graphics.set_color red;
   Graphics.fill_rect 100 730 (h*200/m) 20;
@@ -85,7 +107,7 @@ let enemy_health_bar health name=
   Graphics.moveto 850 515;
   Graphics.draw_string (name^" Health:")
 
-let status_bar state=
+let status_bar ()=
   Graphics.set_color black;
   Graphics.set_line_width 5;
   Graphics.moveto 0 200;
@@ -93,7 +115,7 @@ let status_bar state=
   let player=Graphics.make_image Color_convert.the_player in 
   Graphics.draw_image player 10 0;
   Graphics.moveto 10 175;
-  Graphics.draw_string ("The Hero Level: "^"1")
+  Graphics.draw_string ("The Hero Level: "^string_of_int (get_player_level()))
 
 
 
@@ -181,6 +203,10 @@ let radius_circle x y r rx ry=
   let distance=sqrt(float_of_int(dx*dx+dy*dy))in 
   float_of_int r>=distance
 
+let skill_image name=
+  match name with 
+  |"stab"->draw_a_image Color_convert.the_stab 500 350; Thread.delay 1.5;Graphics.clear_graph()
+  |_->failwith"unbound image"
 
 type trigger=
   |Command of string
@@ -192,7 +218,7 @@ let parse  c=
   match c with
   |Command d when d="easy"->cplace.difficulty<-"easy"
   |Command s-> dialog "this is a GUI tester" Color_convert.cute_cat "cute cat"
-  |Attack sk->()
+  |Attack sk->skill_image sk
   |Next_con s->Graphics.clear_graph()
   |Tnone->()
 
@@ -237,7 +263,7 @@ let rec find_enemy_data name (lst:Color_convert.eimage list)=
   |[]->failwith "can not find the image"
 
 let rec combat name =
-  status_bar cstate;
+  status_bar ();
   normal_four_botton cplace;
   health_bar ();
   combat_four_botton cplace;
@@ -259,7 +285,8 @@ let rec init () =
   cplace.fbutton<-[];
   cplace.dialog<-Bnone;
   cplace.irefresh<-false;
-  status_bar cstate;
+  status_bar ();
+  experience_bar();
   normal_four_botton cplace;
   health_bar ();
   ms1_demo();
