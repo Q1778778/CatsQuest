@@ -5,11 +5,5 @@
   },
   "level": 10,
   "strength": 100,
-  "health": 100,
-  "keys": [
-    "w",
-    "a",
-    "s",
-    "d"
-  ]
+  "health": 100
 }

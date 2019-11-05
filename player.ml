@@ -11,7 +11,7 @@ module type P = sig
   val constructor: row:int ->
     col:int ->
     ?strength:int ->
-    ?health:int -> ?level:int -> ?experience:int -> keys:string list -> t
+    ?health:int -> ?level:int -> ?experience:int -> t
 
   val level :t -> int
 
@@ -89,7 +89,7 @@ end
 module Player : P = struct
 
   (** The abstract type of values representing keyboard keys. *)
-  type key = Up | Down | Left | Right | W | A | S | D | Space | Null
+  type key =  W | A | S | D | Null
   type skill = {
     name: string;
     description: string;
@@ -116,14 +116,13 @@ module Player : P = struct
 
   let constructor 
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
-      ?level:(level=1) ?experience:(experience=0) ~keys = 
+      ?level:(level=1) ?experience:(experience=0) = 
     {
       location = (row,col);
       strength = strength;
       health = health;
       level = level;
       experience = experience;
-      keys = keys;
       skills = [{
           name = "punch";
           description = "Basic attacks.
@@ -153,11 +152,14 @@ module Player : P = struct
   (**[match_keys s] returns the equivalent enum value for the parsed key
      string [s] from the json file. *)
   let match_keys = function
-    | "w" -> W
-    | "a" -> A
-    | "s" -> S
-    | "d" -> D
-    | "space" -> Space
+    | "w" 
+    | "\027[A" -> Up
+    | "a"
+    | "\027[D" -> Left
+    | "s" 
+    | "\027[B" -> Down
+    | "d" 
+    | "\027[C" -> Right
     | _ -> Null
 
   (* type result = Legal of t | Illegal of string *)
