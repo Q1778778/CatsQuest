@@ -62,6 +62,8 @@ module type P = sig
        experience value for that level alone, and [Illegal] otherwise.*)
   val advance_level : t -> unit 
 
+  val max_health : int
+
 end 
 
 module Player : P = struct
