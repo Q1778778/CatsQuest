@@ -102,7 +102,6 @@ module Player : P = struct
     mutable level : int;
     mutable experience : int;
     mutable skills: skill list;
-    keys : string list;
   }
 
   exception Unknownskill of string
