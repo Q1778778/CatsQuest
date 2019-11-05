@@ -2,20 +2,30 @@
 open Yojson.Basic.Util
 
 module type P = sig
-  (** The abstract type of values representing the player's game state. *)
+
+  (** The abstract type of values representing a player's skill. *)
   type skill
+
+  (** The abstract type of values representing a player. *)
   type t
+
   (** The exception representing the result of an illegal movement.*)
   exception Illegal of string
 
+  (** [constructor r c s h l e] constructs a new player module located at
+      row [r], col [c], with strength [s], health [h], experience [e], 
+      at level [l]. *)
   val constructor: row:int ->
     col:int ->
     ?strength:int ->
     ?health:int -> ?level:int -> ?experience:int -> t
 
-  val level :t -> int
+  (**[level p] is the current level of player [p] *)
+  val level : t -> int
 
+  (** The exception type of an unknown skill.  *)
   exception Unknownskill of string
+
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
@@ -70,8 +80,11 @@ module type P = sig
        experience value for that level alone, and [Illegal] otherwise.*)
   val advance_level : t -> unit 
 
+  (** [max_health] is the maximum possible health of a player. *)
   val max_health : int
 
+  (** [skill_constructor p n d s] adds a skill to player [p] with 
+      name [n], description [d] and strength [s]. *)
   val skill_constructor: 
     player:t ->
     name:string ->
