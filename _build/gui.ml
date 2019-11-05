@@ -59,17 +59,17 @@ let dialog text npc name=
   cplace.dialog<-Dialog_sense name
 
 let get_player_health ()=
-  match Engine.get_player(Engine.init ()) with
+  match Engine.get_player(Engine.game_state) with
   |Engine.Player s-> (Player.max_health, Player.health s)
   |Engine.Died ->(Player.max_health, 0)
 
 let get_player_level ()=
-  match Engine.get_player(Engine.init ()) with
+  match Engine.get_player(Engine.game_state) with
   |Engine.Player s->  (Player.level s)
   |Engine.Died ->0
 
 let get_player_expeience ()=
-  match Engine.get_player(Engine.init ()) with
+  match Engine.get_player(Engine.game_state) with
   |Engine.Player s->  (Player.experience s)
   |Engine.Died ->0
 
@@ -203,10 +203,22 @@ let radius_circle x y r rx ry=
   let distance=sqrt(float_of_int(dx*dx+dy*dy))in 
   float_of_int r>=distance
 
+let skill_damage name=
+  match Engine.get_player(Engine.game_state) with
+  |Player s->
+    name|> Player.get_skill_by_skill_name s|> Player.extract_skill_strength_single_skill
+  |Died->failwith "died people don't fight"
+
+
 let skill_image name=
   match name with 
-  |"stab"->draw_a_image Color_convert.the_stab 500 350; Thread.delay 1.5;Graphics.clear_graph()
+  |"punch"->draw_a_image Color_convert.the_stab 500 350;
+    Graphics.moveto 850 500;
+    Graphics.set_color red;
+    Graphics.draw_string ("-"^string_of_int(skill_damage name));
+    Thread.delay 1.5;Graphics.clear_graph()
   |_->failwith"unbound image"
+
 
 type trigger=
   |Command of string
@@ -218,7 +230,8 @@ let parse  c=
   match c with
   |Command d when d="easy"->cplace.difficulty<-"easy"
   |Command s-> dialog "this is a GUI tester" Color_convert.cute_cat "cute cat"
-  |Attack sk->skill_image sk
+  |Attack sk->skill_image sk;
+
   |Next_con s->Graphics.clear_graph()
   |Tnone->()
 
@@ -262,6 +275,12 @@ let rec find_enemy_data name (lst:Color_convert.eimage list)=
   |h::t->find_enemy_data name t 
   |[]->failwith "can not find the image"
 
+let skill_mon ()=
+  match Engine.game_state.player with
+  |Player s->
+    cstate.skill<-List.map (fun x->Player.skill_name x) (Player.skills_list s)
+  |Died->()
+
 let rec combat name =
   status_bar ();
   normal_four_botton cplace;
@@ -278,10 +297,11 @@ let combat_mon()=if cplace.ecombat<>"none" then
     (Graphics.clear_graph();combat cplace.ecombat)
   else ()
 
-let ms1_demo()=
-  draw_enemy "minion" 600 400 20 red 
+let ms1_demo flag=
+  if flag then
+    draw_enemy "minion" 600 400 20 red else ()
 
-let rec init () =
+let rec init flag =
   cplace.fbutton<-[];
   cplace.dialog<-Bnone;
   cplace.irefresh<-false;
@@ -289,12 +309,13 @@ let rec init () =
   experience_bar();
   normal_four_botton cplace;
   health_bar ();
-  ms1_demo();
+  skill_mon();
+  ms1_demo flag;
   fensor cplace Normal;
   combat_mon();
   tsensor cplace;
   clear_screen();
-  init ()
+  init flag
 
 let rec beginning () =
   Graphics.moveto 500 650;
@@ -304,7 +325,7 @@ let rec beginning () =
   cplace.fbutton<-[create_button "easy" green black 500 550 200 50 "easy"];
   fensor cplace Normal;
   if cplace.difficulty<>"empty" then 
-    (Graphics.clear_graph(); init ()) else beginning ()
+    (Graphics.clear_graph(); init true )else beginning ()
 
 let open_g state =
   Graphics.open_graph " 1200x800+100";
