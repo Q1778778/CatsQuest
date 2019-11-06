@@ -7,11 +7,13 @@
   "skills": [
     {
       "name": "fire ball",
-      "strength": 50
+      "strength": 50,
+      "probability": 0.3
     },
     {
       "name": "curses",
-      "strength": 20
+      "strength": 20,
+      "probability": 1.0
     }
   ]
 }

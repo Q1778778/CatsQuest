@@ -13,6 +13,8 @@ module type EnemySig = sig
   val get_one_skill_strength_by_name: t -> string -> int
   (*if the difficulty of the game can be changed, then the strength can be
     changed   *)
+  val get_all_skills_name_prob_and_strength_to_assoc_list: 
+    t -> (string * float * int) list
   val get_level: t -> int
 
   (* Dynamic fields.                *)
@@ -30,6 +32,7 @@ module type EnemySig = sig
   val single_skill_constructor: 
     skill_name: string -> 
     skill_strength: int -> 
+    skill_probability: float ->
     skills
 
   val constructor:
@@ -50,7 +53,8 @@ module Enemy: EnemySig = struct
 
   type skills = {
     skill_name: string;
-    skill_strength: int
+    skill_strength: int;
+    skill_probability: float;
   }
 
   (*i set these fields as mutable because there is a chance that we will modify
@@ -93,15 +97,21 @@ module Enemy: EnemySig = struct
   let get_all_skills_name s = 
     List.map (fun x -> x.skill_name) s.skills
 
+  let get_all_skills_name_prob_and_strength_to_assoc_list s = 
+    List.map (fun x -> (x.skill_name, x.skill_probability, x.skill_strength)) 
+    s.skills
+
   let get_one_skill_strength_by_name s name = 
     try (match List.find (fun x -> x.skill_name = name) s.skills with 
         | a -> a.skill_strength) 
     with Not_found -> raise (UnknownSkill name)
 
-  let single_skill_constructor ~skill_name ~skill_strength :skills = 
+  let single_skill_constructor ~skill_name ~skill_strength ~skill_probability 
+    :skills = 
     {
       skill_name = skill_name;
       skill_strength = skill_strength;
+      skill_probability = skill_probability;
     }
 
   let constructor ~pos ~level ~exp ~hp ~id ~name  ~descr ~max_hp ~skills =
@@ -113,7 +123,7 @@ module Enemy: EnemySig = struct
       level = level;
       pos = pos;
       hp = hp;
-      max_hp=max_hp;
+      max_hp = max_hp;
       skills = skills
     }
 end

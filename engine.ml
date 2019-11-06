@@ -3,7 +3,6 @@ open Player
 open Map
 open Yojson.Basic.Util
 
-
 (*!!!!!!!!!!!!!!!!!!!!!!!!!                                              *)
 (*some functions below required an id, which is created by the functions *)
 (*instead of contained in json                                           *)
@@ -38,6 +37,19 @@ let probabilty s =
   (* 0 <= x <= 10 *)
   let x = Int.to_float (Random.int 11) in
   x <  (s *. 10.0)
+
+(**[choose_skill_random t] is a (skill name, skill strength) for enemy [t]*)
+let choose_skill_random s =
+  let rec inner_chooser lst finished= 
+    match lst with
+    | [] -> finished
+    | h::d -> let name, prob, strength = h in
+      if probability prob && (strenght > finished |> snd)
+      then (name, strength) |> inner_chooser d
+      else inner_chooser d finished in
+  inner_chooser 
+  (s|>Enemy.get_all_skills_name_prob_and_strength_to_assoc_list) []
+
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
@@ -88,7 +100,9 @@ let enemy_builder j id: enemy =
       List.map (fun x -> 
           let skill_name = x |> member "name" |> to_string in
           let skill_strength = x |> member "strength" |> to_int in
-          (Enemy.single_skill_constructor ~skill_name ~skill_strength)) lst in
+          let skill_probability = x |> member "probability" |> to_float in
+          (Enemy.single_skill_constructor ~skill_name ~skill_strength
+          ~skill_probability)) lst in
     Enemy.constructor ~pos ~level ~exp ~name
       ~hp ~id ~descr ~max_hp ~skills
   )
