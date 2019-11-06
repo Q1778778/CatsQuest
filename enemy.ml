@@ -1,14 +1,16 @@
 module type EnemySig = sig
   type t
   type skills
+
+  exception UnknownSkill of string
   (* Static fields                  *)
   (* Onle getters exist             *)
   val get_id: t -> string
   val get_name: t -> string
   val get_description: t -> string
   val get_experience: t -> int
-  val get_skills_description: t -> string
-  val get_skills_strength: t -> int
+  val get_all_skills_name: t -> string list
+  val get_one_skill_strength_by_name: t -> string -> int
   (*if the difficulty of the game can be changed, then the strength can be
     changed   *)
   val get_normal_strength: t -> int 
@@ -25,8 +27,8 @@ module type EnemySig = sig
   val get_hp: t -> int
   val get_pos: t -> int * int  
 
-  val skill_constructor: 
-    skill_descr: string -> 
+  val single_skill_constructor: 
+    skill_name: string -> 
     skill_strength: int -> 
     skills
 
@@ -34,33 +36,35 @@ module type EnemySig = sig
     pos:int * int ->
     level:int ->
     exp:int ->
-    strength:int ->
     hp:int ->
     id:string -> 
     name:string -> 
     descr:string -> 
-    ?skills: skills option ->unit->
+    skills: skills list ->
     t
 end
 
 module Enemy: EnemySig = struct
+  exception UnknownSkill of string
+
   type skills = {
     descr: string;
     strength: int
   }
 
+(*i set these fields as mutable because there is a chance that we will modify
+it in MS2 *)
   type t = {
     (*static fields *)
     id: string;
     name: string;
     descr: string;
-    exp: int;
-    strength: int;
-    level: int;
+    mutable exp: int;
+    mutable level: int;
     (*dynamic fields *)
-    pos: int * int;
-    hp: int;
-    skills: skills option;
+    mutable pos: int * int;
+    mutable hp: int;
+    mutable skills: skills list;
   }
 
   let get_id s = s.id
@@ -77,26 +81,28 @@ module Enemy: EnemySig = struct
 
   let get_pos s = s.pos
 
-  let get_normal_strength s = s.strength
+  let set_move s d = s.pos <- d
 
-  let set_move s d = {s with pos = d}
-
-  let reduce_hp s d = {s with hp = s.hp - d}
+  let reduce_hp s d = s.hp <- (s.hp - d)
 
   (* new methods *)
-  let get_skills_description s = (Option.get (s.skills)).descr
+  let get_all_skills_name s = 
+    List.map (fun x -> x.name) s.skills
 
-  let get_skills_strength s = (Option.get (s.skills)).strength
+  let get_one_skill_strength_by_name s name = 
+    match List.find (fun x -> x.name = name) s.skills with
+    | Not_found -> raise (UnknownSkill name)
+    | a -> a.strength
 
-  let skill_constructor ~skill_descr ~skill_strength = 
+  let single_skill_constructor ~skills_name ~skills_strength = 
     {
-      descr = skill_descr;
-      strength = skill_strength;
+      name = skills_name;
+      strength = skills_strength;
     }
 
   let constructor ~pos ~level 
       ~exp ~strength ~hp 
-      ~id ~name  ~descr ?skills:(skills = None) ()=
+      ~id ~name  ~descr ~skills =
     {
       id = id;
       name = name;
