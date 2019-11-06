@@ -32,12 +32,12 @@ type state = {
 
 (**[probabilty s] produces a bool based on probabilty [s]
 
-Require:
-[s] mod 0.1. 0.1 <= [s] <= 1.0*)
+   Require:
+   [s] mod 0.1. 0.1 <= [s] <= 1.0*)
 let probabilty s = 
   (* 0 <= x <= 10 *)
-   let x = Int.to_float (Random.int 11) in
-   Float.to_int (s *. 10) > x
+  let x = Int.to_float (Random.int 11) in
+  x <  (s *. 10.0)
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =

@@ -25,10 +25,19 @@ type map = int * int
 
 type state = {
   mutable player: player;
-  map: map;
+  mutable map: map;
   mutable items: item list;
   mutable enemies: enemy list;
 }
+
+(**[probabilty s] produces a bool based on probabilty [s]
+
+   Require:
+   [s] mod 0.1. 0.1 <= [s] <= 1.0*)
+let probabilty s = 
+  (* 0 <= x <= 10 *)
+  let x = Int.to_float (Random.int 11) in
+  x <  (s *. 10.0)
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
@@ -65,7 +74,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 let enemy_builder j id: enemy =
   Enemy (
-    let name = "witch" in
+    let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
@@ -130,8 +139,8 @@ let food_list_builder jsons: item list =
              let name = j |> member "name" |> to_string in
              let description = j |> member "description" |> to_string in
              let location = j |> member "location" in
-             let row = location |> member "row"|>to_int in
-             let col = location |> member "col" |>to_int in
+             let row = location |> member "row"|> to_int in
+             let col = location |> member "col" |> to_int in
              Food (Maps.Food.constructor ~col ~row ~health 
                      ~description ~name ~id ~strength)) jsons
 
@@ -177,7 +186,8 @@ let init (): state =
     enemies = main_engine_enemy ();
   }
 
-let game_state= init()
+let game_state= init ()
+
 
 
 let change_item item (s:state) = s.items <- item

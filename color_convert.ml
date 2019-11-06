@@ -52,6 +52,7 @@ let image_of_images i={
 let images_of_json json=
   json|> member"images"|>to_list|>List.map image_of_images
 
+let enemy_stab=images_of_json (Yojson.Basic.from_file "punch_enemy.json")
 
 let cat=
   images_of_json (Yojson.Basic.from_file "cute cat.json")
@@ -63,6 +64,9 @@ let minion=images_of_json (Yojson.Basic.from_file "minion-image.json")
 let player_combat=images_of_json (Yojson.Basic.from_file "player_combat.json")
 
 let stab=images_of_json (Yojson.Basic.from_file "stab.json")
+
+
+let enemy_punch=(array_color (List.find (fun x->x.name="stab") enemy_stab).matrix)
 
 let cute_cat= 
   (array_color (List.find (fun x->x.name="cute cat") cat).matrix)

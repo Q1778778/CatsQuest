@@ -104,9 +104,7 @@ module Enemy: EnemySig = struct
       skill_strength = skill_strength;
     }
 
-  let constructor ~pos ~level 
-      ~exp  ~hp 
-      ~id ~name  ~descr ~max_hp ~skills =
+  let constructor ~pos ~level ~exp ~hp ~id ~name  ~descr ~max_hp ~skills =
     {
       id = id;
       name = name;

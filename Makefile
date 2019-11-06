@@ -1,3 +1,3 @@
-color:
-	ocamlbuild -pkg graphics -use-ocamlfind color_convert.byte
-	utop -init color_convert.ml
+build:
+	ocamlbuild -pkgs Graphics -use-ocamlfind color_convert.byte enemy.byte maps.byte  engine.byte player.byte -tag thread gui.byte
+
