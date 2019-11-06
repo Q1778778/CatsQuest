@@ -31,7 +31,10 @@ module type EnemySig = sig
     skills
 
   val constructor:
+<<<<<<< HEAD
     ?skills: skills option ->
+=======
+>>>>>>> 6d324dfec983098e36277156f538a2d2cd05e954
     pos:int * int ->
     level:int ->
     exp:int ->
@@ -40,14 +43,25 @@ module type EnemySig = sig
     id:string -> 
     name:string -> 
     descr:string -> 
+<<<<<<< HEAD
+=======
+    ?skills: skills option ->
+>>>>>>> 6d324dfec983098e36277156f538a2d2cd05e954
     t
 end
 
 module Goblin: EnemySig = struct
+<<<<<<< HEAD
   type skills = Some of {
       descr: string;
       strength: int
     } | None
+=======
+  type skills = {
+      descr: string;
+      strength: int
+    }
+>>>>>>> 6d324dfec983098e36277156f538a2d2cd05e954
 
   type t = {
     (*static fields *)
@@ -89,7 +103,11 @@ module Goblin: EnemySig = struct
   let get_skills_strength s = s.skills.strength
 
   let skill_constructor ~skill_descr ~skill_strength = 
+<<<<<<< HEAD
     Some {
+=======
+       {
+>>>>>>> 6d324dfec983098e36277156f538a2d2cd05e954
       descr = description;
       strength = strength;
     }
