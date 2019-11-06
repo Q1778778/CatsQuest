@@ -9,10 +9,8 @@ open Yojson.Basic.Util
 (*instead of contained in json                                           *)
 
 type enemy = 
-  | Witch of Witch.s 
-  | Goblin of Goblin.t 
-  | Minion of Minion.t
-  | Delete
+  | Enemy of Enemy.t
+  | Deleted
 
 type player = 
   | Player of Player.t 
@@ -27,10 +25,19 @@ type map = int * int
 
 type state = {
   mutable player: player;
-  map: map;
+  mutable map: map;
   mutable items: item list;
   mutable enemies: enemy list;
 }
+
+(**[probabilty s] produces a bool based on probabilty [s]
+
+   Require:
+   [s] mod 0.1. 0.1 <= [s] <= 1.0*)
+let probabilty s = 
+  (* 0 <= x <= 10 *)
+  let x = Int.to_float (Random.int 11) in
+  x <  (s *. 10.0)
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
@@ -65,43 +72,31 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
     else browse_dir_enemy handler lst
 
 
-let witch_builder j id: enemy =
-  Witch (
-    let name = "witch" in
+let enemy_builder j id: enemy =
+  Enemy (
+    let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
     (* random init pos *)
     let pos = ((Random.int 10)+1, (Random.int 10)+1) in
-    let strength = j |> member "strength" |> to_int in
     let hp = j |> member "HP" |> to_int in
-    let lst = j |> member "special skills" in
-    let skills_descr = lst |> member "description" |> to_string in
-    let skills_strength = lst |> member "strength" |> to_int in
-    let skills =
-     Some (Witch.skill_constructor ~skills_descr ~skills_strength) in
-    Witch.constructor ~pos ~level ~exp ~name
-      ~skills_strength ~strength ~hp ~id ~descr ~skills
+    let max_hp = hp in
+    let lst = j |> member "skills" |> to_list in
+    let skills = 
+      List.map (fun x -> 
+          let skill_name = x |> member "name" |> to_string in
+          let skill_strength = x |> member "strength" |> to_int in
+          (Enemy.single_skill_constructor ~skill_name ~skill_strength)) lst in
+    Enemy.constructor ~pos ~level ~exp ~name
+      ~hp ~id ~descr ~max_hp ~skills
   )
 
-let goblin_or_minion_builder j id: enemy =
-  Minion (let name = j |> member "name"|> to_string in
-          let id = (Int.to_string (id + 1)) in
-          let descr = j |> member "description" |> to_string in
-          let exp = j |> member "experience" |> to_int in
-          let level = j |> member "level" |> to_int in
-          let pos = ((Random.int 10)+1, (Random.int 10)+1) in 
-          let strength = j |> member "strength" |> to_int in
-          let hp = j |> member "HP" |> to_int in
-          Minion.constructor ~name ~pos ~level ~exp ~strength ~hp ~id ~descr )
-
-
 let browse_one_enemy_json j id: enemy = 
-  if (contains j "witch") then witch_builder (Yojson.Basic.from_file j) id
-  else if (contains j "minion" || contains j "goblin")
-  then goblin_or_minion_builder (Yojson.Basic.from_file j) id
-  else failwith "invalid input json name"
+  if (contains j "witch" || contains j "minion" || contains j "goblin")
+  then enemy_builder (Yojson.Basic.from_file j) id
+  else failwith "something wrong with browse_dir_enemy. Check it"
 
 
 (**[main_engine_enemy ()] read all enemy json files in current directory*)
@@ -144,8 +139,8 @@ let food_list_builder jsons: item list =
              let name = j |> member "name" |> to_string in
              let description = j |> member "description" |> to_string in
              let location = j |> member "location" in
-             let row = location |> member "row"|>to_int in
-             let col = location |> member "col" |>to_int in
+             let row = location |> member "row"|> to_int in
+             let col = location |> member "col" |> to_int in
              Food (Maps.Food.constructor ~col ~row ~health 
                      ~description ~name ~id ~strength)) jsons
 
@@ -191,7 +186,8 @@ let init (): state =
     enemies = main_engine_enemy ();
   }
 
-let game_state= init()
+let game_state= init ()
+
 
 
 let change_item item (s:state) = s.items <- item

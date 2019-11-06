@@ -4,5 +4,10 @@
   "HP": 50,
   "level": 3,
   "experience": 50,
-  "strength": 10
+  "skills": [
+    {
+      "name": "stab",
+      "strength": 10
+    }
+  ]
 }
