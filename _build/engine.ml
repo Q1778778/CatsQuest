@@ -9,10 +9,8 @@ open Yojson.Basic.Util
 (*instead of contained in json                                           *)
 
 type enemy = 
-  | Witch of Enemy.t
-  | Goblin of Enemy.t 
-  | Minion of Enemy.t
-  | Delete
+  | Enemy of Enemy.t
+  | Deleted
 
 type player = 
   | Player of Player.t 
@@ -65,8 +63,8 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
     else browse_dir_enemy handler lst
 
 
-let witch_builder j id: enemy =
-  Witch (
+let enemy_builder j id: enemy =
+  Enemy (
     let name = "witch" in
     let id = (Int.to_string (id + 1)) in
     let descr = j |> member "description" |> to_string in
@@ -74,34 +72,22 @@ let witch_builder j id: enemy =
     let level = j |> member "level" |> to_int in
     (* random init pos *)
     let pos = ((Random.int 10)+1, (Random.int 10)+1) in
-    let strength = j |> member "strength" |> to_int in
     let hp = j |> member "HP" |> to_int in
-    let lst = j |> member "special skills" in
-    let skill_descr = lst |> member "description" |> to_string in
-    let skill_strength = lst |> member "strength" |> to_int in
-    let skills =
-      Some (Enemy.skill_constructor ~skill_descr ~skill_strength) in
+    let max_hp = hp in
+    let lst = j |> member "skills" |> to_list in
+    let skills = 
+      List.map (fun x -> 
+          let skill_name = x |> member "name" |> to_string in
+          let skill_strength = x |> member "strength" |> to_int in
+          (Enemy.single_skill_constructor ~skill_name ~skill_strength)) lst in
     Enemy.constructor ~pos ~level ~exp ~name
-      ~strength ~hp ~id ~descr ~skills ()
+      ~hp ~id ~descr ~max_hp ~skills
   )
 
-let goblin_or_minion_builder j id: enemy =
-  Minion (let name = j |> member "name"|> to_string in
-          let id = (Int.to_string (id + 1)) in
-          let descr = j |> member "description" |> to_string in
-          let exp = j |> member "experience" |> to_int in
-          let level = j |> member "level" |> to_int in
-          let pos = ((Random.int 10)+1, (Random.int 10)+1) in 
-          let strength = j |> member "strength" |> to_int in
-          let hp = j |> member "HP" |> to_int in
-          Enemy.constructor ~name ~pos ~level ~exp ~strength ~hp ~id ~descr () )
-
-
 let browse_one_enemy_json j id: enemy = 
-  if (contains j "witch") then witch_builder (Yojson.Basic.from_file j) id
-  else if (contains j "minion" || contains j "goblin")
-  then goblin_or_minion_builder (Yojson.Basic.from_file j) id
-  else failwith "invalid input json name"
+  if (contains j "witch" || contains j "minion" || contains j "goblin")
+  then enemy_builder (Yojson.Basic.from_file j) id
+  else failwith "something wrong with browse_dir_enemy. Check it"
 
 
 (**[main_engine_enemy ()] read all enemy json files in current directory*)

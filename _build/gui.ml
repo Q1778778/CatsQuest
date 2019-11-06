@@ -19,15 +19,17 @@ type clist=
     mutable dialog: box;
     mutable irefresh: bool;
     mutable difficulty: string;
-    mutable ecombat:string}
+    mutable enemy_to_combat:string}
 
 type state={
   mutable health: int;
   mutable skill: string list;
 }
 
+exception Not_such_enemy of string
+
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
-             difficulty="empty";ecombat="none"}
+             difficulty="empty";enemy_to_combat="none"}
 
 let cstate={health=100;skill=["stab"]}
 
@@ -96,16 +98,18 @@ let health_bar ()=
   Graphics.moveto 40 733;
   Graphics.draw_string"Health:"
 
-let enemy_health_bar health name=
+let enemy_health_bar enemy=
+  let health=Enemy.get_hp enemy in
+  let max_hp= Enemy.get_max_hp enemy in
   whitebox_draw 850 530 1050 550 5;
   Graphics.set_color red;
-  Graphics.fill_rect 850 530 (health*2) 20;
+  Graphics.fill_rect 850 530 (health*200/max_hp) 20;
   Graphics.set_color white;
   Graphics.moveto 930 535;
-  Graphics.draw_string ((string_of_int health)^"/100");
+  Graphics.draw_string ((string_of_int health)^(string_of_int max_hp));
   Graphics.set_color black;
   Graphics.moveto 850 515;
-  Graphics.draw_string (name^" Health:")
+  Graphics.draw_string (Enemy.get_name enemy^" Health:")
 
 let status_bar ()=
   Graphics.set_color black;
@@ -203,6 +207,14 @@ let radius_circle x y r rx ry=
   let distance=sqrt(float_of_int(dx*dx+dy*dy))in 
   float_of_int r>=distance
 
+let enemy_list=Engine.get_enemies Engine.game_state
+
+let rec get_one_enemy name lst=
+  match lst with
+  |Engine.Enemy s::t when (Enemy.get_name s)=name->s
+  |h::t -> get_one_enemy name t
+  |[]->raise (Not_such_enemy name)
+
 let skill_damage name=
   match Engine.get_player(Engine.game_state) with
   |Player s->
@@ -260,7 +272,7 @@ let fensor (c:clist) i=
     |Dialog_sense _->()
     |Bnone->() 
     |Enemy (n,x,y,r) when (radius_circle s.mouse_x s.mouse_y r x y=true)->
-      cplace.ecombat<-n 
+      cplace.enemy_to_combat<-n 
     |Enemy _->()in
   let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
   let _=List.rev_map (fun butt->sense butt sta) c.ecircle in ()
@@ -286,15 +298,16 @@ let rec combat name =
   normal_four_botton cplace;
   health_bar ();
   combat_four_botton cplace;
+  let the_enemy=get_one_enemy name enemy_list in
   let image_of_e=find_enemy_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
-  enemy_health_bar 100 name;
+  enemy_health_bar the_enemy;
   draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
   combat name 
 
-let combat_mon()=if cplace.ecombat<>"none" then 
-    (Graphics.clear_graph();combat cplace.ecombat)
+let combat_mon()=if cplace.enemy_to_combat<>"none" then 
+    (Graphics.clear_graph();combat cplace.enemy_to_combat)
   else ()
 
 let ms1_demo flag=

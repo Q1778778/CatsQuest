@@ -13,19 +13,19 @@ module type EnemySig = sig
   val get_one_skill_strength_by_name: t -> string -> int
   (*if the difficulty of the game can be changed, then the strength can be
     changed   *)
-  val get_normal_strength: t -> int 
   val get_level: t -> int
 
   (* Dynamic fields.                *)
   (* Both setters and getters exist *)
 
   (* Setters                        *)
-  val set_move: t -> int * int -> t
-  val reduce_hp: t -> int -> t
+  val set_move: t -> int * int -> unit
+  val reduce_hp: t -> int -> unit
 
   (* Getters                        *)
   val get_hp: t -> int
   val get_pos: t -> int * int  
+  val get_max_hp: t-> int
 
   val single_skill_constructor: 
     skill_name: string -> 
@@ -40,6 +40,7 @@ module type EnemySig = sig
     id:string -> 
     name:string -> 
     descr:string -> 
+    max_hp:int->
     skills: skills list ->
     t
 end
@@ -48,12 +49,12 @@ module Enemy: EnemySig = struct
   exception UnknownSkill of string
 
   type skills = {
-    descr: string;
-    strength: int
+    skill_name: string;
+    skill_strength: int
   }
 
-(*i set these fields as mutable because there is a chance that we will modify
-it in MS2 *)
+  (*i set these fields as mutable because there is a chance that we will modify
+    it in MS2 *)
   type t = {
     (*static fields *)
     id: string;
@@ -64,6 +65,7 @@ it in MS2 *)
     (*dynamic fields *)
     mutable pos: int * int;
     mutable hp: int;
+    max_hp: int;
     mutable skills: skills list;
   }
 
@@ -85,24 +87,26 @@ it in MS2 *)
 
   let reduce_hp s d = s.hp <- (s.hp - d)
 
+  let get_max_hp s=s.max_hp
+
   (* new methods *)
   let get_all_skills_name s = 
-    List.map (fun x -> x.name) s.skills
+    List.map (fun x -> x.skill_name) s.skills
 
   let get_one_skill_strength_by_name s name = 
-    match List.find (fun x -> x.name = name) s.skills with
-    | Not_found -> raise (UnknownSkill name)
-    | a -> a.strength
+    try (match List.find (fun x -> x.skill_name = name) s.skills with 
+        | a -> a.skill_strength) 
+    with Not_found -> raise (UnknownSkill name)
 
-  let single_skill_constructor ~skills_name ~skills_strength = 
+  let single_skill_constructor ~skill_name ~skill_strength :skills = 
     {
-      name = skills_name;
-      strength = skills_strength;
+      skill_name = skill_name;
+      skill_strength = skill_strength;
     }
 
   let constructor ~pos ~level 
-      ~exp ~strength ~hp 
-      ~id ~name  ~descr ~skills =
+      ~exp  ~hp 
+      ~id ~name  ~descr ~max_hp ~skills =
     {
       id = id;
       name = name;
@@ -110,8 +114,8 @@ it in MS2 *)
       exp = exp;
       level = level;
       pos = pos;
-      strength = strength;
       hp = hp;
+      max_hp=max_hp;
       skills = skills
     }
 end

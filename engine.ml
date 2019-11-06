@@ -73,18 +73,19 @@ let enemy_builder j id: enemy =
     (* random init pos *)
     let pos = ((Random.int 10)+1, (Random.int 10)+1) in
     let hp = j |> member "HP" |> to_int in
+    let max_hp = hp in
     let lst = j |> member "skills" |> to_list in
     let skills = 
       List.map (fun x -> 
-        let skills_name = lst |> member "name" |> to_string in
-        let skills_strength = lst |> member "strength" |> to_int in
-          (Enemy.skill_constructor ~skills_name ~skills_strength)) lst in
+          let skill_name = x |> member "name" |> to_string in
+          let skill_strength = x |> member "strength" |> to_int in
+          (Enemy.single_skill_constructor ~skill_name ~skill_strength)) lst in
     Enemy.constructor ~pos ~level ~exp ~name
-       ~hp ~id ~descr ~skills
+      ~hp ~id ~descr ~max_hp ~skills
   )
 
 let browse_one_enemy_json j id: enemy = 
-  if (contains j "witch" || contains "minion" || contains "goblin")
+  if (contains j "witch" || contains j "minion" || contains j "goblin")
   then enemy_builder (Yojson.Basic.from_file j) id
   else failwith "something wrong with browse_dir_enemy. Check it"
 
