@@ -27,10 +27,13 @@ module type EnemySig = sig
   val get_pos: t -> int * int  
   val get_max_hp: t-> int
 
+  val get_all_skills_name_prob_and_strength_to_assoc_list: 
+    t -> (string * float * int) list
 
   val single_skill_constructor: 
     skill_name: string -> 
-    skill_strength: int -> 
+    skill_strength: int ->
+    skill_probability: float ->
     skills
 
   val constructor:
