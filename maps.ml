@@ -31,6 +31,17 @@ module type W = sig
     weapon
 end
 
+module type MP = sig 
+  (** The abstract type of values representing map params. *)
+  type map_param 
+
+  (** Constructor of a map param *)
+  val constructor : 
+    row:int -> 
+    col:int -> 
+    name:string -> 
+    map_param
+end
 
 module Food : F = struct
   type food = {
@@ -70,6 +81,20 @@ module Weapon : W = struct
     weapon_description = description;
     weapon_loc = (row,col);
     strength = strength;
+  }
+end
+
+module Map_Param : MP = struct 
+  type map_param = {
+    name : string;
+    col : int; 
+    row : int; 
+  }
+  let constructor 
+      ~row ~col ~name = {
+    name = name;
+    row = row;
+    col = col;
   }
 end
 
