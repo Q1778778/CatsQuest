@@ -183,15 +183,15 @@ let parse_dims s =
   (cols, rows)
 
 let map_param_list_builder jsons : map_param array = 
-  List.map (fun j -> let id = 
-                       let count = 
-                         let counter = ref 0 in fun () -> incr counter; 
-                           !counter in count () in 
-             let name = j |> member "name" |> to_string in 
-             let loc = j |> member "loc" |> to_string in 
-             let col = parse_dims loc |> fst in 
-             let row = parse_dims loc |> snd in 
-             Map_Param (Maps.Map_Param.constructor ~row ~col ~name)) jsons
+  Array.map (fun j -> let id = 
+                        let count = 
+                          let counter = ref 0 in fun () -> incr counter; 
+                            !counter in count () in 
+              let name = j |> member "name" |> to_string in 
+              let loc = j |> member "loc" |> to_string in 
+              let col = parse_dims loc |> fst in 
+              let row = parse_dims loc |> snd in 
+              Map_Param (Maps.Map_Param.constructor ~row ~col ~name)) jsons
 
 
 let main_engine_map : unit -> (item list * (int * int)) = 
@@ -225,8 +225,8 @@ let main_engine_map_param =
         let size = json |> member "size" |> to_string |> parse_dims in 
         let rows = snd size in 
         let cols = fst size in 
-        let params = json |> member "picture" |> to_list |> 
-                     map_param_list_builder in 
+        let params = json |> member "picture" |> to_list |> Array.of_list 
+                     |>  map_param_list_builder in 
         (name, rows, cols, params)
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
