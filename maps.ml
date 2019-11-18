@@ -40,6 +40,7 @@ module type MP = sig
     row:int -> 
     col:int -> 
     name:string -> 
+    link: string ->
     map_param
 end
 
@@ -87,22 +88,20 @@ end
 module Map_Param : MP = struct 
   type map_param = {
     name : string;
+    link: string; (*link here represents another map file 
+      that current map element is linked to. If there is NO such
+      linked map, link will be empty string ""*)
     col : int; 
     row : int; 
   }
-  let constructor 
-      ~row ~col ~name = {
+  let single_map_element_constructor ~row ~col ~name ~link = 
+  {
+    link = link;
     name = name;
     row = row;
     col = col;
   }
 end
-
-type t = {
-  size: int * int;
-  weapons: Weapon.weapon list;
-  foods: Food.food list
-}
 
 exception UnknownFood of string
 exception UnknownWeapon of string

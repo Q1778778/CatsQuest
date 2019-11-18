@@ -1,8 +1,4 @@
 {
-  "size": {
-    "rows": 10,
-    "cols": 10
-  },
   "foods": [
     {
       "name": "bread",
