@@ -1,5 +1,5 @@
 #directory "_build";;
-#require "Graphics";;
+#require "graphics";;
 #require "Str";;
 #thread;;
 #require "threads";;

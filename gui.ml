@@ -235,27 +235,7 @@ let skill_damage name=
     name|> Player.get_skill_by_skill_name s|> Player.extract_skill_strength_single_skill
   |Died->failwith "died people don't fight"
 
-let skill_helper name=
-  Graphics.moveto 850 500;
-  Graphics.set_color red;
-  Graphics.draw_string ("-"^string_of_int(skill_damage name));
-  Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat enemy_list) (skill_damage name);
-  Thread.delay 1.5;
-  Graphics.clear_graph(); status_bar ();
-  normal_four_botton cplace;
-  health_bar ();
-  combat_four_botton cplace;
-  let the_enemy=get_one_enemy cplace.enemy_to_combat enemy_list in
-  let image_of_e=find_enemy_image_data cplace.enemy_to_combat Color_convert.enemy_data in 
-  draw_a_image image_of_e 900 550;
-  enemy_health_bar the_enemy;
-  draw_a_image Color_convert.player_in_combat 10 205
 
-let skill_image name=
-  match name with 
-  |"punch"->draw_a_image Color_convert.the_stab 500 350;
-    skill_helper name
-  |_->failwith"unbound image"
 
 let enemy_skill_image name=
   match name with 
@@ -271,6 +251,30 @@ let enemy_skill t=
   Graphics.set_color black;
   Graphics.moveto 100 715;
   Graphics.draw_string ("-"^string_of_int damage)
+
+let skill_helper name=
+  Graphics.moveto 850 500;
+  Graphics.set_color red;
+  Graphics.draw_string ("-"^string_of_int(skill_damage name));
+  Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat enemy_list) (skill_damage name);
+  Thread.delay 1.5;
+  Graphics.clear_graph(); status_bar ();
+  normal_four_botton cplace;
+  health_bar ();
+  combat_four_botton cplace;
+  let the_enemy=get_one_enemy cplace.enemy_to_combat enemy_list in
+  let image_of_e=find_enemy_image_data cplace.enemy_to_combat Color_convert.enemy_data in 
+  draw_a_image image_of_e 900 550;
+  enemy_health_bar the_enemy;
+  let the_enemy=get_one_enemy cplace.enemy_to_combat enemy_list in
+  enemy_skill the_enemy;
+  draw_a_image Color_convert.player_in_combat 10 205
+
+let skill_image name=
+  match name with 
+  |"punch"->draw_a_image Color_convert.the_stab 500 350;
+    skill_helper name
+  |_->failwith"unbound image"
 
 type trigger=
   |Command of string
@@ -299,7 +303,7 @@ let tsensor(c:clist)=
        |Action_circle _->()in
      let _=sense (c.dialog) sta in ())
 
-let fensor (c:clist) i=
+let rec fensor (c:clist) i=
   let sta=Graphics.wait_next_event [Button_down] in 
   let sense b (s:Graphics.status)=
     match b with
@@ -310,7 +314,7 @@ let fensor (c:clist) i=
                                                   parse  (Attack t)) else ()
     |Action_circle ((x,y,r),t)->()
     |Dialog_sense s->()
-    |Bnone->() 
+    |Bnone->fensor c i
     |Enemy (n,x,y,r) when (radius_circle s.mouse_x s.mouse_y r x y=true)->
       cplace.enemy_to_combat<-n 
     |Enemy _->()in
@@ -348,7 +352,6 @@ let rec combat name =
   enemy_health_bar the_enemy;
   draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
-  enemy_skill the_enemy;
   Thread.delay 1.0;
   game_over_mon();
   Graphics.clear_graph();
@@ -391,7 +394,9 @@ let rec beginning () =
   if cplace.difficulty<>"empty" then 
     (Graphics.clear_graph(); init true )else beginning ()
 
-let open_g state =
+let open_g () =
   Graphics.open_graph " 1200x800+100";
   beginning ()
+
+let ()=open_g ()
 
