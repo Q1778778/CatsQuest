@@ -4,9 +4,9 @@ open Map
 open Maps
 open Yojson.Basic.Util
 
-(*!!!!!!!!!!!!!!!!!!!!!!!!!                                              *)
-(*some functions below required an id, which is created by the functions *)
-(*instead of contained in json                                           *)
+(*!!!!!!!!!!!!!!!!!!!!!!!!!                                                 *)
+(*some constructors below required an id, which is created by the functions *)
+(*instead of contained in json                                              *)
 
 type enemy = 
   | Enemy of Enemy.t
@@ -21,13 +21,21 @@ type item =
   | Food of Maps.Food.food
   | Eaten  (*Eaten means the food is eaten. We cannot destroy weapon in game *)
 
-type one_map_param = Maps.Map_Param.map_param
+type map_param = Maps.MapParam.map_param
+
+type current_map = Maps.t
 
 type state = {
   mutable player: player;
-  mutable map_size: int * int; (* (col, row) *)
-  mutable current_map_name: string;
-  mutable current_all_map_params: one_map_param array;
+
+   (* we can have several maps linked in one game, and [all_maps] store
+   all maps in one game. *)
+  
+  mutable current_map: current_map;
+  mutable all_maps: current_map array;
+  (**[current_map_in_all_maps] counts which map the player is currently in.
+  i.e. the index in [all_maps]*)
+  mutable current_map_in_all_maps: int; 
   mutable items: item array;
   mutable enemies: enemy array;
 }
@@ -43,7 +51,7 @@ let probabilty s =
 
 (**[choose_skill_random t] is a (skill name, skill strength) for enemy [t]*)
 let choose_skill_random s =
-  let rec inner_chooser lst finished= 
+  let rec inner_chooser lst finished = 
     match lst with
     | [] -> finished
     | h::d -> let name, prob, strength = h in
@@ -182,22 +190,19 @@ let parse_dims s =
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   (cols |> int_of_string, rows |> int_of_string)
 
-let map_param_array_builder jsons : map_param array = 
-  Array.map (fun j -> let id = 
-                        let count = 
-                          let counter = ref 0 in fun () -> incr counter; 
-                            !counter in count () in 
-              let name = j |> member "name" |> to_string in 
+let map_param_array_builder jsons : (int * int) * map_param = 
+  Array.map ( let name = j |> member "name" |> to_string in 
               let loc = j |> member "loc" |> to_string in
               let link = j |> member "link" |> to_string in 
               let col = parse_dims loc |> fst in 
               let row = parse_dims loc |> snd in 
-      Map_Param (Maps.Map_Param.single_map_element_constructor ~row ~col ~name
-              ~link)) jsons
+    ((col,row), 
+      Map_Param 
+        (Maps.Map_Param.single_map_element_constructor ~name ~link))) jsons
 
 
-let main_engine_map : unit -> item array = 
-  let rec read_map handler =
+let main_engine_item : unit -> item array = 
+  let rec read_item handler =
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler; 
       failwith "map.json is not in current directory"
@@ -209,38 +214,44 @@ let main_engine_map : unit -> item array =
         let food_array = json |> member "foods" 
                        |> to_list 
                        |> food_array_builder in
-        (weapon_array @ food_array)
-      else read_map handler in
-  fun () -> (read_map (Unix.opendir "."))
+        (Array.append weapon_array food_array)
+      else read_item handler in
+  fun () -> (read_item (Unix.opendir "."))
 
-let main_engine_map_param : unit -> string * int * int * map_param array = 
+let main_engine_map : unit -> current_map = 
   let rec read_map handler = 
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler;
-      failwith "map-param.json is not in current directory"
-    | s -> if s = "map.json"
+      failwith "no map-param.json is not in current directory"
+    | s -> let pos = String.length s in 
+              if String.length s > 13 
+              && (String.sub s (pos-5) 5) = ".json" 
+              && contains s "map-param"
       then 
         let json = s |> Yojson.Basic.from_file in 
         let name = json |> member "name" |> to_string in 
-        let size = json |> member "size" |> to_string |> parse_dims in 
-        let rows = snd size in 
-        let cols = fst size in 
-        let params = json |> member "picture" |> to_list |> Array.of_list 
-                     |>  map_param_array_builder in 
-        (name, rows, cols, params)
+        let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
+        let rows = snd unparsed_size in 
+        let cols = fst unparsed_size in 
+        let size = (cols, rows) in
+        let picture_lists = json |> member "picture" |> to_list in
+        let all_map_param = 
+          Array.map 
+            (fun param -> map_param_array_builder param) picture_lists in 
+        Maps.map_constructor ~size ~name ~all_map_param
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
 
 
 let init (): state =
-  let items = main_engine_map () in
-  let name, col, row, map_param_array = main_engine_map_param () in
+  let items = main_engine_item () in
+  let map = main_engine_map () in
   {
     items = items;
     player = main_engine_player ();
-    map_size = (col, row);
-    current_map_name = name;
-    current_all_map_params = map_param_array;
+    current_map = map;
+    all_maps = [|map|];
+    current_map_in_all_maps = 0;
     enemies = main_engine_enemy ();
   }
 
@@ -258,8 +269,6 @@ let get_player s = s.player
 
 let get_enemies s = s.enemies
 
-let get_current_map_name s = s.name
+let get_current_map_name s = s.current_map.name
 
-let get_all_map_params s = s.current_all_map_params
-
-let get_current_map_size s = s.map_size
+let get_current_map_size s = s.current_map.size
