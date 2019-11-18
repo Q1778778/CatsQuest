@@ -1,6 +1,3 @@
-(** The abstract type of values representing maps. *)
-(*type t*)
-
 (** Raised when an unknown food is encountered. *)
 exception UnknownFood of string
 
@@ -44,7 +41,33 @@ module type W = sig
     strength: int->
     weapon
 end
+module type MP = sig 
+  (** The abstract type of values representing map params. *)
+  type map_param 
 
-module Food :F 
+  (** Constructor of a map param *)
+  val single_map_element_constructor : 
+    name: string -> 
+    link: string ->
+    map_param
+end
 
-module Weapon :W
+
+(** The abstract type of values representing maps. *)
+type t = {
+  size : int * int; 
+  name : string; 
+  map_params: ((int * int) * MapParam.map_param) array;
+}
+
+val map_constructor: 
+  size: int * int -> 
+  name: string -> 
+  all_map_param: ((int * int) * MapParam.map_param) array ->
+  t
+
+module Food: F 
+
+module Weapon: W
+
+module MapParam: MP

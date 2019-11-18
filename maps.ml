@@ -54,13 +54,13 @@ module Food : F = struct
 
   let constructor 
       ~row ~col ~health ~description ~name ~id ~strength = {
-      name = name;
-      id = id;
-      strength = strength;
-      health = health;
-      location = (col,row);
-      description = description;
-    }
+    name = name;
+    id = id;
+    strength = strength;
+    health = health;
+    location = (col,row);
+    description = description;
+  }
 end
 
 module Weapon : W = struct 
@@ -90,9 +90,9 @@ module MapParam : MP = struct
                     linked map, link will be empty string ""*)
   }
   let single_map_element_constructor ~name ~link = {
-      link = link;
-      name = name;
-    }
+    link = link;
+    name = name;
+  }
 end
 
 exception UnknownFood of string
@@ -112,7 +112,7 @@ type t = {
 }
 
 let map_constructor 
-`~size ~name ~all_map_param = {
+    ~size ~name ~all_map_param = {
   size = size; (*total col * total rows *)
   name = name; (*this map name *)
   map_params = all_map_param; 
