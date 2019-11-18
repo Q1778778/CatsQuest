@@ -31,15 +31,11 @@ module type EnemySig = sig
     skills
 
   val constructor:
-    ?skills: skills option ->
     pos:int * int ->
     level:int ->
     exp:int ->
     strength:int ->
-    hp:int ->
-    id:string -> 
-    name:string -> 
-    descr:string -> 
+    hp:int -> id:string -> name:string -> descr:string -> ?skills:skills -> 
     t
 end
 

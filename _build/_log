@@ -1,0 +1,40 @@
+### Starting build.
+# Target: color_convert.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:color_convert.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules color_convert.ml > color_convert.ml.depends # cached
+# Target: color_convert.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o color_convert.cmo color_convert.ml # cached
+# Target: color_convert.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:color_convert.byte, link, ocaml, program, quiet, thread, traverse }
+ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics color_convert.cmo -o color_convert.byte # cached
+# Target: enemy.mli.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:mli, file:enemy.mli, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules enemy.mli > enemy.mli.depends # cached
+# Target: enemy.cmi, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:enemy.mli, interf, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o enemy.cmi enemy.mli # cached
+# Target: enemy.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:enemy.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules enemy.ml > enemy.ml.depends # cached
+# Target: enemy.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:enemy.cmo, file:enemy.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o enemy.cmo enemy.ml # cached
+# Target: enemy.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:enemy.byte, link, ocaml, program, quiet, thread, traverse }
+ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics enemy.cmo -o enemy.byte # cached
+# Target: maps.mli.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:mli, file:maps.mli, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules maps.mli > maps.mli.depends
+# Target: maps.cmi, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:mli, file:maps.mli, interf, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o maps.cmi maps.mli
+# Target: maps.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:maps.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules maps.ml > maps.ml.depends # cached
+# Target: maps.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:maps.cmo, file:maps.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o maps.cmo maps.ml
+# Target: maps.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:maps.byte, link, ocaml, program, quiet, thread, traverse }
+ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics maps.cmo -o maps.byte
+# Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
+# Target: player.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules player.ml > player.ml.depends
+# Target: player.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
++ ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
+File "player.ml", line 49, characters 24-30:
+49 |   val move_north : t -> Maps.t -> unit
+                             ^^^^^^
+Error: Unbound type constructor Maps.t
+Command exited with code 2.
+# Compilation unsuccessful.
