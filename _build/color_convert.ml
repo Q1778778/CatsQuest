@@ -65,6 +65,17 @@ let player_combat=images_of_json (Yojson.Basic.from_file "player_combat.json")
 
 let stab=images_of_json (Yojson.Basic.from_file "stab.json")
 
+let sand5=images_of_json (Yojson.Basic.from_file "sand-120.json")
+
+let grass5=images_of_json (Yojson.Basic.from_file "grass-120.json")
+
+let stone5=images_of_json (Yojson.Basic.from_file "stone-120.json")
+
+let snow5=images_of_json (Yojson.Basic.from_file "snow-120.json")
+
+let water5=images_of_json (Yojson.Basic.from_file "water-120.json")
+
+let dirt5=images_of_json (Yojson.Basic.from_file "dirt-120.json")
 
 let enemy_punch=(array_color (List.find (fun x->x.name="stab") enemy_stab).matrix)
 
@@ -82,5 +93,17 @@ let player_in_combat=
 let the_stab=
   (array_color (List.find (fun x->x.name="stab") stab).matrix)
 
+let sand_120=
+  (array_color (List.find (fun x->x.name="sand-120") sand5).matrix)
+
+let grass_120=(array_color (List.find (fun x->x.name="grass-120") grass5).matrix)
+
+let stone_120=(array_color (List.find (fun x->x.name="stone-120") stone5).matrix)
+
+let snow_120=(array_color (List.find (fun x->x.name="snow-120") snow5).matrix)
+
+let water_120=(array_color (List.find (fun x->x.name="water-120") water5).matrix)
+
+let dirt_120=(array_color (List.find (fun x->x.name="dirt-120") dirt5).matrix)
 
 let enemy_data=[{name_data="minion";image_data=the_minion}]

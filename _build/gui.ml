@@ -236,7 +236,6 @@ let skill_damage name=
   |Died->failwith "died people don't fight"
 
 
-
 let enemy_skill_image name=
   match name with 
   |"punch"->draw_a_image Color_convert.enemy_punch 500 350
@@ -370,6 +369,7 @@ let rec init flag =
   cplace.fbutton<-[];
   cplace.dialog<-Bnone;
   cplace.irefresh<-false;
+  Map_builder.map_text_build();
   status_bar ();
   experience_bar();
   normal_four_botton cplace;

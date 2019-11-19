@@ -369,6 +369,7 @@ let rec init flag =
   cplace.fbutton<-[];
   cplace.dialog<-Bnone;
   cplace.irefresh<-false;
+  Map_builder.map_text_build();
   status_bar ();
   experience_bar();
   normal_four_botton cplace;
