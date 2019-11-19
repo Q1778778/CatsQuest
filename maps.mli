@@ -52,6 +52,7 @@ module type MP = sig
     map_param
 end
 
+module MapParam : MP 
 
 (** The abstract type of values representing maps. *)
 type t = {
@@ -70,4 +71,5 @@ module Food: F
 
 module Weapon: W
 
-module MapParam: MP
+val bound_check: t -> int -> int -> bool
+

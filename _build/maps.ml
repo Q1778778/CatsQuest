@@ -37,8 +37,6 @@ module type MP = sig
 
   (** Constructor of a map param *)
   val single_map_element_constructor : 
-    row:int -> 
-    col:int -> 
     name:string -> 
     link: string ->
     map_param
@@ -55,15 +53,14 @@ module Food : F = struct
   }
 
   let constructor 
-      ~row ~col ~health ~description ~name ~id ~strength = 
-    {
-      name = name;
-      id = id;
-      strength = strength;
-      health = health;
-      location = (row,col);
-      description = description;
-    }
+      ~row ~col ~health ~description ~name ~id ~strength = {
+    name = name;
+    id = id;
+    strength = strength;
+    health = health;
+    location = (col,row);
+    description = description;
+  }
 end
 
 module Weapon : W = struct 
@@ -71,7 +68,7 @@ module Weapon : W = struct
     weapon_name : string;
     weapon_description : string;
     id : int;
-    weapon_loc : int * int;
+    weapon_loc : int * int; (*col, row*)
     strength: int;
   }
 
@@ -80,27 +77,22 @@ module Weapon : W = struct
     weapon_name = name;
     id = id;
     weapon_description = description;
-    weapon_loc = (row,col);
+    weapon_loc = (col,row);
     strength = strength;
   }
 end
 
-module Map_Param : MP = struct 
+module MapParam : MP = struct 
   type map_param = {
-    name : string;
+    name: string; (*this represents a jpg name for this element*)
     link: string; (*link here represents another map file 
                     that current map element is linked to. If there is NO such
                     linked map, link will be empty string ""*)
-    col : int; 
-    row : int; 
   }
-  let single_map_element_constructor ~row ~col ~name ~link = 
-    {
-      link = link;
-      name = name;
-      row = row;
-      col = col;
-    }
+  let single_map_element_constructor ~name ~link = {
+    link = link;
+    name = name;
+  }
 end
 
 exception UnknownFood of string
@@ -111,11 +103,26 @@ exception UnknownWeapon of string
    and [j] is the value associated with key [b]. If [a] is not a defined key
    in [j], [(Null, [j])] will be returned. 
    Requires: [j] is a valid json representation.*)
+
+type t = {
+  size : int * int; (*total col * total rows *)
+  name : string; (*this map name*)
+  (**[|((col, row), map_param)|]*)
+  map_params: ((int * int) * MapParam.map_param) array; 
+}
+
+let map_constructor 
+    ~size ~name ~all_map_param = {
+  size = size; (*total col * total rows *)
+  name = name; (*this map name *)
+  map_params = all_map_param; 
+}
+
 let to_tuple a b j = (j |> member a |> to_int, j |> member b |> to_int)
 
-(*let size m = m.size
+let size m = m.size
 
-  let bound_check m r c = 
+let bound_check m r c = 
   let rows = fst m.size in 
   let cols = snd m.size in 
-  r < 0 || r > rows || c < 0 || c > cols*)
+  r < 0 || r > rows || c < 0 || c > cols
