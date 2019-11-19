@@ -14,7 +14,8 @@ module type P = sig
   (** [constructor r c s h l e] constructs a new player module located at
       row [r], col [c], with strength [s], health [h], experience [e], 
       at level [l]. *)
-  val constructor: row:int ->
+  val constructor: 
+    row:int ->
     col:int ->
     ?strength:int ->
     ?health:int -> ?level:int -> ?experience:int -> t
@@ -63,6 +64,8 @@ module type P = sig
       Raises: [Illegal] if the move results in out of bounds from the map*)
   val move_down : t -> Maps.t -> unit
 
+  val increase_health: t -> int -> unit
+
   (** [reduce_health p h] reduces the health of player [p] by [h].
       Requires: [h] >= 0 *)
   val reduce_health : t -> int -> unit
@@ -97,9 +100,10 @@ module type P = sig
 
   val extract_skill_description_single_skill: skill -> string
 
-  val skills_list: t-> skill list
+  val skills_list: t -> skill list
 
-  val skill_name: skill->string
+  val skill_name: skill -> string
+
 end 
 
 module Player : P = struct
@@ -197,6 +201,8 @@ module Player : P = struct
   let move_up p m = move p m 0 1
 
   let move_down p m = move p m 0 (-1)
+
+  let increase_health p h = p.health <- p.health + h
 
   let reduce_health p h = 
     assert(h >= 0);

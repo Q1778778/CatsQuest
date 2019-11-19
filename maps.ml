@@ -2,7 +2,14 @@ open Yojson.Basic.Util
 
 module type F = sig 
   (** The abstract type of values representing foods. *)
-  type food
+    type food = {
+    name : string;
+    description : string;
+    id : int;
+    location : int * int;
+    health : int;
+    strength : int;
+  }
 
   (** Constructor of a food *)
   val constructor : 
@@ -18,7 +25,13 @@ end
 
 module type W = sig 
   (** The abstract type of values representing weapons. *)
-  type weapon
+  type weapon = {
+    weapon_name : string;
+    weapon_description : string;
+    id : int;
+    weapon_loc : int * int; (*col, row*)
+    strength: int;
+  }
 
   (** Constructor of a weapon *)
   val constructor : 
@@ -99,9 +112,6 @@ module MapParam : MP = struct
     name = name;
   }
 end
-
-exception UnknownFood of string
-exception UnknownWeapon of string
 
 (**[to_tuple a b j] converts a json representation [j] into a tuple of ints
    [(i,j)], where [i] is the value associated with key [a] 
