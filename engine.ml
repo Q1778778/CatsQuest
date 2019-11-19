@@ -248,8 +248,7 @@ let main_engine_map : unit -> current_map =
 
 let init (): state =
   let items = main_engine_item () in
-  let map = main_engine_map () in
-  {
+  let map = main_engine_map () in {
     items = items;
     player = main_engine_player ();
     current_map = map;
@@ -275,3 +274,39 @@ let get_enemies s = s.enemies
 let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
+
+(** [move_player_left] change the current pos (col', row') of player to 
+  (col'-1, row'-1)*)
+let move_player_left s = 
+  let player = s.player in
+  let () = Player.move_left player in
+    s.player <- player
+
+let move_player_right s = 
+  try
+    let player = s.player in
+    let () = Player.move_right player in
+      s.player <- player
+  with Illegal _ -> ()
+
+let move_player_up s = 
+  try
+    let player = s.player in
+    let () = Player.move_up player in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let move_player_down s = 
+  try
+    let player = s.player in
+    let () = Player.move_down player in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let delete_one_enemy_from_state s enemy =
+  for i = 0 to (Array.length s.enemies) - 1 do 
+    if s.enemies.(i) = enemy 
+    then s.enemies.(i) <- Deleted 
+    else ()
+  done
+
