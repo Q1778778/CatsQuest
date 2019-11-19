@@ -151,9 +151,9 @@ let normal_four_botton c=
   let second=create_button "second" 
       magenta black 1060 105 130 85 ("second")in
   let third=create_button "third" blue black 920 10 130 85("second") in
-  let forth=create_button "forth" 
+  let fourth=create_button "fourth" 
       green black 1060 10 130 85 ("second")in
-  c.fbutton<-(first::second::third::[forth])
+  c.fbutton<-(first::second::third::[fourth])
 
 let combat_four_botton c =
   let fskill=(List.nth_opt (cstate.skill) 0) in
