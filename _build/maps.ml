@@ -33,7 +33,12 @@ end
 
 module type MP = sig 
   (** The abstract type of values representing map params. *)
-  type map_param 
+  type map_param = {
+    name: string; (*this represents a jpg name for this element*)
+    link: string; (*link here represents another map file 
+                    that current map element is linked to. If there is NO such
+                    linked map, link will be empty string ""*)
+  }
 
   (** Constructor of a map param *)
   val single_map_element_constructor : 
