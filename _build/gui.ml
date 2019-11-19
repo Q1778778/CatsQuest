@@ -236,6 +236,7 @@ let skill_damage name=
   |Died->failwith "died people don't fight"
 
 
+
 let enemy_skill_image name=
   match name with 
   |"punch"->draw_a_image Color_convert.enemy_punch 500 350
