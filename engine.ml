@@ -25,9 +25,14 @@ type map_param = Maps.MapParam.map_param
 
 type current_map = Maps.t
 
+exception UnknwonFood of string
+
+exception SuccessExit
+
 type state = {
   mutable player: player;
-
+  mutable food_inventory: item array;
+  mutable weapon_inventory: item array;
    (* we can have several maps linked in one game, and [all_maps] store
    all maps in one game. *)
   
@@ -248,9 +253,10 @@ let main_engine_map : unit -> current_map =
 
 let init (): state =
   let items = main_engine_item () in
-  let map = main_engine_map () in
-  {
+  let map = main_engine_map () in {
     items = items;
+    food_inventory = [||];
+    weapon_inventory = [||];
     player = main_engine_player ();
     current_map = map;
     all_maps = [|map|];
@@ -275,3 +281,63 @@ let get_enemies s = s.enemies
 let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
+
+(** [move_player_left] change the current pos (col', row') of player to 
+  (col'-1, row'-1)*)
+let move_player_left s = 
+  try
+    let player = s.player in
+    let () = Player.move_left player s.current_map in
+      s.player <- player
+  with Illegal _ -> ()
+
+let move_player_right s = 
+  try
+    let player = s.player in
+    let () = Player.move_right player s.current_map in
+      s.player <- player
+  with Illegal _ -> ()
+
+let move_player_up s = 
+  try
+    let player = s.player in
+    let () = Player.move_up player s.current_map in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let move_player_down s = 
+  try
+    let player = s.player in
+    let () = Player.move_down player s.current_map in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let delete_one_enemy_from_state s enemy =
+  for i = 0 to (Array.length s.enemies) - 1 do 
+    if s.enemies.(i) = enemy 
+    then s.enemies.(i) <- Deleted 
+    else ()
+  done
+
+(** raises: UnknownFood if [food_name] 
+  is not a valid food name in player's inventory*)
+let eat_one_food s food_name = 
+  try
+    (let food_array = s.food_inventory in
+    for i = 0 to (Array.length food_array) - 1 do 
+      match food_array.(i) with
+      | Food food -> 
+        if food.name = food_name
+        then 
+          (let health = food.health 
+          and strength = food.strength in
+          let () = Player.increase_health s.player health 
+          and () = Player.increase_strength s.player strength;
+          food_array.(i) <- Eaten; 
+          raise SuccessExit)
+        else ()
+      | _ -> ()
+    done);
+    raise UnknownFood
+  with SuccessExit ->
+    ()
