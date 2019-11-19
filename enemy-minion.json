@@ -7,8 +7,13 @@
   "skills": [
     {
       "name": "punch",
-      "strength": 20,
+      "strength": 10,
       "probability": 1.0
+    },
+    {
+      "name": "scratch",
+      "strength": 20,
+      "probability": 0.4
     }
   ]
 }
