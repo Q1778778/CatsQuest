@@ -53,13 +53,13 @@ let probabilty s =
 let choose_skill_random s =
   let rec inner_chooser lst finished = 
     match lst with
-    | [] -> finished
+    | [] -> List.hd finished
     | h::d -> let name, prob, strength = h in
       if probabilty prob && (strength > (finished |> snd))
       then (name, strength) |> inner_chooser d
       else inner_chooser d finished in
-  inner_chooser 
-    (s|>Enemy.get_all_skills_name_prob_and_strength_to_assoc_list) []
+  let skills = s |> Enemy.get_all_skills_name_prob_and_strength_to_assoc_list in
+  inner_chooser skills (List.hd skills)
 
 (**[contains s s1] is true if [s] contains substring [s1]. false otherwise*)
 let contains s1 s2 =
@@ -169,7 +169,7 @@ let food_array_builder jsons: item array =
                      ~description ~name ~id ~strength)) jsons
 
 let weapon_array_builder jsons: item array = 
-  Array.map (fun j -> let id = 
+  jsons |> List.map (fun j -> let id = 
                        let count = 
                          let counter = ref 0 in fun () -> incr counter; 
                            !counter in count () in
@@ -180,7 +180,8 @@ let weapon_array_builder jsons: item array =
              let row = location |> member "row"|> to_int in
              let col = location |> member "col" |> to_int in
              Weapon (Maps.Weapon.constructor ~strength ~col ~row 
-                       ~description ~name ~id)) jsons
+                       ~description ~name ~id))
+        |> Array.of_list
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"]
@@ -190,15 +191,16 @@ let parse_dims s =
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   (cols |> int_of_string, rows |> int_of_string)
 
-let map_param_array_builder jsons : (int * int) * map_param = 
-  Array.map ( let name = j |> member "name" |> to_string in 
+let map_param_array_builder jsons : (int * int) * map_param array = 
+  jsons |> List.map ( let name = j |> member "name" |> to_string in 
               let loc = j |> member "loc" |> to_string in
               let link = j |> member "link" |> to_string in 
               let col = parse_dims loc |> fst in 
               let row = parse_dims loc |> snd in 
     ((col,row), 
       Map_Param 
-        (Maps.Map_Param.single_map_element_constructor ~name ~link))) jsons
+        (Maps.Map_Param.single_map_element_constructor ~name ~link)))
+        |> Array.of_list
 
 
 let main_engine_item : unit -> item array = 
@@ -235,9 +237,7 @@ let main_engine_map : unit -> current_map =
         let cols = fst unparsed_size in 
         let size = (cols, rows) in
         let picture_lists = json |> member "picture" |> to_list in
-        let all_map_param = 
-          Array.map 
-            (fun param -> map_param_array_builder param) picture_lists in 
+        let all_map_param = map_param_array_builder picture_lists in 
         Maps.map_constructor ~size ~name ~all_map_param
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
