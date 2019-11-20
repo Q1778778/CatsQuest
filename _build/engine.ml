@@ -31,6 +31,7 @@ exception UnknownWeapon of string
 
 exception SuccessExit
 
+
 type state = {
   mutable player: player;
   mutable food_inventory: item array;
@@ -279,6 +280,8 @@ let get_items_array s = s.items
 let get_player s = s.player
 
 let get_enemies s = s.enemies
+
+let get_map s = s.current_map
 
 let get_current_map_name s = s.current_map.name
 

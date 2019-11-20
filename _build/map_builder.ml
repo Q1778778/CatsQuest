@@ -15,7 +15,7 @@ let picture_getter s=
   |_->failwith "wrong name of picture, broken json or code"
 
 let map_text_build ()=
-  let t=Engine.main_engine_map() in
+  let t=Engine.get_map Engine.game_state in
   let ((rr,cr),interval)=map_size_cal t in 
   let photo_data=Array.to_list t.map_params in
   let rec draw_pic (data:((int * int) * Maps.MapParam.map_param) list) rs cs inter=
@@ -26,3 +26,18 @@ let map_text_build ()=
                      draw_pic t rs cs inter )
     |[]->() in 
   draw_pic photo_data rr cr interval
+
+let draw_player () : unit =
+  let t=Engine.get_map Engine.game_state in
+  let ((rr,cr),interval)=map_size_cal t in 
+  let player=Engine.get_player Engine.game_state in 
+  match player with 
+  |Player z-> let (col,row)=Player.Player.location z in 
+    print_string ("col"^string_of_int col);
+    print_string ("row"^string_of_int row);
+    let h=Player.Player.health z in 
+    print_int h;
+    Graphics.set_color Graphics.red;
+    Graphics.fill_circle (rr+(col-1)*interval+interval/2) (cr+(row-1)*interval+(interval/2)) (interval/4)
+  |Died->()
+
