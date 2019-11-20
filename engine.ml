@@ -159,7 +159,7 @@ let main_engine_player: unit -> player =
         let row = location |> member "row" |> to_int in
         let col = location |> member "col" |> to_int in
         let experience = 0 in
-        Player.constructor ~health ~level ~strength  ~row ~col ~experience 
+        Player.constructor ~health ~level ~strength  ~row ~col ~experience ()
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 

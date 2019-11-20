@@ -17,7 +17,7 @@ module type P = sig
   val constructor: row:int ->
     col:int ->
     ?strength:int ->
-    ?health:int -> ?level:int -> ?experience:int -> t
+    ?health:int -> ?level:int -> ?experience:int -> unit-> t
 
   (**[level p] is the current level of player [p] *)
   val level : t -> int
@@ -128,7 +128,7 @@ module Player : P = struct
 
   let constructor 
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
-      ?level:(level=1) ?experience:(experience=0) = 
+      ?level:(level=1) ?experience:(experience=0) ()= 
     {
       location = (col,row);
       strength = strength;
