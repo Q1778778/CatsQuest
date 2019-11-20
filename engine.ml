@@ -286,30 +286,38 @@ let get_current_map_size s = s.current_map.size
     (col'-1, row'-1)*)
 let move_player_left s = 
   try
-    let player = s.player in
-    let () = Player.move_left player s.current_map in
-    s.player <- player
+    match s.player with
+    | Died -> ()
+    | Player t ->
+      let () = Player.move_left t s.current_map in
+      s.player <- Player t
   with Illegal _ -> ()
 
 let move_player_right s = 
   try
-    let player = s.player in
-    let () = Player.move_right player s.current_map in
-    s.player <- player
+    match s.player with
+    | Died -> ()
+    | Player t ->
+      let () = Player.move_right t s.current_map in
+      s.player <- Player t
   with Illegal _ -> ()
 
 let move_player_up s = 
   try
-    let player = s.player in
-    let () = Player.move_up player s.current_map in
-    (s.player <- player; s)
+    match s.player with
+    | Died -> ()
+    | Player t ->
+      let () = Player.move_up t s.current_map in
+      s.player <- Player t
   with Illegal _ -> ()
 
 let move_player_down s = 
   try
-    let player = s.player in
-    let () = Player.move_down player s.current_map in
-    (s.player <- player; s)
+    match s.player with
+    | Died -> ()
+    | Player t ->
+      let () = Player.move_down t s.current_map in
+      s.player <- Player t
   with Illegal _ -> ()
 
 let delete_one_enemy_from_state s enemy =
