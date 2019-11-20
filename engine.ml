@@ -366,11 +366,11 @@ let eat_one_food s food_name =
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
   let _ = for i = 0 to (Array.length s.weapon_inventory) do
-    match s.weapon_inventory.(i) with
-    | Null -> ()
-    | Weapon w -> 
-      array.(0) <- (Maps.Weapon.get_name w) :: (array.(0)) 
-  done in array.(0)
+      match s.weapon_inventory.(i) with
+      | Null -> ()
+      | Weapon w -> 
+        array.(0) <- (Maps.Weapon.get_name w) :: (array.(0)) 
+    done in array.(0)
 
 let equip_one_weapon s weapon_name = 
   try
@@ -382,17 +382,16 @@ let equip_one_weapon s weapon_name =
                 (get_weapon_name_list_of_player_inventory s)
               && Player.location t = Maps.Weapon.get_loc w)
           then 
-            begin weapon_array.(i) <- Null;
+            (weapon_array.(i) <- Null;
              for j = 0 to (Array.length s.weapon_inventory) - 1 do 
-              if (s.weapon_inventory.(j) = Null) 
-              then
-                s.weapon_inventory.(j) <- Weapon w;
-                let health = Maps.Weapon.get_strength w in
-                let () = Player.increase_strength t health in
-                s.player <- Player t; 
-                raise SuccessExit 
-              else ()
-              done end
+               if (s.weapon_inventory.(j) = Null) 
+               then
+                 ( s.weapon_inventory.(j) <- Weapon w;
+                   let health = Maps.Weapon.get_strength w in
+                   let () = Player.increase_strength t health in
+                   s.player <- Player t; 
+                   raise SuccessExit )
+               else () done)
           else ())
        | _ -> ()
      done);

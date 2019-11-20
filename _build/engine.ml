@@ -16,10 +16,18 @@ type player =
   | Player of Player.t 
   | Died
 
-type item = 
-  | Weapon of Maps.Weapon.weapon 
+type food_item = 
   | Food of Maps.Food.food
   | Null (*once a weapon or food has been taken, this weapon becomes null *)
+
+type weapon_item =
+  | Weapon of Maps.Weapon.weapon
+  | Null
+
+type item = 
+  | Weapon of Maps.Weapon.weapon
+  | Food of Maps.Food.food
+  | Null
 
 type map_param = Maps.MapParam.map_param
 
@@ -31,11 +39,10 @@ exception UnknownWeapon of string
 
 exception SuccessExit
 
-
 type state = {
   mutable player: player;
-  mutable food_inventory: item array;
-  mutable weapon_inventory: Maps.Weapon.weapon list;
+  mutable food_inventory: food_item array;
+  mutable weapon_inventory: weapon_item array;
   (* we can have several maps linked in one game, and [all_maps] store
      all maps in one game. *)
 
@@ -44,7 +51,7 @@ type state = {
   (**[current_map_in_all_maps] counts which map the player is currently in.
      i.e. the index in [all_maps]*)
   mutable current_map_in_all_maps: int; 
-  mutable items: item array;
+  mutable all_items: item array;
   mutable enemies: enemy array;
 }
 
@@ -244,8 +251,8 @@ let main_engine_map : unit -> current_map =
         let json = s |> Yojson.Basic.from_file in 
         let name = json |> member "name" |> to_string in 
         let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
-        let rows = snd unparsed_size in 
         let cols = fst unparsed_size in 
+        let rows = snd unparsed_size in 
         let size = (cols, rows) in
         let picture_lists = json |> member "picture" |> to_list in
         let all_map_param = map_param_array_builder picture_lists in 
@@ -257,9 +264,9 @@ let main_engine_map : unit -> current_map =
 let init (): state =
   let items = main_engine_item () in
   let map = main_engine_map () in {
-    items = items;
+    all_items = items;
     food_inventory = [||];
-    weapon_inventory = [];
+    weapon_inventory = [|Null; Null; Null|];
     player = main_engine_player ();
     current_map = map;
     all_maps = [|map|];
@@ -269,13 +276,13 @@ let init (): state =
 
 let game_state= init ()
 
-let change_item item (s:state) = s.items <- item
+let change_item item (s:state) = s.all_items <- item
 
 let change_player player s = s.player <- player
 
 let change_enemies enemies s = s.enemies <- enemies
 
-let get_items_array s = s.items
+let get_items_array s = s.all_items
 
 let get_player s = s.player
 
@@ -356,24 +363,35 @@ let eat_one_food s food_name =
   with SuccessExit ->
     ()
 
+let get_weapon_name_list_of_player_inventory s =
+  let array = [|[]|] in
+  let _ = for i = 0 to (Array.length s.weapon_inventory) do
+      match s.weapon_inventory.(i) with
+      | Null -> ()
+      | Weapon w -> 
+        array.(0) <- (Maps.Weapon.get_name w) :: (array.(0)) 
+    done in array.(0)
 
 let equip_one_weapon s weapon_name = 
   try
-    (let weapon_array = s.items in
+    (let weapon_array = s.all_items in
      for i = 0 to (Array.length weapon_array) - 1 do 
        match weapon_array.(i), s.player with
        | Weapon w, Player t -> 
-         (if (List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
-                                      Maps.Weapon.get_name w ) 
-                (s.weapon_inventory)
+         (if (List.for_all (fun w1 -> w1 <> Maps.Weapon.get_name w) 
+                (get_weapon_name_list_of_player_inventory s)
               && Player.location t = Maps.Weapon.get_loc w)
           then 
-            begin weapon_array.(i) <- Null;
-              s.weapon_inventory = (w::s.weapon_inventory);
-              let health = Maps.Weapon.get_strength w in
-              let () = Player.increase_strength t health in
-              s.player <- Player t; 
-              raise SuccessExit end
+            (weapon_array.(i) <- Null;
+             for j = 0 to (Array.length s.weapon_inventory) - 1 do 
+               if (s.weapon_inventory.(j) = Null) 
+               then
+                 ( s.weapon_inventory.(j) <- Weapon w;
+                   let health = Maps.Weapon.get_strength w in
+                   let () = Player.increase_strength t health in
+                   s.player <- Player t; 
+                   raise SuccessExit )
+               else () done)
           else ())
        | _ -> ()
      done);
