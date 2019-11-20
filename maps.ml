@@ -35,9 +35,9 @@ module type W = sig
     strength: int->
     weapon
   
-  val get_name : food -> string
+  val get_name : weapon -> string
 
-  val get_strength : food -> int
+  val get_strength : weapon -> int
 
 end
 
