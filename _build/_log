@@ -28,21 +28,16 @@ ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITe
 # Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, thread, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
 # Target: player.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, thread, traverse }
-ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules player.ml > player.ml.depends
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules player.ml > player.ml.depends # cached
 # Target: player.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, thread, traverse }
-ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
-+ ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
-File "player.ml", line 138, characters 36-48:
-138 |       ?level:(level=1) ?experience:(experience=0) = 
-                                          ^^^^^^^^^^^^
-Warning 16: this optional argument cannot be erased.
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml # cached
 # Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, thread, traverse }
 ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
 + ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
-File "engine.ml", line 290, characters 30-36:
-290 |     let () = Player.move_left player s.current_map in
-                                    ^^^^^^
-Error: This expression has type player but an expression was expected of type
-         Player.Player.t
+File "engine.ml", line 294, characters 7-14:
+294 |   with Illegal _ -> ()
+             ^^^^^^^
+Error: This variant pattern is expected to have type exn
+       The constructor Illegal does not belong to type exn
 Command exited with code 2.
 # Compilation unsuccessful.
