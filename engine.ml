@@ -358,23 +358,25 @@ let equip_one_weapon s weapon_name =
   try
     (let weapon_array = s.items in
      for i = 0 to (Array.length weapon_array) - 1 do 
-       match weapon_array.(i), s.player with
-       | Weapon w, Player t -> 
-         if (s.weapon_inventory 
-             |> Array.to_list 
-             |> List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
-                                        Maps.Weapon.get_name w )
-             && Player.location t = Maps.Weapon.get_loc w)
-         then 
-           weapon_array.(i) <- Null;
-         s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
-         let health = Maps.Weapon.get_strength w in
-         let () = Player.increase_strength t strength in
-         s.player <- Player t; 
-         raise SuccessExit
+       begin
+         match weapon_array.(i), s.player with
+         | Weapon w, Player t -> 
+           if (s.weapon_inventory 
+               |> Array.to_list 
+               |> List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
+                                          Maps.Weapon.get_name w )
+               && Player.location t = Maps.Weapon.get_loc w)
+           then 
+             weapon_array.(i) <- Null;
+           s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
+           let health = Maps.Weapon.get_strength w in
+           let () = Player.increase_strength t strength;
+             s.player <- Player t; 
+             raise SuccessExit
 else ()
 | _ -> ()
-done)
+end
+done);
 raise (UnknownWeapon weapon_name)
 with SuccessExit ->
 ()

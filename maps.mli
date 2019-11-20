@@ -18,6 +18,7 @@ module type F = sig
     id:int -> 
     strength:int -> 
     food
+
   val get_name : food -> string
 
   val get_strength : food -> int
@@ -29,7 +30,8 @@ end
 
 module type W = sig 
   (** The abstract type of values representing weapons. *)
-  type weapon
+  type weapon 
+
   (** Constructor of a weapon *)
   val constructor : 
     row:int -> 
