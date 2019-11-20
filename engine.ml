@@ -359,7 +359,7 @@ let eat_one_food s food_name =
     (let weapon_array = s.items in
     for i = 0 to (Array.length weapon_array) - 1 do 
       match weapon_array.(i), s.player with
-      | Weapon w, Player t -> begin
+      | Weapon w, Player t -> 
           if (s.weapon_inventory 
               |> Array.to_list 
               |> List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
@@ -372,7 +372,7 @@ let eat_one_food s food_name =
             let () = Player.increase_strength t strength;
             s.player <- Player t; 
             raise SuccessExit
-        else () end
+        else ()
       | _ -> ()
     done);
     raise (UnknownWeapon weapon_name)

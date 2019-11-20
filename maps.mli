@@ -7,14 +7,7 @@
 
 module type F = sig 
   (** The abstract type of values representing foods. *)
-  type food = {
-    name : string;
-    description : string;
-    id : int;
-    location : int * int;
-    health : int;
-    strength : int;
-  }
+  type food 
 
   (** Constructor of a food *)
   val constructor : 
@@ -26,17 +19,19 @@ module type F = sig
     id:int -> 
     strength:int -> 
     food
+      
+  val get_name : food -> string
+
+  val get_strength : food -> int
+
+  val get_health : food -> int
+
+  val get_loc : food -> int * int
 end
 
 module type W = sig 
   (** The abstract type of values representing weapons. *)
-    type weapon = {
-    weapon_name : string;
-    weapon_description : string;
-    id : int;
-    weapon_loc : int * int; (*col, row*)
-    strength: int;
-  }
+  type weapon 
 
   (** Constructor of a weapon *)
   val constructor : 
@@ -47,6 +42,11 @@ module type W = sig
     description:string -> 
     strength: int->
     weapon
+  
+  val get_name : weapon -> string
+
+  val get_strength : weapon -> int
+
 end
 module type MP = sig 
   (** The abstract type of values representing map params. *)
