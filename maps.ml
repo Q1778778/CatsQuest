@@ -2,7 +2,7 @@ open Yojson.Basic.Util
 
 module type F = sig 
   (** The abstract type of values representing foods. *)
-    type food 
+  type food 
   (** Constructor of a food *)
   val constructor : 
     row:int ->
@@ -34,7 +34,7 @@ module type W = sig
     description:string -> 
     strength: int->
     weapon
-  
+
   val get_name : weapon -> string
 
   val get_strength : weapon -> int
@@ -78,7 +78,7 @@ module Food : F = struct
   }
 
   let get_name f = f.name
-  
+
   let get_strength f = f.strength
 
   let get_health f = f.health
@@ -104,11 +104,11 @@ module Weapon : W = struct
     strength = strength;
   }
 
-  let get_name w = w.name
-  
+  let get_name w = w.weapon_name
+
   let get_strength w = w.strength
 
-  let get_loc w = w.location
+  let get_loc w = w.weapon_loc
 end
 
 module MapParam : MP = struct 

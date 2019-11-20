@@ -14,8 +14,7 @@ module type P = sig
   (** [constructor r c s h l e] constructs a new player module located at
       row [r], col [c], with strength [s], health [h], experience [e], 
       at level [l]. *)
-  val constructor: 
-    row:int ->
+  val constructor: row:int ->
     col:int ->
     ?strength:int ->
     ?health:int -> ?level:int -> ?experience:int -> t
@@ -29,11 +28,11 @@ module type P = sig
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
-  (** [col p] is the current col coordinate of player [p]. *)
-  val col : t -> int 
-
   (** [row p] is the current row coordinate of player [p]. *)
   val row : t -> int 
+
+  (** [col p] is the current col coordinate of player [p]. *)
+  val col : t -> int 
 
   (** [health p] is the current health of player [p]. *)
   val health : t -> int
@@ -44,27 +43,25 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-  (** [move_left p m] updates the player state after [p] moves left,
+  (** [move_north p m] updates the player state after [p] moves north,
       returning [unit].
       Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_left : t -> Maps.t -> unit
+  val move_north : t -> Maps.t -> unit
 
-  (** [move_right p m] updates the player state after [p] moves right,
+  (** [move_south p m] updates the player state after [p] moves south,
       returning [unit].
       Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_right : t -> Maps.t -> unit
+  val move_south : t -> Maps.t -> unit
 
-  (** [move_up p m] updates the player state after [p] moves up,
+  (** [move_east p m] updates the player state after [p] moves east,
       returning [unit].
       Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_up : t -> Maps.t -> unit
+  val move_east : t -> Maps.t -> unit
 
-  (** [move_down p m] updates the player state after [p] moves down,
+  (** [move_west p m] updates the player state after [p] moves west,
       returning [unit].
       Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_down : t -> Maps.t -> unit
-
-  val increase_health: t -> int -> unit
+  val move_west : t -> Maps.t -> unit
 
   (** [reduce_health p h] reduces the health of player [p] by [h].
       Requires: [h] >= 0 *)
@@ -100,10 +97,9 @@ module type P = sig
 
   val extract_skill_description_single_skill: skill -> string
 
-  val skills_list: t -> skill list
+  val skills_list: t-> skill list
 
-  val skill_name: skill -> string
-
+  val skill_name: skill->string
 end 
 
 module Player : P = struct
@@ -137,7 +133,7 @@ module Player : P = struct
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
       ?level:(level=1) ?experience:(experience=0) = 
     {
-      location = (col, row);
+      location = (row,col);
       strength = strength;
       health = health;
       level = level;
@@ -164,9 +160,9 @@ module Player : P = struct
 
   let max_health = 100
 
-  let col p = fst p.location
+  let row p = fst p.location
 
-  let row p = snd p.location
+  let col p = snd p.location
 
   (**[match_keys s] returns the equivalent enum value for the parsed key
      string [s] from the json file. *)
@@ -184,40 +180,38 @@ module Player : P = struct
   (* type result = Legal of t | Illegal of string *)
   exception Illegal of string 
 
-  (* [move p m c r] changes the player state for which the player [p] 
+  (* [move p m r c] changes the player state for which the player [p] 
      moves north, south, east, or west in map [m]; i.e. moves north or south by 
      [row_diff], moves east or west by [col_diff] *)
-  let move p m col_diff row_diff = 
-    let col = col p in
+  let move p m row_diff col_diff = 
     let row = row p in 
-    if Maps.bound_check m col row then 
-      p.location <- (col + col_diff, row + row_diff)
+    let col = col p in
+    if Maps.bound_check m row col then 
+      p.location <- (row+row_diff, col+col_diff)
     else raise (Illegal "Cannot move out of the map!")
 
-  let move_left p m = move p m (-1) 0
+  let move_north p m = move p m (-1) 0
 
-  let move_right p m = move p m 1 0
+  let move_south p m = move p m 1 0
 
-  let move_up p m = move p m 0 1
+  let move_east p m = move p m 0 1
 
-  let move_down p m = move p m 0 (-1)
-
-  let increase_health p h = p.health <- p.health + h
+  let move_west p m = move p m 0 (-1)
 
   let reduce_health p h = 
-    assert(h >= 0);
+    assert(h>=0);
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
     in p.health <- new_health
 
   let reduce_strength p s = 
-    assert(s >= 0);
+    assert(s>=0);
     let new_strength = 
       if p.strength - s >= 0 then p.strength - s else 0 
     in p.strength <- new_strength
 
   let increase_experience p e = 
-    assert (e >= 0);
+    assert (e>=0);
     p.experience <- p.experience + e
 
   let advance_level p =  begin
