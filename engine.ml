@@ -35,7 +35,7 @@ exception SuccessExit
 type state = {
   mutable player: player;
   mutable food_inventory: item array;
-  mutable weapon_inventory: Maps.Weapon.weapon array;
+  mutable weapon_inventory: Maps.Weapon.weapon list;
   (* we can have several maps linked in one game, and [all_maps] store
      all maps in one game. *)
 
@@ -113,7 +113,7 @@ let single_enemy_builder j id: enemy =
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
     (* random init pos *)
-    let pos = ((Random.int 10)+1, (Random.int 10)+1) in
+    let pos = ((Random.int 5)+1, (Random.int 5)+1) in
     let hp = j |> member "HP" |> to_int in
     let max_hp = hp in
     let lst = j |> member "skills" |> to_list in
@@ -259,7 +259,7 @@ let init (): state =
   let map = main_engine_map () in {
     items = items;
     food_inventory = [||];
-    weapon_inventory = [||];
+    weapon_inventory = [];
     player = main_engine_player ();
     current_map = map;
     all_maps = [|map|];
@@ -369,7 +369,7 @@ let equip_one_weapon s weapon_name =
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;
-              s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
+              s.weapon_inventory = (w::s.weapon_inventory);
               let health = Maps.Weapon.get_strength w in
               let () = Player.increase_strength t health in
               s.player <- Player t; 
