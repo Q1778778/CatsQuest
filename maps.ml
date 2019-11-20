@@ -89,7 +89,7 @@ end
 module Weapon : W = struct 
   type weapon = {
     name : string;
-    weapon_description : string;
+    description : string;
     id : int;
     weapon_loc : int * int; (*col, row*)
     strength: int;
@@ -99,7 +99,7 @@ module Weapon : W = struct
       ~row ~col ~name ~id ~description ~strength = {
     name = name;
     id = id;
-    weapon_description = description;
+    description = description;
     weapon_loc = (col,row);
     strength = strength;
   }
