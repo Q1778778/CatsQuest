@@ -126,12 +126,6 @@ module MapParam : MP = struct
   }
 end
 
-(**[to_tuple a b j] converts a json representation [j] into a tuple of ints
-   [(i,j)], where [i] is the value associated with key [a] 
-   and [j] is the value associated with key [b]. If [a] is not a defined key
-   in [j], [(Null, [j])] will be returned. 
-   Requires: [j] is a valid json representation.*)
-
 type t = {
   size : int * int; (*total col * total rows *)
   name : string; (*this map name*)
@@ -146,11 +140,9 @@ let map_constructor
   map_params = all_map_param; 
 }
 
-let to_tuple a b j = (j |> member a |> to_int, j |> member b |> to_int)
-
 let size m = m.size
 
 let bound_check m c r = 
   let cols = fst m.size in 
   let rows = snd m.size in 
-  r > 0 && r <= rows && c > 0 && c <= cols
+  c > 0 && c <= cols && r > 0 && r <= rows

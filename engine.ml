@@ -243,8 +243,8 @@ let main_engine_map : unit -> current_map =
         let json = s |> Yojson.Basic.from_file in 
         let name = json |> member "name" |> to_string in 
         let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
-        let rows = snd unparsed_size in 
         let cols = fst unparsed_size in 
+        let rows = snd unparsed_size in 
         let size = (cols, rows) in
         let picture_lists = json |> member "picture" |> to_list in
         let all_map_param = map_param_array_builder picture_lists in 
@@ -366,7 +366,7 @@ let equip_one_weapon s weapon_name =
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;
-              s.weapon_inventory = (w::s.weapon_inventory);
+              ignore (s.weapon_inventory = (w::s.weapon_inventory))
               let health = Maps.Weapon.get_strength w in
               let () = Player.increase_strength t health in
               s.player <- Player t; 
