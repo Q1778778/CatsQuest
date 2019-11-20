@@ -25,16 +25,21 @@ type map_param = Maps.MapParam.map_param
 
 type current_map = Maps.t
 
+exception UnknwonFood of string
+
+exception SuccessExit
+
 type state = {
   mutable player: player;
+  mutable food_inventory: item array;
+  mutable weapon_inventory: item array;
+  (* we can have several maps linked in one game, and [all_maps] store
+     all maps in one game. *)
 
-   (* we can have several maps linked in one game, and [all_maps] store
-   all maps in one game. *)
-  
   mutable current_map: current_map;
   mutable all_maps: current_map array;
   (**[current_map_in_all_maps] counts which map the player is currently in.
-  i.e. the index in [all_maps]*)
+     i.e. the index in [all_maps]*)
   mutable current_map_in_all_maps: int; 
   mutable items: item array;
   mutable enemies: enemy array;
@@ -158,34 +163,34 @@ let main_engine_player: unit -> player =
 
 let food_array_builder jsons: item array = 
   jsons |> List.map (fun j -> let id = 
-                       let count = 
-                         let counter = ref 0 in fun () -> incr counter; 
-                           !counter in count () in
-             let health = j |> member "health" |> to_int in
-             let strength = j |> member "strength" |> to_int in
-             let name = j |> member "name" |> to_string in
-             let description = j |> member "description" |> to_string in
-             let location = j |> member "location" in
-             let row = location |> member "row"|> to_int in
-             let col = location |> member "col" |> to_int in
-             Food (Maps.Food.constructor ~col ~row ~health 
-                     ~description ~name ~id ~strength))
-        |> Array.of_list
+                                let count = 
+                                  let counter = ref 0 in fun () -> incr counter; 
+                                    !counter in count () in
+                      let health = j |> member "health" |> to_int in
+                      let strength = j |> member "strength" |> to_int in
+                      let name = j |> member "name" |> to_string in
+                      let description = j |> member "description" |> to_string in
+                      let location = j |> member "location" in
+                      let row = location |> member "row"|> to_int in
+                      let col = location |> member "col" |> to_int in
+                      Food (Maps.Food.constructor ~col ~row ~health 
+                              ~description ~name ~id ~strength))
+  |> Array.of_list
 
 let weapon_array_builder jsons: item array = 
   jsons |> List.map (fun j -> let id = 
-                       let count = 
-                         let counter = ref 0 in fun () -> incr counter; 
-                           !counter in count () in
-             let name = j |> member "name" |> to_string in
-             let description = j |> member "description" |> to_string in
-             let location = j |> member "location" in
-             let strength = j |> member "strength"|> to_int in
-             let row = location |> member "row"|> to_int in
-             let col = location |> member "col" |> to_int in
-             Weapon (Maps.Weapon.constructor ~strength ~col ~row 
-                       ~description ~name ~id))
-        |> Array.of_list
+                                let count = 
+                                  let counter = ref 0 in fun () -> incr counter; 
+                                    !counter in count () in
+                      let name = j |> member "name" |> to_string in
+                      let description = j |> member "description" |> to_string in
+                      let location = j |> member "location" in
+                      let strength = j |> member "strength"|> to_int in
+                      let row = location |> member "row"|> to_int in
+                      let col = location |> member "col" |> to_int in
+                      Weapon (Maps.Weapon.constructor ~strength ~col ~row 
+                                ~description ~name ~id))
+  |> Array.of_list
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"]
@@ -197,13 +202,13 @@ let parse_dims s =
 
 let map_param_array_builder jsons : ((int * int) * map_param) array = 
   jsons |> List.map ( fun j ->
-              let name = j |> member "name" |> to_string in 
-              let loc = j |> member "loc" |> to_string in
-              let link = j |> member "link" |> to_string in 
-              let col = parse_dims loc |> fst in 
-              let row = parse_dims loc |> snd in 
-    ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
-        |> Array.of_list
+      let name = j |> member "name" |> to_string in 
+      let loc = j |> member "loc" |> to_string in
+      let link = j |> member "link" |> to_string in 
+      let col = parse_dims loc |> fst in 
+      let row = parse_dims loc |> snd in 
+      ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
+  |> Array.of_list
 
 
 let main_engine_item : unit -> item array = 
@@ -215,10 +220,10 @@ let main_engine_item : unit -> item array =
       then 
         let json = s |> Yojson.Basic.from_file in
         let weapon_array = json |> member "weapons" 
-                         |> to_list |> weapon_array_builder in
+                           |> to_list |> weapon_array_builder in
         let food_array = json |> member "foods" 
-                       |> to_list 
-                       |> food_array_builder in
+                         |> to_list 
+                         |> food_array_builder in
         (Array.append weapon_array food_array)
       else read_item handler in
   fun () -> (read_item (Unix.opendir "."))
@@ -229,9 +234,9 @@ let main_engine_map : unit -> current_map =
     | exception _ -> Unix.closedir handler;
       failwith "no map-param.json is not in current directory"
     | s -> let pos = String.length s in 
-              if String.length s > 13 
-              && (String.sub s (pos-5) 5) = ".json" 
-              && contains s "map-param"
+      if String.length s > 13 
+      && (String.sub s (pos-5) 5) = ".json" 
+      && contains s "map-param"
       then 
         let json = s |> Yojson.Basic.from_file in 
         let name = json |> member "name" |> to_string in 
@@ -248,9 +253,10 @@ let main_engine_map : unit -> current_map =
 
 let init (): state =
   let items = main_engine_item () in
-  let map = main_engine_map () in
-  {
+  let map = main_engine_map () in {
     items = items;
+    food_inventory = [||];
+    weapon_inventory = [||];
     player = main_engine_player ();
     current_map = map;
     all_maps = [|map|];
@@ -275,3 +281,63 @@ let get_enemies s = s.enemies
 let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
+
+(** [move_player_left] change the current pos (col', row') of player to 
+    (col'-1, row'-1)*)
+let move_player_left s = 
+  try
+    let player = s.player in
+    let () = Player.move_left player s.current_map in
+    s.player <- player
+  with Illegal _ -> ()
+
+let move_player_right s = 
+  try
+    let player = s.player in
+    let () = Player.move_right player s.current_map in
+    s.player <- player
+  with Illegal _ -> ()
+
+let move_player_up s = 
+  try
+    let player = s.player in
+    let () = Player.move_up player s.current_map in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let move_player_down s = 
+  try
+    let player = s.player in
+    let () = Player.move_down player s.current_map in
+    (s.player <- player; s)
+  with Illegal _ -> ()
+
+let delete_one_enemy_from_state s enemy =
+  for i = 0 to (Array.length s.enemies) - 1 do 
+    if s.enemies.(i) = enemy 
+    then s.enemies.(i) <- Deleted 
+    else ()
+  done
+
+(** raises: UnknownFood if [food_name] 
+    is not a valid food name in player's inventory*)
+let eat_one_food s food_name = 
+  try
+    (let food_array = s.food_inventory in
+     for i = 0 to (Array.length food_array) - 1 do 
+       match food_array.(i) with
+       | Food food -> 
+         if food.name = food_name
+         then 
+           (let health = food.health 
+            and strength = food.strength in
+            let () = Player.increase_health s.player health 
+            and () = Player.increase_strength s.player strength in
+            food_array.(i) <- Eaten; 
+            raise SuccessExit)
+         else ()
+       | _ -> ()
+     done);
+    raise UnknownFood
+  with SuccessExit ->
+    ()

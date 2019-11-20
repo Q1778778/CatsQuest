@@ -1,9 +1,3 @@
-(** Raised when an unknown food is encountered. *)
-exception UnknownFood of string
-
-(** Raised when an unknown weapon is encountered. *)
-exception UnknownWeapon of string
-
 (*(**[size m] is the size of the map [m] in [(rows, columns)]. *)
   val size : t -> int * int
 
@@ -13,7 +7,14 @@ exception UnknownWeapon of string
 
 module type F = sig 
   (** The abstract type of values representing foods. *)
-  type food
+  type food = {
+    name : string;
+    description : string;
+    id : int;
+    location : int * int;
+    health : int;
+    strength : int;
+  }
 
   (** Constructor of a food *)
   val constructor : 
@@ -29,7 +30,13 @@ end
 
 module type W = sig 
   (** The abstract type of values representing weapons. *)
-  type weapon
+    type weapon = {
+    weapon_name : string;
+    weapon_description : string;
+    id : int;
+    weapon_loc : int * int; (*col, row*)
+    strength: int;
+  }
 
   (** Constructor of a weapon *)
   val constructor : 
