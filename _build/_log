@@ -27,14 +27,22 @@ ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal
 ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics maps.cmo -o maps.byte # cached
 # Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, thread, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
-+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
-File "engine.ml", line 375, characters 33-34:
-375 |                 raise SuccessExit)
-                                       ^
-Error: Syntax error: ')' expected
-File "engine.ml", line 370, characters 13-14:
-370 |              (weapon_array.(i) <- Null;
-                   ^
-  This '(' might be unmatched
+# Target: player.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules player.ml > player.ml.depends
+# Target: player.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
++ ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
+File "player.ml", line 134, characters 36-48:
+134 |       ?level:(level=1) ?experience:(experience=0) = 
+                                          ^^^^^^^^^^^^
+Warning 16: this optional argument cannot be erased.
+# Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, thread, traverse }
+ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
++ ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
+File "engine.ml", line 294, characters 15-31:
+294 |       let () = Player.move_left t s.current_map in
+                     ^^^^^^^^^^^^^^^^
+Error: Unbound value Player.move_left
+Hint: Did you mean move_west?
 Command exited with code 2.
 # Compilation unsuccessful.
