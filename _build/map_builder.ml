@@ -33,10 +33,6 @@ let draw_player () : unit =
   let player=Engine.get_player Engine.game_state in 
   match player with 
   |Player z-> let (col,row)=Player.Player.location z in 
-    print_string ("col"^string_of_int col);
-    print_string ("row"^string_of_int row);
-    let h=Player.Player.health z in 
-    print_int h;
     Graphics.set_color Graphics.red;
     Graphics.fill_circle (rr+(col-1)*interval+interval/2) (cr+(row-1)*interval+(interval/2)) (interval/4)
   |Died->()

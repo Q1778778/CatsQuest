@@ -180,10 +180,10 @@ module Player : P = struct
   (* [move p m c r] changes the player state for which the player [p] 
      moves in map [m];  *)
   let move p m col_diff row_diff = 
-    let col = col p in
-    let row = row p in 
-    if Maps.bound_check m col row then 
-      p.location <- (col+col_diff, row+row_diff)
+    let col' = col_diff + (col p) in
+    let row' = row_diff + (row p) in 
+    if Maps.bound_check m col' row' then 
+      p.location <- (col', row')
     else raise (Illegal "Cannot move out of the map!")
 
   let move_left p m = move p m (-1) 0

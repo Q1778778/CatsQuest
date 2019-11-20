@@ -23,7 +23,6 @@ type clist=
     mutable dialog_in_progress:bool}
 
 type state={
-  mutable health: int;
   mutable skill: string list;
 }
 
@@ -32,7 +31,7 @@ exception Not_such_enemy of string
 let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
              difficulty="empty";enemy_to_combat="none";dialog_in_progress=false}
 
-let cstate={health=100;skill=["stab"]}
+let cstate={skill=["stab"]}
 
 let lblue=Graphics.rgb 82 219 255
 
@@ -305,10 +304,14 @@ let tsensor(c:clist)=
 let ksensor sta=
   let key=sta.key in 
   match key with 
-  |'a'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
-  |'d'->Engine.move_player_right Engine.game_state; cplace.irefresh<-true
-  |'w'->Engine.move_player_up Engine.game_state; cplace.irefresh<-true
-  |'s'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
+  |'a'
+  |'A'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
+  |'d'
+  |'D'->Engine.move_player_right Engine.game_state; cplace.irefresh<-true
+  |'w'
+  |'W'->Engine.move_player_up Engine.game_state; cplace.irefresh<-true
+  |'s'
+  |'S'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
   |_->()
 
 let rec fensor (c:clist) i=
