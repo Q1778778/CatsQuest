@@ -104,7 +104,7 @@ module Weapon : W = struct
     strength = strength;
   }
 
-  let get_name w = w.weapon_name
+  let get_name w = w.name
 
   let get_strength w = w.strength
 

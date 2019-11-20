@@ -88,7 +88,7 @@ end
 
 module Weapon : W = struct 
   type weapon = {
-    weapon_name : string;
+    name : string;
     weapon_description : string;
     id : int;
     weapon_loc : int * int; (*col, row*)
@@ -97,14 +97,14 @@ module Weapon : W = struct
 
   let constructor 
       ~row ~col ~name ~id ~description ~strength = {
-    weapon_name = name;
+    name = name;
     id = id;
     weapon_description = description;
     weapon_loc = (col,row);
     strength = strength;
   }
 
-  let get_name w = w.weapon_name
+  let get_name w = w.name
 
   let get_strength w = w.strength
 

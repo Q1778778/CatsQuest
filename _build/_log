@@ -28,9 +28,13 @@ ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITe
 # Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, thread, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
 + ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends
-File "engine.ml", line 375, characters 0-4:
-375 | else ()
-      ^^^^
-Error: Syntax error: operator expected.
+File "engine.ml", line 375, characters 33-34:
+375 |                 raise SuccessExit)
+                                       ^
+Error: Syntax error: ')' expected
+File "engine.ml", line 370, characters 13-14:
+370 |              (weapon_array.(i) <- Null;
+                   ^
+  This '(' might be unmatched
 Command exited with code 2.
 # Compilation unsuccessful.
