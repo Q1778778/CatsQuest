@@ -358,6 +358,7 @@ let eat_one_food s food_name =
   try
     (let weapon_array = s.items in
     for i = 0 to (Array.length weapon_array) - 1 do 
+      begin
       match weapon_array.(i), s.player with
       | Weapon w, Player t -> 
           if (s.weapon_inventory 
@@ -374,6 +375,7 @@ let eat_one_food s food_name =
             raise SuccessExit
         else ()
       | _ -> ()
+      end
     done);
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
