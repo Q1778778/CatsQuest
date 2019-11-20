@@ -337,7 +337,7 @@ let eat_one_food s food_name =
      for i = 0 to (Array.length food_array) - 1 do 
        match food_array.(i), s.player with
        | Food food, Player t -> 
-         if food.name = food_name
+         if Food.get_name food = food_name
          then 
            (let health = Maps.Food.get_health food
             and strength = Maps.Food.get_strength food in
