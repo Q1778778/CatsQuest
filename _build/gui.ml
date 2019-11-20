@@ -239,6 +239,7 @@ let skill_damage name=
 let enemy_skill_image name=
   match name with 
   |"punch"->draw_a_image Color_convert.enemy_punch 500 350
+  |"scratch"->draw_a_image Color_convert.enemy_scar 500 350
   |_->failwith"unbound image"
 
 let enemy_skill t=
@@ -301,8 +302,13 @@ let tsensor(c:clist)=
        |Action_circle _->()in
      let _=sense (c.dialog) sta in ())
 
+let ksensor sta=
+  let key=sta.key in 
+  match key with 
+  |'a'->()
+
 let rec fensor (c:clist) i=
-  let sta=Graphics.wait_next_event [Button_down] in 
+  let sta=Graphics.wait_next_event [Button_down;Key_pressed] in 
   let sense b (s:Graphics.status)=
     match b with
     |Action_button ((x,y,w,h),t)->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
@@ -316,8 +322,9 @@ let rec fensor (c:clist) i=
     |Enemy (n,x,y,r) when (radius_circle s.mouse_x s.mouse_y r x y=true)->
       cplace.enemy_to_combat<-n 
     |Enemy _->()in
-  let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
-  let _=List.rev_map (fun butt->sense butt sta) c.ecircle in ()
+  if sta.button then (let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
+                      let _=List.rev_map (fun butt->sense butt sta) c.ecircle in ()) else 
+    ksensor sta
 
 
 let clear_screen ()=

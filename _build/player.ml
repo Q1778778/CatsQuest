@@ -43,25 +43,18 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-  (** [move_north p m] updates the player state after [p] moves north,
-      returning [unit].
-      Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_north : t -> Maps.t -> unit
 
-  (** [move_south p m] updates the player state after [p] moves south,
-      returning [unit].
-      Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_south : t -> Maps.t -> unit
+  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_up : t -> Maps.t -> unit
 
-  (** [move_east p m] updates the player state after [p] moves east,
-      returning [unit].
-      Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_east : t -> Maps.t -> unit
+  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_down : t -> Maps.t -> unit
 
-  (** [move_west p m] updates the player state after [p] moves west,
-      returning [unit].
-      Raises: [Illegal] if the move results in out of bounds from the map*)
-  val move_west : t -> Maps.t -> unit
+  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_right : t -> Maps.t -> unit
+
+  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  val move_left : t -> Maps.t -> unit
 
   (** [reduce_health p h] reduces the health of player [p] by [h].
       Requires: [h] >= 0 *)
@@ -100,6 +93,10 @@ module type P = sig
   val skills_list: t-> skill list
 
   val skill_name: skill->string
+
+  val increase_health: t -> int -> unit
+
+  val increase_strength: t -> int -> unit
 end 
 
 module Player : P = struct
@@ -133,7 +130,7 @@ module Player : P = struct
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
       ?level:(level=1) ?experience:(experience=0) = 
     {
-      location = (row,col);
+      location = (col,row);
       strength = strength;
       health = health;
       level = level;
@@ -160,9 +157,9 @@ module Player : P = struct
 
   let max_health = 100
 
-  let row p = fst p.location
+  let col p = fst p.location
 
-  let col p = snd p.location
+  let row p = snd p.location
 
   (**[match_keys s] returns the equivalent enum value for the parsed key
      string [s] from the json file. *)
@@ -180,23 +177,22 @@ module Player : P = struct
   (* type result = Legal of t | Illegal of string *)
   exception Illegal of string 
 
-  (* [move p m r c] changes the player state for which the player [p] 
-     moves north, south, east, or west in map [m]; i.e. moves north or south by 
-     [row_diff], moves east or west by [col_diff] *)
-  let move p m row_diff col_diff = 
-    let row = row p in 
+  (* [move p m c r] changes the player state for which the player [p] 
+     moves in map [m];  *)
+  let move p m col_diff row_diff = 
     let col = col p in
+    let row = row p in 
     if Maps.bound_check m row col then 
-      p.location <- (row+row_diff, col+col_diff)
+      p.location <- (col+col_diff, row+row_diff)
     else raise (Illegal "Cannot move out of the map!")
 
-  let move_north p m = move p m (-1) 0
+  let move_left p m = move p m (-1) 0
 
-  let move_south p m = move p m 1 0
+  let move_right p m = move p m 1 0
 
-  let move_east p m = move p m 0 1
+  let move_up p m = move p m 0 1
 
-  let move_west p m = move p m 0 (-1)
+  let move_down p m = move p m 0 (-1)
 
   let reduce_health p h = 
     assert(h>=0);
@@ -243,4 +239,11 @@ module Player : P = struct
 
   let skill_name skill=
     skill.name
+
+  let increase_strength t st =
+    t.strength <- t.strength + st
+
+  let increase_health t hp = 
+    t.health <- t.health + hp
+
 end

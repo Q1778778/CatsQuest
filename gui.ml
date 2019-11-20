@@ -239,6 +239,7 @@ let skill_damage name=
 let enemy_skill_image name=
   match name with 
   |"punch"->draw_a_image Color_convert.enemy_punch 500 350
+  |"scratch"->draw_a_image Color_convert.enemy_scar 500 350
   |_->failwith"unbound image"
 
 let enemy_skill t=

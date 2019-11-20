@@ -25,7 +25,7 @@ type map_param = Maps.MapParam.map_param
 
 type current_map = Maps.t
 
-exception UnknwonFood of string
+exception UnknownFood of string
 
 exception UnknownWeapon of string
 
@@ -34,7 +34,7 @@ exception SuccessExit
 type state = {
   mutable player: player;
   mutable food_inventory: item array;
-  mutable weapon_inventory: item array;
+  mutable weapon_inventory: Maps.Weapon.weapon array;
   (* we can have several maps linked in one game, and [all_maps] store
      all maps in one game. *)
 
@@ -362,18 +362,18 @@ let equip_one_weapon s weapon_name =
        | Weapon w, Player t -> 
          (if (List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
                                       Maps.Weapon.get_name w ) 
-                Array.to_list s.weapon_inventory
+                (Array.to_list s.weapon_inventory)
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;
               s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
               let health = Maps.Weapon.get_strength w in
-              let () = Player.increase_strength t strength in
+              let () = Player.increase_strength t health in
               s.player <- Player t; 
               raise SuccessExit end
           else ())
        | _ -> ()
-     done)
-      raise (UnknownWeapon weapon_name)
+     done);
+    raise (UnknownWeapon weapon_name)
   with SuccessExit ->
     ()

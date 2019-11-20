@@ -46,6 +46,9 @@ module type W = sig
 
   val get_strength : weapon -> int
 
+  val get_loc : weapon -> int * int
+
+
 end
 
 module type MP = sig 

@@ -54,6 +54,8 @@ let images_of_json json=
 
 let enemy_stab=images_of_json (Yojson.Basic.from_file "punch_enemy.json")
 
+let enemy_s=images_of_json (Yojson.Basic.from_file "scar.json")
+
 let cat=
   images_of_json (Yojson.Basic.from_file "cute cat.json")
 
@@ -78,6 +80,8 @@ let water5=images_of_json (Yojson.Basic.from_file "water-120.json")
 let dirt5=images_of_json (Yojson.Basic.from_file "dirt-120.json")
 
 let enemy_punch=(array_color (List.find (fun x->x.name="stab") enemy_stab).matrix)
+
+let enemy_scar=(array_color (List.find (fun x->x.name="scar-200") enemy_s).matrix)
 
 let cute_cat= 
   (array_color (List.find (fun x->x.name="cute cat") cat).matrix)
