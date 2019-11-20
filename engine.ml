@@ -383,11 +383,16 @@ let equip_one_weapon s weapon_name =
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;
-              (s.weapon_inventory = (w::s.weapon_inventory))
-              let health = Maps.Weapon.get_strength w in
-              let () = Player.increase_strength t health in
-              s.player <- Player t; 
-              raise SuccessExit end
+             for j = 0 to (Array.length s.weapon_inventory) - 1 do 
+              if (s.weapon_inventory.(j) = Null) 
+              then
+                s.weapon_inventory.(j) <- Weapon w;
+                let health = Maps.Weapon.get_strength w in
+                let () = Player.increase_strength t health in
+                s.player <- Player t; 
+                raise SuccessExit 
+              else ()
+              done end
           else ())
        | _ -> ()
      done);
