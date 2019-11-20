@@ -305,7 +305,11 @@ let tsensor(c:clist)=
 let ksensor sta=
   let key=sta.key in 
   match key with 
-  |'a'->()
+  |'a'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
+  |'d'->Engine.move_player_right Engine.game_state; cplace.irefresh<-true
+  |'w'->Engine.move_player_up Engine.game_state; cplace.irefresh<-true
+  |'s'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
+  |_->()
 
 let rec fensor (c:clist) i=
   let sta=Graphics.wait_next_event [Button_down;Key_pressed] in 
@@ -377,6 +381,7 @@ let rec init flag =
   cplace.dialog<-Bnone;
   cplace.irefresh<-false;
   Map_builder.map_text_build();
+  Map_builder.draw_player();
   status_bar ();
   experience_bar();
   normal_four_botton cplace;

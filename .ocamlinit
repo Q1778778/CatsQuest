@@ -11,6 +11,7 @@
 #load_rec "player.cmo";;
 #load "engine.cmo";;
 #load "color_convert.cmo";;
+#load "map_builder.cmo";;
 #load "gui.cmo";;
 
 

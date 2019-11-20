@@ -31,6 +31,7 @@ exception UnknownWeapon of string
 
 exception SuccessExit
 
+
 type state = {
   mutable player: player;
   mutable food_inventory: item array;
@@ -280,6 +281,8 @@ let get_player s = s.player
 
 let get_enemies s = s.enemies
 
+let get_map s = s.current_map
+
 let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
@@ -362,7 +365,7 @@ let equip_one_weapon s weapon_name =
        | Weapon w, Player t -> 
          (if (List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
                                       Maps.Weapon.get_name w ) 
-                (Array.to_list s.weapon_inventory)
+                (s.weapon_inventory)
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;
