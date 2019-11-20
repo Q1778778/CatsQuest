@@ -365,7 +365,7 @@ let equip_one_weapon s weapon_name =
        | Weapon w, Player t -> 
          (if (List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
                                       Maps.Weapon.get_name w ) 
-                (Array.to_list s.weapon_inventory)
+                (s.weapon_inventory)
               && Player.location t = Maps.Weapon.get_loc w)
           then 
             begin weapon_array.(i) <- Null;

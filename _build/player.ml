@@ -182,7 +182,7 @@ module Player : P = struct
   let move p m col_diff row_diff = 
     let col = col p in
     let row = row p in 
-    if Maps.bound_check m row col then 
+    if Maps.bound_check m col row then 
       p.location <- (col+col_diff, row+row_diff)
     else raise (Illegal "Cannot move out of the map!")
 
