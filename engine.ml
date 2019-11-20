@@ -292,13 +292,8 @@ let move_player_left s =
     | Died -> ()
     | Player t ->
       let () = Player.move_left t s.current_map in
-<<<<<<< HEAD
       s.player <- Player t
-  with Illegal _ -> ()
-=======
-        s.player <- Player t
   with Player.Illegal _ -> ()
->>>>>>> f42aaddde3b3785492a106ba9fa6b58667a2e7ad
 
 let move_player_right s = 
   try
@@ -306,13 +301,8 @@ let move_player_right s =
     | Died -> ()
     | Player t ->
       let () = Player.move_right t s.current_map in
-<<<<<<< HEAD
       s.player <- Player t
-  with Illegal _ -> ()
-=======
-        s.player <- Player t
   with Player.Illegal _ -> ()
->>>>>>> f42aaddde3b3785492a106ba9fa6b58667a2e7ad
 
 let move_player_up s = 
   try
@@ -320,13 +310,8 @@ let move_player_up s =
     | Died -> ()
     | Player t ->
       let () = Player.move_up t s.current_map in
-<<<<<<< HEAD
       s.player <- Player t
-  with Illegal _ -> ()
-=======
-        s.player <- Player t
   with Player.Illegal _ -> ()
->>>>>>> f42aaddde3b3785492a106ba9fa6b58667a2e7ad
 
 let move_player_down s = 
   try
@@ -334,13 +319,8 @@ let move_player_down s =
     | Died -> ()
     | Player t ->
       let () = Player.move_down t s.current_map in
-<<<<<<< HEAD
       s.player <- Player t
-  with Illegal _ -> ()
-=======
-        s.player <- Player t
   with Player.Illegal _ -> ()
->>>>>>> f42aaddde3b3785492a106ba9fa6b58667a2e7ad
 
 let delete_one_enemy_from_state s enemy =
   for i = 0 to (Array.length s.enemies) - 1 do 
@@ -354,65 +334,47 @@ let delete_one_enemy_from_state s enemy =
 let eat_one_food s food_name = 
   try
     (let food_array = s.food_inventory in
-<<<<<<< HEAD
      for i = 0 to (Array.length food_array) - 1 do 
-       match food_array.(i) with
-       | Food food -> 
+       match food_array.(i), s.player with
+       | Food food, Player t -> 
          if food.name = food_name
          then 
-           (let health = food.health 
-            and strength = food.strength in
-            let () = Player.increase_health s.player health 
-            and () = Player.increase_strength s.player strength in
-            food_array.(i) <- Eaten; 
-            raise SuccessExit)
+           (let health = Maps.Food.get_health food
+            and strength = Maps.Food.get_strength food in
+            let () = Player.increase_health t health 
+            and () = Player.increase_strength t strength;
+              food_array.(i) <- Null;
+              s.player <- Player t; 
+              raise SuccessExit)
          else ()
        | _ -> ()
      done);
-    raise UnknownFood
-=======
-    for i = 0 to (Array.length food_array) - 1 do 
-      match food_array.(i), s.player with
-      | Food food, Player t -> 
-        if food.name = food_name
-        then 
-          (let health = Maps.Food.get_health food
-          and strength = Maps.Food.get_strength food in
-          let () = Player.increase_health t health 
-          and () = Player.increase_strength t strength;
-          food_array.(i) <- Null;
-          s.player <- Player t; 
-          raise SuccessExit)
-        else ()
-      | _ -> ()
-    done);
     raise (UnknownFood food_name)
   with SuccessExit ->
     ()
-  
 
-  let equip_one_weapon s weapon_name = 
+
+let equip_one_weapon s weapon_name = 
   try
     (let weapon_array = s.items in
-    for i = 0 to (Array.length weapon_array) - 1 do 
-      match weapon_array.(i), s.player with
-      | Weapon w, Player t -> begin
-          if (s.weapon_inventory 
-              |> Array.to_list 
-              |> List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
+     for i = 0 to (Array.length weapon_array) - 1 do 
+       match weapon_array.(i), s.player with
+       | Weapon w, Player t -> begin
+           if (s.weapon_inventory 
+               |> Array.to_list 
+               |> List.for_all (fun w1 -> Maps.Weapon.get_name w1 <>
                                           Maps.Weapon.get_name w )
-              && Player.location t = Maps.Weapon.get_loc w)
-          then 
-            weapon_array.(i) <- Null;
-            s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
-            let health = Maps.Weapon.get_strength w in
-            let () = Player.increase_strength t strength;
-            s.player <- Player t; 
-            raise SuccessExit
-        else () end
-      | _ -> ()
-    done);
-    raise (UnknownWeapon weapon_name)
->>>>>>> f42aaddde3b3785492a106ba9fa6b58667a2e7ad
-  with SuccessExit ->
-    ()
+               && Player.location t = Maps.Weapon.get_loc w)
+           then 
+             weapon_array.(i) <- Null;
+           s.weapon_inventory <- Array.append [|w|] s.weapon_inventory;
+           let health = Maps.Weapon.get_strength w in
+           let () = Player.increase_strength t strength;
+             s.player <- Player t; 
+             raise SuccessExit
+else () end
+| _ -> ()
+done);
+raise (UnknownWeapon weapon_name)
+with SuccessExit ->
+()
