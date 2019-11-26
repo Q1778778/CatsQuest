@@ -43,7 +43,6 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-
   (** Raises: [Illegal] if the move results in out of bounds from the map*)
   val move_up : t -> Maps.t -> unit
 
