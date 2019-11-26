@@ -72,6 +72,9 @@ module type P = sig
        experience value for that level alone, and [Illegal] otherwise.*)
   val advance_level : t -> unit 
 
+  (** [max_strength] is the maximum possible strength of a player. *)
+  val max_strength : int
+
   (** [max_health] is the maximum possible health of a player. *)
   val max_health : int
 
@@ -84,18 +87,29 @@ module type P = sig
     strength:int -> 
     unit
 
+  (**[get_skill_by_skill_name p n] returns skill [s] with 
+     the name [n] of player [p]. Raises [UnknownSkill] if the player [p] 
+     does not have the skill named [n]. *)
   val get_skill_by_skill_name: t -> string -> skill
 
+  (**[extract_skill_strength_single_skill s] is the strength amount of the 
+     skill [s]. *)
   val extract_skill_strength_single_skill: skill -> int
 
+  (**[extract_skill_description_single_skill s] is the description of the 
+     skill [s]  *)
   val extract_skill_description_single_skill: skill -> string
 
+  (**[skills_list p] is [p.skills], the skills that the player [p] posesses. *)
   val skills_list: t-> skill list
 
+  (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill->string
 
+  (**[increase_health p h] increases player [p]'s health by [h].*)
   val increase_health: t -> int -> unit
 
+  (**[increase_strength p s] increases player [p]'s strength by [s].*)
   val increase_strength: t -> int -> unit
 end 
 
@@ -108,6 +122,7 @@ module Player : P = struct
     description: string;
     strength: int;
   }
+
   type t = {
     mutable location : int * int;
     mutable strength : int;
