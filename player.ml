@@ -87,8 +87,9 @@ module type P = sig
     unit
 
   (**[get_skill_by_skill_name p n] returns skill [s] with 
-     the name [n] of player [p]. Raises [UnknownSkill] if the player [p] 
-     does not have the skill named [n]. *)
+     the name [n] of player [p]. 
+     Raises [UnknownSkill ("skill name " ^ [n] ^ "does not exist")] 
+     if the player [p] does not have the skill named [n]. *)
   val get_skill_by_skill_name: t -> string -> skill
 
   (**[extract_skill_strength_single_skill s] is the strength amount of the 
