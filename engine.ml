@@ -1,6 +1,5 @@
 open Enemy
 open Player
-open Map
 open Maps
 open Yojson.Basic.Util
 
@@ -17,16 +16,11 @@ type player =
   | Died
 
 type food_item = 
-  | Food of Maps.Food.food
+  | Food of Foods.food.food
   | Null (*once a weapon or food has been taken, this weapon becomes null *)
 
 type weapon_item =
-  | Weapon of Maps.Weapon.weapon
-  | Null
-
-type item = 
-  | Weapon of Maps.Weapon.weapon
-  | Food of Maps.Food.food
+  | Weapon of  Weapons.weapon.weapon
   | Null
 
 type map_param = Maps.MapParam.map_param
@@ -51,9 +45,14 @@ type state = {
   (**[current_map_in_all_maps] counts which map the player is currently in.
      i.e. the index in [all_maps]*)
   mutable current_map_in_all_maps: int; 
-  mutable all_items: item array;
+  mutable all_foods: food_item array;
+  mutable all_weapons: weapon_item array;
   mutable enemies: enemy array;
 }
+
+let count = 
+  let counter = ref 0 in fun () -> incr counter; 
+    !counter in count ()
 
 (**[probabilty s] produces a bool based on probabilty [s]
 
@@ -112,7 +111,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
     else browse_dir_enemy handler lst
 
 
-let single_enemy_builder j id: enemy =
+let single_enemy_builder j ~id ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
@@ -120,7 +119,7 @@ let single_enemy_builder j id: enemy =
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
     (* random init pos *)
-    let pos = ((Random.int 5)+1, (Random.int 5)+1) in
+    let pos = ((Random.int col)+1, (Random.int row)+1) in
     let hp = j |> member "HP" |> to_int in
     let max_hp = hp in
     let lst = j |> member "skills" |> to_list in
@@ -135,23 +134,20 @@ let single_enemy_builder j id: enemy =
       ~hp ~id ~descr ~max_hp ~skills
   )
 
-let browse_one_enemy_json j id: enemy = 
+let browse_one_enemy_json j ~id ~col ~row = 
   if (contains j "witch" || contains j "minion" || contains j "goblin")
-  then single_enemy_builder (Yojson.Basic.from_file j) id
+  then single_enemy_builder (Yojson.Basic.from_file j) ~id ~col ~row
   else failwith "something wrong with browse_dir_enemy. Check it"
 
 
 (**[main_engine_enemy ()] read all enemy json files in current directory*)
-let main_engine_enemy : unit -> enemy list =
-  fun () -> (
-      try
-        let incr x = x := !x + 1 in
-        let count = 
-          let counter = ref 0 in fun () -> incr counter; !counter in
-        List.map  (fun x -> browse_one_enemy_json x (count ()))
-          ([] |> browse_dir_enemy (Unix.opendir ".")) 
-      with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
-        raise (Failure "NONE of 'enemy' json exists"))
+let main_engine_enemy ~col ~row : enemy list =
+  try
+    let id = count () in 
+    List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
+      ([] |> browse_dir_enemy (Unix.opendir ".") ) 
+  with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
+    raise (Failure "NONE of 'enemy' json exists")
 
 let main_engine_player: unit -> player =
   let rec read_map handler =
@@ -171,36 +167,32 @@ let main_engine_player: unit -> player =
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 
-let food_array_builder jsons: item array = 
-  jsons |> List.map (fun j -> let id = 
-                                let count = 
-                                  let counter = ref 0 in fun () -> incr counter; 
-                                    !counter in count () in
+
+let food_array_builder jsons ~cols ~rows: item array = 
+  jsons |> List.map (fun j -> let id = count () in
                       let health = j |> member "health" |> to_int in
                       let strength = j |> member "strength" |> to_int in
                       let name = j |> member "name" |> to_string in
                       let description = j |> member "description" |> to_string in
-                      let location = j |> member "location" in
-                      let row = location |> member "row"|> to_int in
-                      let col = location |> member "col" |> to_int in
+                      let row = 1 + Random.int rows in
+                      let col = 1 + Random.int cols in
                       Food (Maps.Food.constructor ~col ~row ~health 
                               ~description ~name ~id ~strength))
   |> Array.of_list
 
-let weapon_array_builder jsons: item array = 
-  jsons |> List.map (fun j -> let id = 
-                                let count = 
-                                  let counter = ref 0 in fun () -> incr counter; 
-                                    !counter in count () in
+
+
+let weapon_array_builder jsons ~cols ~rows : item array = 
+  jsons |> List.map (fun j -> let id = count () in
                       let name = j |> member "name" |> to_string in
                       let description = j |> member "description" |> to_string in
-                      let location = j |> member "location" in
                       let strength = j |> member "strength"|> to_int in
-                      let row = location |> member "row"|> to_int in
-                      let col = location |> member "col" |> to_int in
+                      let row = 1 + Random.int rows in
+                      let col = 1 + Random.int cols in
                       Weapon (Maps.Weapon.constructor ~strength ~col ~row 
                                 ~description ~name ~id))
   |> Array.of_list
+
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"]
@@ -209,6 +201,7 @@ let parse_dims s =
   let rows = List.nth (String.split_on_char ',' s) 0 in 
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   (cols |> int_of_string, rows |> int_of_string)
+
 
 let map_param_array_builder jsons : ((int * int) * map_param) array = 
   jsons |> List.map ( fun j ->
@@ -221,24 +214,37 @@ let map_param_array_builder jsons : ((int * int) * map_param) array =
   |> Array.of_list
 
 
-let main_engine_item : unit -> item array = 
-  let rec read_item handler =
-    match Unix.readdir handler with
-    | exception _ -> Unix.closedir handler; 
-      failwith "map.json is not in current directory"
-    | s -> if s = "map.json"
-      then 
-        let json = s |> Yojson.Basic.from_file in
-        let weapon_array = json |> member "weapons" 
-                           |> to_list |> weapon_array_builder in
-        let food_array = json |> member "foods" 
-                         |> to_list 
-                         |> food_array_builder in
-        (Array.append weapon_array food_array)
-      else read_item handler in
-  fun () -> (read_item (Unix.opendir "."))
 
-let main_engine_map : unit -> current_map = 
+let main_engine_food ~(col: int) ~(row:int)  = 
+  let rec read_food handler = 
+    match Unix.readdir with 
+    | exception _ -> Unix.closedir handler; 
+      failwith "foods.json is not in current directory"
+    | s ->  let pos = String.length json in 
+      if String.length json >= (String.length "foods.json")
+      && (String.sub json (pos-5) 5) = ".json" 
+      && contains json "foods"
+      then 
+        json |> Yojson.Basic.from_file 
+        |> to_list 
+        |> food_array_builder ~col ~row
+      else read_food handler in
+  fun () -> (read_food (Unix.opendir "."))
+
+
+let main_engine_weapon ~(col: int) ~(row: int) =
+  let pos = String.length json in 
+  if String.length json >= (String.length "weapons.json") 
+  && (String.sub json (pos-5) 5) = ".json" 
+  && contains json "weapons"
+  then 
+    json |> Yojson.Basic.from_file 
+    |> to_list 
+    |> weapon_array_builder ~col ~row
+  else raise Json_Not_found
+
+
+let main_engine_map_param_param : unit -> current_map * (int * int) = 
   let rec read_map handler = 
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler;
@@ -256,25 +262,25 @@ let main_engine_map : unit -> current_map =
         let size = (cols, rows) in
         let picture_lists = json |> member "picture" |> to_list in
         let all_map_param = map_param_array_builder picture_lists in 
-        Maps.map_constructor ~size ~name ~all_map_param
+        (Maps.map_constructor ~size ~name ~all_map_param), 
+        (col, row)
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
 
-
 let init (): state =
-  let items = main_engine_item () in
-  let map = main_engine_map () in {
-    all_items = items;
-    food_inventory = [||];
+  let map, (cols, rows) = main_engine_map_param () in {
+    all_foods = main_engine_food ~cols ~rows;
+    all_weapons = main_engine_weapon ~cols ~rows;
+    food_inventory = [|Null; Null; Null|];
     weapon_inventory = [|Null; Null; Null|];
     player = main_engine_player ();
     current_map = map;
     all_maps = [|map|];
     current_map_in_all_maps = 0;
-    enemies = () |> main_engine_enemy |> Array.of_list;
+    enemies = main_engine_enemy ~col ~row |> Array.of_list;
   }
 
-let game_state= init ()
+let game_state ~col ~row = init ~col ~row
 
 let change_item item (s:state) = s.all_items <- item
 
