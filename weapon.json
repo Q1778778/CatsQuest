@@ -1,0 +1,12 @@
+[
+  {
+    "name": "dagger",
+    "description": "Pop like Mick Jagger, pull up the dagger!",
+    "strength": 10
+  },
+  {
+    "name": "jade sword",
+    "description": "In order to arcade, you need a sword green like jade!",
+    "strength": 20
+  }
+]
