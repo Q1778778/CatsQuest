@@ -1,6 +1,7 @@
 module type F = sig 
   (** The abstract type of values representing foods. *)
   type food 
+
   (** Constructor of a food *)
   val constructor : 
     row:int ->
@@ -11,12 +12,17 @@ module type F = sig
     id:int -> 
     strength:int -> 
     food
+
+  (**[get_name f] is the name of the food [f]  *)
   val get_name : food -> string
 
+  (**[get_strength f] is the strength of the food [f]  *)
   val get_strength : food -> int
 
+  (**[get_health f] is the health of the food [f]  *)
   val get_health : food -> int
 
+  (**[get_loc f] is the location of the food [f]  *)
   val get_loc : food -> int * int
 end
 
