@@ -1,6 +1,7 @@
 module type W = sig 
   (** The abstract type of values representing weapons. *)
   type weapon
+
   (** Constructor of a weapon *)
   val constructor : 
     row:int -> 
@@ -11,10 +12,13 @@ module type W = sig
     strength: int->
     weapon
 
+  (**[get_name w] is the name of the weapon [w]  *)
   val get_name : weapon -> string
 
+  (**[get_strength w] is the strength of the weapon [w]  *)
   val get_strength : weapon -> int
 
+  (**[get_loc w] is the location of the weapon [w]  *)
   val get_loc : weapon -> int * int
 
 end
