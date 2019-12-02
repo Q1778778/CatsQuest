@@ -1,5 +1,5 @@
 build:
-	ocamlbuild -use-ocamlfind color_convert.byte enemy.byte maps.byte  engine.byte player.byte map_builder.byte -tag thread gui.byte 
+	ocamlbuild -use-ocamlfind color_convert.byte enemy.byte  foods.byte weapons.byte maps.byte  engine.byte player.byte map_builder.byte -tag thread gui.byte 
 
 clean:
 	ocamlbuild -clean
