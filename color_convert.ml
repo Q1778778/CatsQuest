@@ -18,7 +18,8 @@ type eimage={
   image_data: Graphics.color array array;
 }
 
-(**[list_color lll acc i] returns the 2d RGB array given by the   *)
+(**[list_color l acc i] recursively converts each element of [l] into 
+   an rgb matrix starting with an accumulator [acc] and index [i]. *)
 let rec list_color (lst:int list list list) acc int2=
   match lst with 
   |h::t->
@@ -39,6 +40,8 @@ let rec list_color (lst:int list list list) acc int2=
     (list_color t acc (int2+1))
   |[]->acc
 
+(**[array_color l] converts the image json data [l] into an rgb matrix [m], 
+   and returns [m].  *)
 let array_color lst=
   let c_size=List.length lst in
   let array= Array.make c_size [|16777215;|] in
