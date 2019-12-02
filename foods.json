@@ -1,0 +1,14 @@
+[
+  {
+    "name": "bread",
+    "description": "Bread is the physiological food.",
+    "strength": 10,
+    "health": 10
+  },
+  {
+    "name": "Coffee",
+    "description": "You are tired. You need some energy to stay awake.",
+    "strength": 30,
+    "health": 20
+  }
+]
