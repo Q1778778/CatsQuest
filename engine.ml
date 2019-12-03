@@ -37,7 +37,7 @@ type state = {
   mutable player: player;
   mutable food_inventory: food_item array;
   mutable weapon_inventory: weapon_item array;
-  
+
   (* we can have several maps linked in one game, and [all_maps] store
      all maps in one game. *)
 
@@ -65,13 +65,13 @@ let probabilty s =
 
 (**[random_choice lst] is a random object chosen from list [lst]
 
-  Require:
-  [lst] cannot be empty*)
+   Require:
+   [lst] cannot be empty*)
 let random_choice list = 
   List.nth list (Random.int (List.length list))
 
 (**[random_list_with_fixed_length lst len] is a randomly chosen list
- with length as [len] and its elements from [lst]*)
+   with length as [len] and its elements from [lst]*)
 let random_list_with_fixed_length list len =
   List.map (fun _ -> random_choice list) 
     ((Array.make len 0) |> Array.to_list)
@@ -158,7 +158,7 @@ let main_engine_enemy ~col ~row ~number =
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
-       random_list_with_fixed_length all_enemy_models number in
+      random_list_with_fixed_length all_enemy_models number in
     let id = count () in 
     List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
       expected_enemy_models
@@ -291,7 +291,7 @@ let main_engine_map_param : unit -> current_map * (int * int) =
 let init (): state =
   let map, (col, row) = main_engine_map_param () in
   let number = 5 (*this number can be either artificially set or 
-    stored in json.*) in {
+                   stored in json.*) in {
     all_foods = main_engine_food ~col ~row ();
     all_weapons = main_engine_weapon ~col ~row ();
     food_inventory = [|Null; Null; Null|];
@@ -393,35 +393,56 @@ let eat_one_food s food_name =
 
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
-  let _ = for i = 0 to (Array.length s.weapon_inventory) do
+  let _ = 
+    for i = 0 to (Array.length s.weapon_inventory) do
       match s.weapon_inventory.(i) with
       | Null -> ()
       | Weapon w -> 
         array.(0) <- (Weapons.Weapon.get_name w) :: (array.(0)) 
     done in array.(0)
 
+(**[match_weapons s weapon_array i] is a helper function that, if  
+   the [weapon_array.(i)] and [s.player] is a valid and defined weapon 
+   and player, [s] includes the weapon [weapon_array.(i)] in its inventory 
+   and increases the player's health. *)
+let equip_weapon_helper s weapon_array i = 
+
+  let for_each_weapon w t j = 
+    if (s.weapon_inventory.(j) = Null) 
+    then
+      ( s.weapon_inventory.(j) <- Weapon w;
+        let health = Weapons.Weapon.get_strength w in
+        let () = Player.increase_strength t health in
+        s.player <- Player t; 
+        raise SuccessExit )
+    else () in 
+
+  let add_weapon w t = 
+    for j = 0 to (Array.length s.weapon_inventory) - 1 do 
+      for_each_weapon w t j 
+    done in 
+
+  let execute_valid_weapon_player w t = 
+    (if (List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
+           (get_weapon_name_list_of_player_inventory s)
+         && Player.location t = Weapons.Weapon.get_loc w)
+     then 
+       (weapon_array.(i) <- Null;
+        add_weapon w t 
+       )
+     else ()) in 
+
+  match weapon_array.(i), s.player with
+  | Weapon w, Player t -> 
+    execute_valid_weapon_player w t
+  | _ -> () 
+
+(**[equip_one_weapon s weapon_name] increases the health of the  *)
 let equip_one_weapon s weapon_name = 
   try
     (let weapon_array = s.all_weapons in
      for i = 0 to (Array.length weapon_array) - 1 do 
-       match weapon_array.(i), s.player with
-       | Weapon w, Player t -> 
-         (if (List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
-                (get_weapon_name_list_of_player_inventory s)
-              && Player.location t = Weapons.Weapon.get_loc w)
-          then 
-            (weapon_array.(i) <- Null;
-             for j = 0 to (Array.length s.weapon_inventory) - 1 do 
-               if (s.weapon_inventory.(j) = Null) 
-               then
-                 ( s.weapon_inventory.(j) <- Weapon w;
-                   let health = Weapons.Weapon.get_strength w in
-                   let () = Player.increase_strength t health in
-                   s.player <- Player t; 
-                   raise SuccessExit )
-               else () done)
-          else ())
-       | _ -> ()
+       equip_weapon_helper s weapon_array i  
      done);
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
