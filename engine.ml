@@ -367,8 +367,14 @@ let delete_one_enemy_from_state s enemy =
     else ()
   done
 
-(** raises: UnknownFood if [food_name] 
-    is not a valid food name in player's inventory*)
+(**[eat_one_food s food_name] makes the following updates: 
+   1. [food_name] is removed from the the player's food array in [s].
+   2. the player in [s] increases health and strength by its corresponding food
+   health and strength. 
+   Returns [()] if the following updates are successful (i.e. when [food_name]
+   is a valid food name in the player's inventory.)
+   Raises: [UnknownFood food_name] if [food_name] is not a valid food name in 
+    player's inventory*)
 let eat_one_food s food_name = 
 
   let handle_valid_food_player food t food_array i = 
@@ -447,7 +453,8 @@ let equip_weapon_helper s weapon_array i =
   | _ -> () 
 
 (**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
-   possible weapon in [s]. 
+   possible weapon in [s], and returns [()] if the [weapon_name] is known in 
+   [s]. 
    Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
    exist in [s].  *)
 let equip_one_weapon s weapon_name = 
