@@ -437,7 +437,10 @@ let equip_weapon_helper s weapon_array i =
     execute_valid_weapon_player w t
   | _ -> () 
 
-(**[equip_one_weapon s weapon_name] increases the health of the  *)
+(**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
+   possible weapon in [s]. 
+   Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
+   exist in [s].  *)
 let equip_one_weapon s weapon_name = 
   try
     (let weapon_array = s.all_weapons in
