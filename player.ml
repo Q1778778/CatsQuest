@@ -25,6 +25,9 @@ module type P = sig
   (** The exception type of an unknown skill.  *)
   exception Unknownskill of string
 
+  (**[map p] is the current map name of which player is currently in*)
+  val map : t -> string
+
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
@@ -111,6 +114,9 @@ module type P = sig
 
   (**[increase_strength p s] increases player [p]'s strength by [s].*)
   val increase_strength: t -> int -> unit
+
+  (**[change_map p map] updates the map name of player's currently in.*)
+  val change_map: t -> string -> unit
 end 
 
 module Player : P = struct
@@ -130,6 +136,7 @@ module Player : P = struct
     mutable level : int;
     mutable experience : int;
     mutable skills: skill list;
+    mutable map: string;
   }
 
   exception Unknownskill of string
@@ -143,7 +150,7 @@ module Player : P = struct
 
   let constructor 
       ~row ~col ?strength:(strength=10) ?health:(health=100) 
-      ?level:(level=1) ?experience:(experience=0) ()= 
+      ?level:(level=1) ?experience:(experience=0) () = 
     {
       location = (col,row);
       strength = strength;
@@ -155,8 +162,12 @@ module Player : P = struct
           description = "Basic attacks.
         Player uses fists to challenge the evils!";
           strength = strength;
-        }]
+        }];
+      map = "main" (* The initial map should be the main map 
+                        so I hard-coded this *)
     }
+
+  let map p = p.map
 
   let location p = p.location
 
@@ -210,19 +221,16 @@ module Player : P = struct
   let move_down p m = move p m 0 (-1)
 
   let reduce_health p h = 
-    assert(h>=0);
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
     in p.health <- new_health
 
   let reduce_strength p s = 
-    assert(s>=0);
     let new_strength = 
       if p.strength - s >= 0 then p.strength - s else 0 
     in p.strength <- new_strength
 
   let increase_experience p e = 
-    assert (e>=0);
     p.experience <- p.experience + e
 
   let advance_level p =  begin
@@ -261,4 +269,6 @@ module Player : P = struct
   let increase_health t hp = 
     t.health <- t.health + hp
 
+  let change_map t map = 
+    t.map <- map
 end

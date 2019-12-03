@@ -146,7 +146,6 @@ module Enemy: EnemySig = struct
 
   let reduce_hp s d = s.hp <- (s.hp - d)
 
-  (* new methods *)
   let get_all_skills_name s = 
     List.map (fun x -> x.skill_name) s.skills
 
