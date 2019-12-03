@@ -370,26 +370,35 @@ let delete_one_enemy_from_state s enemy =
 (** raises: UnknownFood if [food_name] 
     is not a valid food name in player's inventory*)
 let eat_one_food s food_name = 
-  try
-    (let food_array = s.food_inventory in
-     for i = 0 to (Array.length food_array) - 1 do 
-       match food_array.(i), s.player with
-       | Food food, Player t -> 
-         if Foods.Food.get_name food = food_name
-         then 
-           (let health = Foods.Food.get_health food
-            and strength = Foods.Food.get_strength food in
-            let () = Player.increase_health t health 
-            and () = Player.increase_strength t strength in
-            food_array.(i) <- Null;
-            s.player <- Player t; 
-            raise SuccessExit)
-         else ()
-       | _ -> ()
-     done);
-    raise (UnknownFood food_name)
-  with SuccessExit ->
-    ()
+
+  let handle_valid_food_player food t food_array i = 
+    if Foods.Food.get_name food = food_name
+    then 
+      (let health = Foods.Food.get_health food
+       and strength = Foods.Food.get_strength food in
+       let () = Player.increase_health t health 
+       and () = Player.increase_strength t strength in
+       food_array.(i) <- Null;
+       s.player <- Player t; 
+       raise SuccessExit)
+    else ();
+
+    let for_each_food food_array i = 
+      match food_array.(i), s.player with
+      | Food food, Player t -> handle_valid_food_player food t food_array i
+      | _ -> () in 
+
+    let eat_valid_food = 
+      let food_array = s.food_inventory in
+      for i = 0 to (Array.length food_array) - 1 do 
+        for_each_food food_array i
+      done in 
+
+    try
+      eat_valid_food;
+      raise (UnknownFood food_name)
+    with SuccessExit ->
+      ()
 
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
