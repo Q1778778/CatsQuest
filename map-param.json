@@ -1,5 +1,5 @@
 {
-  "name": "first",
+  "name": "main",
   "size": "5,5",
   "picture": [
     {
@@ -10,7 +10,7 @@
     {
       "name": "field",
       "loc": "1,2",
-      "link": ""
+      "link": "branched2"
     },
     {
       "name": "field",
@@ -65,7 +65,7 @@
     {
       "name": "mountain",
       "loc": "3,3",
-      "link": ""
+      "link": "branched1"
     },
     {
       "name": "lake",

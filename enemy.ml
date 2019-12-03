@@ -18,6 +18,9 @@ module type EnemySig = sig
   (**[get_name e] returns the name of the enemy [e]. *)
   val get_name: t -> string
 
+  (**[get_map e] returns the map name of which this enemy [e] is in*)
+  val get_map: t -> string
+
   (**[get_description e] returns the description of the enemy [e]. *)
   val get_description: t -> string
 
@@ -89,6 +92,7 @@ module type EnemySig = sig
     descr:string -> 
     max_hp:int->
     skills: skills list ->
+    map: string ->
     t
 end
 
@@ -108,15 +112,17 @@ module Enemy: EnemySig = struct
     id: string;
     name: string;
     descr: string;
+    map: string;
+    max_hp: int;
     mutable exp: int;
     mutable level: int;
     (*dynamic fields *)
     mutable pos: int * int;
     mutable hp: int;
-    max_hp: int;
     mutable skills: skills list;
   }
 
+  (* getters are defined here *)
   let get_id s = s.id
 
   let get_name s = s.name 
@@ -131,11 +137,14 @@ module Enemy: EnemySig = struct
 
   let get_pos s = s.pos
 
+  let get_max_hp s=s.max_hp
+
+  let get_map s = s.map
+
+  (* setters are defined here *)
   let set_move s d = s.pos <- d
 
   let reduce_hp s d = s.hp <- (s.hp - d)
-
-  let get_max_hp s=s.max_hp
 
   (* new methods *)
   let get_all_skills_name s = 
@@ -158,7 +167,7 @@ module Enemy: EnemySig = struct
       skill_probability = skill_probability;
     }
 
-  let constructor ~pos ~level ~exp ~hp ~id ~name  ~descr ~max_hp ~skills =
+  let constructor ~pos ~level ~exp ~hp ~id ~name  ~descr ~max_hp ~skills ~map =
     {
       id = id;
       name = name;
@@ -168,6 +177,7 @@ module Enemy: EnemySig = struct
       pos = pos;
       hp = hp;
       max_hp = max_hp;
-      skills = skills
+      skills = skills;
+      map = map;
     }
 end

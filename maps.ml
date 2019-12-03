@@ -9,9 +9,16 @@ module type MP = sig
 
   (** Constructor of a map param *)
   val single_map_element_constructor : 
-    name:string -> 
+    name: string -> 
     link: string ->
     map_param
+
+  val get_name: map_param -> string
+
+  val get_link: map_param -> string
+
+  (* the name and link of a map param should be IMMUTABLE. 
+  There is NO setter method for this module *)
 end
 
 
@@ -22,10 +29,16 @@ module MapParam : MP = struct
                     that current map element is linked to. If there is NO such
                     linked map, link will be empty string ""*)
   }
+
   let single_map_element_constructor ~name ~link = {
     link = link;
     name = name;
   }
+
+  let get_link param = param.link
+
+  let get_name param = param.name
+
 end
 
 type t = {
