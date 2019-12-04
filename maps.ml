@@ -18,7 +18,7 @@ module type MP = sig
   val get_link: map_param -> string
 
   (* the name and link of a map param should be IMMUTABLE. 
-  There is NO setter method for this module *)
+     There is NO setter method for this module *)
 end
 
 
@@ -66,8 +66,8 @@ let get_one_map_param_by_loc t loc =
   if bound_check t (fst loc) (snd loc)
   then 
     t.map_params 
-      |> List.find (fun single, _ -> single = loc)
-      |> snd
+    |> List.find (fun (single,_) -> single = loc)
+    |> snd
   else failwith "the input loc exceeds the bound of this map"
 
 let get_one_link_by_loc t loc =

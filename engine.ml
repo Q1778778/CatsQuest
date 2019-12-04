@@ -55,7 +55,7 @@ let branch_map_store = ref []
 
 (*look up the ref right above *)
 let update_branch_map_store name loc =
-  branch_map_store := ((name, loc)::(!branch_map_store))
+  branch_map_store := ((loc, name)::(!branch_map_store))
 
 let count = 
   let counter = ref 0 in fun () -> (incr counter; !counter)
@@ -235,12 +235,12 @@ let map_param_array_builder jsons : ((int * int) * map_param) list =
       let loc = j |> member "loc" |> to_string in
       let link = j |> member "link" |> to_string in 
       (*updating branched loc*)
-      let _ = 
-        if link <> "" && name = "main" (* i don't think the later check is necessary *)
-        then update_branch_map_store link loc 
-        else () in
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in 
+      let _ = 
+        if link <> "" && name = "main" (* i don't think the later check is necessary *)
+        then update_branch_map_store link (col, row) 
+        else () in
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 
@@ -248,7 +248,7 @@ let main_engine_food ~(col: int) ~(row:int)  =
   let rec read_food handler = 
     match Unix.readdir handler  with 
     | exception _ -> Unix.closedir handler; 
-      failwith "foods.json is not in current directory"
+      failwith "foods.json is not in current directory"
     | json ->  let pos = String.length json in 
       if String.length json >= (String.length "foods.json")
       && (String.sub json (pos-5) 5) = ".json" 
@@ -283,7 +283,7 @@ let build_one_map s = (*s is the map-param * .json*)
   let size = json |> member "size" |> to_string |> parse_dims in 
   let picture_lists = json |> member "picture" |> to_list in
   let all_map_param = map_param_array_builder picture_lists in
-  (Maps.map_constructor ~size ~name ~all_map_param), (cols, rows)
+  (Maps.map_constructor ~size ~name ~all_map_param), size
 
 let main_engine_map_param : unit -> (current_map * (int * int)) list = 
   let rec read_map handler list = 
@@ -298,7 +298,7 @@ let main_engine_map_param : unit -> (current_map * (int * int)) list =
       then 
         read_map handler ((build_one_map s)::list)
       else read_map handler list in 
-  fun () -> (read_map (Unix.opendir "."))
+  fun () -> (read_map (Unix.opendir ".") [])
 
 (**[find_one_map_by_name lst name] is the map with its name as [name] from
    a list of map [lst]
@@ -319,6 +319,7 @@ let init (): state =
     current_map_in_all_maps = 0; (* this shouldn't be changed *)
     current_map = find_one_map_by_name map_list "main";
 
+    player_old_loc = (0,0);
     branched_map_info = !branch_map_store;
     all_enemies_in_current_map = [||];
     all_foods_in_current_map = [||]; (* change it later *)
@@ -488,22 +489,21 @@ let check_current_linked_map s =
   if get_current_map_name s <> "main" then false, ""
   else 
     try
-      let loc = p |> Player.Player.location in
+      let loc = s |> get_player |> Player.location in
       true, (List.assoc loc s.branched_map_info)
     with Not_found ->
       false, ""
 
 
 let transfer_player_to_branch_map s = 
-  let status, name =  get_one_link_by_loc s.current_map loc in
+  let status, name =  check_current_linked_map s in
   if status = false then ()
   else 
     let map = find_one_map_by_name s.all_maps name in
-    s.player_old_loc <- s |> get_player |> Player.Player.location;
+    s.player_old_loc <- s |> get_player |> Player.location;
     s.current_map <- map;
     s.all_enemies_in_current_map <- [||]; (*TODO *)
     s.all_foods_in_current_map <- [||];
     s.all_weapons_in_current_map <- [||];
     Player.switch_loc (get_player s) (1,1)
-    
 
