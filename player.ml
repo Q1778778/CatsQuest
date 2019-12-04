@@ -1,5 +1,3 @@
-open Yojson.Basic.Util
-
 module type P = sig
 
   (** The abstract type of values representing a player's skill. *)
@@ -117,6 +115,8 @@ module type P = sig
 
   (**[change_map p map] updates the map name of player's currently in.*)
   val change_map: t -> string -> unit
+
+  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!!*)
 end 
 
 module Player : P = struct
@@ -255,12 +255,12 @@ module Player : P = struct
     match List.filter (fun x -> x.name = name ) t.skills with
     | [] -> raise (Unknownskill 
                      (Printf.sprintf "skill name %s does not exist" name))
-    | h::d -> h
+    | h::_ -> h
 
-  let skills_list t=
+  let skills_list t =
     t.skills
 
-  let skill_name skill=
+  let skill_name skill =
     skill.name
 
   let increase_strength t st =
@@ -271,4 +271,7 @@ module Player : P = struct
 
   let change_map t map = 
     t.map <- map
+  
+  let switch_loc t loc =
+    t.location <- loc
 end

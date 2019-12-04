@@ -5,7 +5,8 @@ clean:
 	ocamlbuild -clean
 	rm -rf doc.public doc.private report search_src.zip bisect*.out
 
-
 play:
 	ocamlbuild -use-ocamlfind gui.byte && ./gui.byte
 
+test: 
+	ocamlbuild -use-ocamlfind -tag 'debug' test.byte && ./test.byte
