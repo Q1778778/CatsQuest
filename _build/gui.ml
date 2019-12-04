@@ -231,8 +231,7 @@ let rec get_one_enemy name lst=
 let skill_damage name=
   match Engine.get_player(Engine.game_state) with
   |Player s->
-    name|> Player.get_skill_by_skill_name s
-    |> Player.extract_skill_strength_single_skill
+    name|> Player.get_skill_by_skill_name s|> Player.extract_skill_strength_single_skill
   |Died->failwith "died people don't fight"
 
 
