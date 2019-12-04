@@ -3,19 +3,37 @@ open Player
 open Enemy
 open Engine
 
+(**[get_player s] returns [t] if the player at state [s] yields [Player t].
+   Otherwise, fails with "died" *)
 let get_player s = 
   match s.player with
   | Player t -> t
-  | Died -> failwith ""
+  | Died -> failwith "died"
 
+(**[get_pos s] is the player's location at state [s]  *)
 let get_pos s = s |> get_player |> Player.location 
+
+(**[get_health s] is the player's health at state [s]  *)
 let get_health s = s |> get_player |> Player.health
+
+(**[get_strength s] is the player's strength at state [s]  *)
 let get_strength s = s |> get_player |> Player.strength
+
+(**[get_experience s] is the player's experience at state [s]  *)
 let get_experience s = s |> get_player |> Player.experience
+
+(**[get_level s] is the player's level at state [s]  *)
 let get_level s = s |> get_player |> Player.level
+
+(**[get_player_map s] is the player's map at state [s]  *)
 let get_player_map s = s |> get_player |> Player.map
+
+(**[map_cols s] is the # of cols of the player's map at state [s]  *)
 let map_cols s = s.current_map.size |> fst
+
+(**[map_rows s] is the # of rows of the player's map at state [s]  *)
 let map_rows s = s.current_map.size |> snd
+
 
 (** Player state update tests *)
 
@@ -126,6 +144,8 @@ let make_exc_test n f e =
   let func = fun () -> f in 
   n >:: (fun _ -> assert_raises e func)
 
+
+(** Test suite for player states  *)
 let player_state_tests = [
   make_test "init" init_pos (1,1);
   make_test "R" state1_loc (2,1);
@@ -160,6 +180,7 @@ let player_state_tests = [
   make_test "died" player_f Died;
 ]
 
+(** Test suite for enemy states  *)
 let enemy_state_tests = [
 
 ]
