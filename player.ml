@@ -255,10 +255,10 @@ module Player : P = struct
                      (Printf.sprintf "skill name %s does not exist" name))
     | h::_ -> h
 
-  let skills_list t=
+  let skills_list t =
     t.skills
 
-  let skill_name skill=
+  let skill_name skill =
     skill.name
 
   let increase_strength t st =

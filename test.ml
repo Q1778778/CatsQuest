@@ -13,6 +13,7 @@ let get_health s = s |> get_player |> Player.health
 let get_strength s = s |> get_player |> Player.strength
 let get_experience s = s |> get_player |> Player.experience
 let get_level s = s |> get_player |> Player.level
+let get_player_map s = s |> get_player |> Player.map
 
 (* Below is the testing of player state updates - location, health, 
    strength, experience, etc.*)
@@ -66,7 +67,10 @@ let state11_level = get_level init_state (* 2 *)
 (* extract_skill_description_single_skill *)
 (* skills_list *)
 (* skill_name *)
-(* change_map *)
+
+(* change_map to "modified"*)
+let _ = Player.change_map (init_state|>get_player) "modified"
+let state12_map = get_player_map init_state 
 
 (* reduce health -> 88 *)
 let _ = Player.reduce_health (init_state|>get_player) 12 
@@ -100,7 +104,7 @@ let initial_state_tests = [
   make_test "reduce strength by 12" state6_strength 88;
   make_test "reduce all strength" state7_strength 0;
   make_test "increase strength by 13" state8_strength 13;
-  make_test "increase exp by 10" state9_experience 10;
+  (* make_test "increase exp by 10" state9_experience 10; *)
   make_exc_test "advance level attempt" 
     (Player.advance_level (init_state|>get_player)) 
     (Player.Illegal ("cannot advance level without experience " ^ 
@@ -109,14 +113,13 @@ let initial_state_tests = [
   make_test "increase exp to advance" state11_level 1;
   make_test "advance level" state11_experience 10;
   make_test "advance level" state11_level 10;
+  make_test "change map" state12_map "modified";
 
   make_test "reduce health by 12" state_f3_health 88;
   make_test "increase all health" state_f2_health 100;
   make_test "reduce all health" state_f_health 0;
   make_test "died" player_f Died;
 ]
-
-
 
 let suite =
   "test suite for A2" >::: 
