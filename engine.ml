@@ -39,7 +39,7 @@ type state = {
   mutable player_old_loc: (int * int);
   mutable current_map_in_all_maps: int;
 
-  branched_map_info: ((int * int) * string) list;
+  branched_map_info: ((int * int) * string) list; (* Array doesn't have a find function, so I use List instead *)
   mutable current_map: current_map;
   mutable all_enemies_in_current_map: enemy array;
   mutable all_foods_in_current_map: food_item array;
@@ -461,7 +461,7 @@ let move_player_down s =
     player's inventory*)
 let eat_one_food s food_name = 
   let eat_food food_array i= 
-    match (food_array.(i) : food_item), s.player with
+    match food_array.(i), s.player with
     | Food food, Player t 
       when Foods.Food.get_name food = food_name ->   
       (let health = Foods.Food.get_health food
@@ -477,7 +477,7 @@ let eat_one_food s food_name =
      for i = 0 to (Array.length food_array) - 1 do 
        eat_food food_array i
      done);
-    raise (UnknownFood food_name)
+    raise (UnknownFood food_name) (* @Deprecated *)
   with SuccessExit -> ()
 
 let get_weapon_name_list_of_player_inventory s =
@@ -531,6 +531,9 @@ let equip_one_weapon s weapon_name =
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
     ()
+
+let check_food_or_weapon_on_ground s =
+  1
 
 
 (*map-param related methods *)
