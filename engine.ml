@@ -37,6 +37,7 @@ type state = {
   mutable player: player;
   mutable food_inventory: food_item array;
   mutable weapon_inventory: weapon_item array;
+
   (* we can have several maps linked in one game, and [all_maps] store
      all maps in one game. *)
 
@@ -61,6 +62,19 @@ let probabilty s =
   (* 0 <= x <= 10 *)
   let x = Int.to_float (Random.int 11) in
   x <  (s *. 10.0)
+
+(**[random_choice lst] is a random object chosen from list [lst]
+
+   Require:
+   [lst] cannot be empty*)
+let random_choice list = 
+  List.nth list (Random.int (List.length list))
+
+(**[random_list_with_fixed_length lst len] is a randomly chosen list
+   with length as [len] and its elements from [lst]*)
+let random_list_with_fixed_length list len =
+  List.map (fun _ -> random_choice list) 
+    ((Array.make len 0) |> Array.to_list)
 
 (**[choose_skill_random t] is a (skill name, skill strength) for enemy [t]*)
 let choose_skill_random s =
@@ -109,7 +123,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
     then browse_dir_enemy handler (h::lst) 
     else browse_dir_enemy handler lst
 
-
+(* change it later *)
 let single_enemy_builder j ~id ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
@@ -129,9 +143,9 @@ let single_enemy_builder j ~id ~col ~row =
           let skill_probability = x |> member "probability" |> to_float in
           (Enemy.single_skill_constructor ~skill_name ~skill_strength
              ~skill_probability)) lst in
+    let map = "main" in
     Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills
-  )
+      ~hp ~id ~descr ~max_hp ~skills ~map )
 
 let browse_one_enemy_json j ~id ~col ~row = 
   if (contains j "witch" || contains j "minion" || contains j "goblin")
@@ -139,12 +153,15 @@ let browse_one_enemy_json j ~id ~col ~row =
   else failwith "something wrong with browse_dir_enemy. Check it"
 
 
-(**[main_engine_enemy ()] read all enemy json files in current directory*)
-let main_engine_enemy ~col ~row : enemy list =
-  try
+(**[main_engine_enemy ()] read all enemy json files in current directory*) (* add forbidden *)
+let main_engine_enemy ~col ~row ~number =
+  try 
+    let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
+    let expected_enemy_models =
+      random_list_with_fixed_length all_enemy_models number in
     let id = count () in 
     List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
-      ([] |> browse_dir_enemy (Unix.opendir ".") ) 
+      expected_enemy_models
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
@@ -272,7 +289,9 @@ let main_engine_map_param : unit -> current_map * (int * int) =
   fun () -> (read_map (Unix.opendir "."))
 
 let init (): state =
-  let map, (col, row) = main_engine_map_param () in {
+  let map, (col, row) = main_engine_map_param () in
+  let number = 5 (*this number can be either artificially set or 
+                   stored in json.*) in {
     all_foods = main_engine_food ~col ~row ();
     all_weapons = main_engine_weapon ~col ~row ();
     food_inventory = [|Null; Null; Null|];
@@ -281,7 +300,7 @@ let init (): state =
     current_map = map;
     all_maps = [|map|];
     current_map_in_all_maps = 0;
-    enemies = main_engine_enemy ~col ~row |> Array.of_list;
+    enemies = (main_engine_enemy ~col ~row ~number) |> Array.of_list;
   }
 
 let game_state = init ()
@@ -300,6 +319,9 @@ let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
 
+(*let get_all_weapons_on_current_map s = 
+  let name = s.current_map.name
+*)
 (** [move_player_left] change the current pos (col', row') of player to 
     (col'-1, row'-1)*)
 let move_player_left s = 
@@ -345,61 +367,101 @@ let delete_one_enemy_from_state s enemy =
     else ()
   done
 
-(** raises: UnknownFood if [food_name] 
-    is not a valid food name in player's inventory*)
+(**[eat_one_food s food_name] makes the following updates: 
+   1. [food_name] is removed from the the player's food array in [s].
+   2. the player in [s] increases health and strength by its corresponding food
+   health and strength. 
+   Returns [()] if the following updates are successful (i.e. when [food_name]
+   is a valid food name in the player's inventory.)
+   Raises: [UnknownFood food_name] if [food_name] is not a valid food name in 
+    player's inventory*)
 let eat_one_food s food_name = 
-  try
-    (let food_array = s.food_inventory in
-     for i = 0 to (Array.length food_array) - 1 do 
-       match food_array.(i), s.player with
-       | Food food, Player t -> 
-         if Foods.Food.get_name food = food_name
-         then 
-           (let health = Foods.Food.get_health food
-            and strength = Foods.Food.get_strength food in
-            let () = Player.increase_health t health 
-            and () = Player.increase_strength t strength in
-            food_array.(i) <- Null;
-            s.player <- Player t; 
-            raise SuccessExit)
-         else ()
-       | _ -> ()
-     done);
-    raise (UnknownFood food_name)
-  with SuccessExit ->
-    ()
+
+  let handle_valid_food_player food t food_array i = 
+    if Foods.Food.get_name food = food_name
+    then 
+      (let health = Foods.Food.get_health food
+       and strength = Foods.Food.get_strength food in
+       let () = Player.increase_health t health 
+       and () = Player.increase_strength t strength in
+       food_array.(i) <- Null;
+       s.player <- Player t; 
+       raise SuccessExit)
+    else ();
+
+    let for_each_food food_array i = 
+      match food_array.(i), s.player with
+      | Food food, Player t -> handle_valid_food_player food t food_array i
+      | _ -> () in 
+
+    let eat_valid_food = 
+      let food_array = s.food_inventory in
+      for i = 0 to (Array.length food_array) - 1 do 
+        for_each_food food_array i
+      done in 
+
+    try
+      eat_valid_food;
+      raise (UnknownFood food_name)
+    with SuccessExit ->
+      ()
 
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
-  let _ = for i = 0 to (Array.length s.weapon_inventory) do
+  let _ = 
+    for i = 0 to (Array.length s.weapon_inventory) do
       match s.weapon_inventory.(i) with
       | Null -> ()
       | Weapon w -> 
         array.(0) <- (Weapons.Weapon.get_name w) :: (array.(0)) 
     done in array.(0)
 
+(**[match_weapons s weapon_array i] is a helper function that, if  
+   the [weapon_array.(i)] and [s.player] is a valid and defined weapon 
+   and player, [s] includes the weapon [weapon_array.(i)] in its inventory 
+   and increases the player's health. *)
+let equip_weapon_helper s weapon_array i = 
+
+  let for_each_weapon w t j = 
+    if (s.weapon_inventory.(j) = Null) 
+    then
+      ( s.weapon_inventory.(j) <- Weapon w;
+        let health = Weapons.Weapon.get_strength w in
+        let () = Player.increase_strength t health in
+        s.player <- Player t; 
+        raise SuccessExit )
+    else () in 
+
+  let add_weapon w t = 
+    for j = 0 to (Array.length s.weapon_inventory) - 1 do 
+      for_each_weapon w t j 
+    done in 
+
+  let execute_valid_weapon_player w t = 
+    (if (List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
+           (get_weapon_name_list_of_player_inventory s)
+         && Player.location t = Weapons.Weapon.get_loc w)
+     then 
+       (weapon_array.(i) <- Null;
+        add_weapon w t 
+       )
+     else ()) in 
+
+  match weapon_array.(i), s.player with
+  | Weapon w, Player t -> 
+    execute_valid_weapon_player w t
+  | _ -> () 
+
+(**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
+   possible weapon in [s], and returns [()] if the [weapon_name] is known in 
+   [s]. 
+   Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
+   exist in [s].  *)
 let equip_one_weapon s weapon_name = 
   try
     (let weapon_array = s.all_weapons in
      for i = 0 to (Array.length weapon_array) - 1 do 
-       match weapon_array.(i), s.player with
-       | Weapon w, Player t -> 
-         (if (List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
-                (get_weapon_name_list_of_player_inventory s)
-              && Player.location t = Weapons.Weapon.get_loc w)
-          then 
-            (weapon_array.(i) <- Null;
-             for j = 0 to (Array.length s.weapon_inventory) - 1 do 
-               if (s.weapon_inventory.(j) = Null) 
-               then
-                 ( s.weapon_inventory.(j) <- Weapon w;
-                   let health = Weapons.Weapon.get_strength w in
-                   let () = Player.increase_strength t health in
-                   s.player <- Player t; 
-                   raise SuccessExit )
-               else () done)
-          else ())
-       | _ -> ()
+       equip_weapon_helper s weapon_array i  
      done);
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
