@@ -48,7 +48,8 @@ type state = {
   all_maps: current_map list; (*persistent map *)
   mutable all_foods: food_item array;
   mutable all_weapons: weapon_item array;
-  mutable enemies: enemy array;
+  (* each element represents an array of enemies in ONE map *)
+  mutable all_enemies: enemy array array; 
 }
 
 let branch_map_store = ref []
@@ -157,9 +158,7 @@ let browse_one_enemy_json j ~id ~col ~row =
   then single_enemy_builder (Yojson.Basic.from_file j) ~id ~col ~row
   else failwith "something wrong with browse_dir_enemy. Check it"
 
-
-(**[main_engine_enemy ()] read all enemy json files in current directory*) (* add forbidden *)
-let main_engine_enemy ~col ~row ~number =
+let main_engine_ememy_for_singly_map ~col ~row ~number = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
@@ -170,6 +169,27 @@ let main_engine_enemy ~col ~row ~number =
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
+(**[main_engine_enemy ()] read all enemy json files in current directory*) (* add forbidden *)
+let main_engine_enemy ~loc_list ~number =
+  let round f = truncate (f +. 0.5) in
+  let raw_prob = List.map (fun (x, y) -> x * y) loc_list in
+  let rec total_num num = function
+    | [] -> num
+    | h::d -> total_num (num + h) d in
+  let sum = total_num 0 raw_prob in
+  let temp_random_number = (*the probability oper here is pretty messy *)
+    List.map 
+    (fun s -> 
+      ((float_of_int s) /. (float_of_int sum) *. (float_of_int number)) 
+          |> round) raw_prob in 
+  let final_random_number = 
+    ((List.hd random_number) 
+      + sum - (total_sum 0 random_number))::(List.tl temp_random_number) in
+  (List.map2 
+    (fun number (col, row) -> main_engine_ememy_for_singly_map col row number)
+      final_random_number loc_list) |> Array.of_list
+  
+  
 let main_engine_player: unit -> player =
   let rec read_map handler =
     match Unix.readdir handler with
@@ -311,8 +331,8 @@ let find_one_map_by_name map_list map_name =
 
 let init (): state =
   let map_list, loc_list = () |> main_engine_map_param |> List.split in
-  let col, row = 10, 5 in
-  let number = 5 (*this number can be either artificially set or stored in json.*) in {
+  let number = 7 (*this number can be either artificially set or stored in json.*) in
+  let all_enemies = (main_engine_enemy ~loc_list ~number) |> Array.of_list in {
     player = main_engine_player ();
     food_inventory = [|Null; Null; Null|];
     weapon_inventory = [|Null; Null; Null|]; (*the length of inventory shouldn't be changed *)
@@ -321,7 +341,7 @@ let init (): state =
 
     player_old_loc = (0,0);
     branched_map_info = !branch_map_store;
-    all_enemies_in_current_map = [||];
+    all_enemies_in_current_map = all_enemies.(0);
     all_foods_in_current_map = [||]; (* change it later *)
     all_weapons_in_current_map = [||];
 
@@ -329,7 +349,7 @@ let init (): state =
     all_foods = main_engine_food ~col ~row ();
     all_weapons = main_engine_weapon ~col ~row ();
 
-    enemies = (main_engine_enemy ~col ~row ~number) |> Array.of_list;
+    all_enemies = all_enemies;
   }
 
 let game_state = init ()
