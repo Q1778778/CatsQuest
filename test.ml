@@ -139,9 +139,10 @@ let player_state_tests = [
   make_test "reduce all strength" state9_strength 0;
   make_test "increase strength by 13" state10_strength 13;
   make_exc_test "advance level attempt" 
-    (Player.advance_level (get_player init_state)) 
-    (Player.Illegal ("cannot advance level without experience " ^ 
-                     (init_state |> get_experience |> string_of_int)));
+    (init_state |> get_player |> Player.advance_level)
+    (let exp = init_state |> get_experience |> string_of_int in 
+     let s = "cannot advance level without experience " ^ exp in 
+     Player.Illegal s);
   make_test "increase exp" state11_experience 
     (init_experience + 10);
   make_test "increase exp to advance" state12_experience 
