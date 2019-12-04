@@ -16,11 +16,11 @@ type player =
 
 type food_item = 
   | Food of Foods.Food.food
-  | Null (*once a weapon or food has been taken, this weapon becomes null *)
+  | Eaten (*once a weapon or food has been taken, this weapon becomes null *)
 
 type weapon_item =
   | Weapon of  Weapons.Weapon.weapon
-  | Null
+  | Empty
 
 type map_param = Maps.MapParam.map_param
 
@@ -370,8 +370,8 @@ let init (): state =
   let all_foods = (main_engine_food ~loc_array ~final_number_array)  in
   let all_weapons = (main_engine_weapon ~loc_array ~final_number_array)  in {
     player = main_engine_player ();
-    food_inventory = [|Null; Null; Null|];
-    weapon_inventory = [|Null; Null; Null|]; (*the length of inventory shouldn't be changed *)
+    food_inventory = [|Eaten; Eaten; Eaten|];
+    weapon_inventory = [|Empty; Empty; Empty|]; (*the length of inventory shouldn't be changed *)
     current_map_in_all_maps = 0; (* this shouldn't be changed *)
     current_map = map_array.(0);
 
@@ -484,7 +484,7 @@ let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
   (for i = 0 to (Array.length s.weapon_inventory) do
      match s.weapon_inventory.(i) with
-     | Null -> ()
+     | Empty -> ()
      | Weapon w -> 
        array.(0) <- (Weapons.Weapon.get_name w) :: array.(0) 
    done); 
@@ -496,7 +496,7 @@ let get_weapon_name_list_of_player_inventory s =
    and increases the player's health. *)
 let equip_weapon_helper s weapon_array i = 
   let for_each_weapon w t j = 
-    if s.weapon_inventory.(j) = Null 
+    if s.weapon_inventory.(j) = Empty 
     then (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
           s.player <- Player t; 
@@ -507,7 +507,7 @@ let equip_weapon_helper s weapon_array i =
         (get_weapon_name_list_of_player_inventory s)
     && Player.location t = Weapons.Weapon.get_loc w
     then 
-      (weapon_array.(i) <- Null;    
+      (weapon_array.(i) <- Empty;    
        for j = 0 to (Array.length s.weapon_inventory) - 1 do 
          for_each_weapon w t j 
        done)
@@ -516,7 +516,7 @@ let equip_weapon_helper s weapon_array i =
   | Weapon w, Player t -> 
     execute_valid_weapon_player w t
   | _ -> () 
-(*)
+
   (**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
    possible weapon in [s], and returns [()] if the [weapon_name] is known in 
    [s]. 
@@ -524,14 +524,14 @@ let equip_weapon_helper s weapon_array i =
    exist in [s].  *)
   let equip_one_weapon s weapon_name = 
   try
-    (let weapon_array = s.all_weapons in
+    (let weapon_array = s.all_weapons_in_current_map in
      for i = 0 to (Array.length weapon_array) - 1 do 
        equip_weapon_helper s weapon_array i  
      done);
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
     ()
-*)
+
 
 (*map-param related methods *)
 let get_player s = 
@@ -549,22 +549,31 @@ let check_current_linked_map s =
     with Not_found ->
       false, ""
 
+let get_map_index_by_name s name = 
+  let rec search acc = function 
+    | [] -> failwith "invalid map name"
+    | h::d -> if h.name = name then acc else
+      search 0 d in 
+  search 0 s.all_maps
+
 
 let transfer_player_to_branch_map s = 
   let status, name =  check_current_linked_map s in
   if status = false then ()
   else 
     let map = find_one_map_by_name s.all_maps name in
+    let map_index = get_map_index_by_name s map in
     s.player_old_loc <- s |> get_player |> Player.location;
     s.current_map <- map;
-    s.all_enemies_in_current_map <- [|Deleted|]; (*TODO *)
-    s.all_foods_in_current_map <- [||];
-    s.all_weapons_in_current_map <- [||];
+    s.all_enemies_in_current_map <- s.all_enemies.(map_index);
+    s.all_foods_in_current_map <- s.all_foods.(map_index);
+    s.all_weapons_in_current_map <- s.all_weapons.(map_index);
+    s.current_map_in_all_maps <- map_index;
     Player.switch_loc (get_player s) (1,1)
 
 let check_branch_map_status s = (*true indicates player finished this branched map *)
   get_current_map_name s <> "main" 
-  && Array.for_all (fun enemy -> enemy = Null) s.all_enemies_in_current_map 
+  && Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
 let transfer_player_to_main_map s =
   if check_branch_map_status s
@@ -573,6 +582,7 @@ let transfer_player_to_main_map s =
      Player.switch_loc (get_player s) s.player_old_loc;
      s.all_enemies_in_current_map <- s.all_enemies.(0);
      s.all_foods_in_current_map <- s.all_foods.(0);
-     s.all_weapons_in_current_map <- s.all_weapons.(0);)
+     s.all_weapons_in_current_map <- s.all_weapons.(0);
+     s.current_map_in_all_maps <- 0)
   else
     ()
