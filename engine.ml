@@ -3,7 +3,6 @@ open Player
 open Maps
 open Yojson.Basic.Util
 
-(*!!!!!!!!!!!!!!!!!!!!!!!!!                                                 *)
 (*some constructors below required an id, which is created by the functions *)
 (*instead of contained in json                                              *)
 
@@ -38,14 +37,14 @@ type state = {
   mutable food_inventory: food_item array;
   mutable weapon_inventory: weapon_item array;
 
-  (* we can have several maps linked in one game, and [all_maps] store
-     all maps in one game. *)
+  mutable current_map_in_all_maps: int;
 
   mutable current_map: current_map;
+  mutable all_enemies_in_current_map: enemies array;
+  mutable all_foods_in_current_map: food_item array;
+  mutable all_weapons_in_current_map: weapon_item array;
+
   mutable all_maps: current_map array;
-  (**[current_map_in_all_maps] counts which map the player is currently in.
-     i.e. the index in [all_maps]*)
-  mutable current_map_in_all_maps: int; 
   mutable all_foods: food_item array;
   mutable all_weapons: weapon_item array;
   mutable enemies: enemy array;
@@ -185,32 +184,33 @@ let main_engine_player: unit -> player =
 
 let food_array_builder cols rows jsons: food_item array = 
   jsons |> 
-    List.map 
-      (fun j -> let id = count () in
-                let health = j |> member "health" |> to_int in
-                let strength = j |> member "strength" |> to_int in
-                let name = j |> member "name" |> to_string in
-                let description = j |> member "description" |> to_string in
-                let row = 1 + Random.int rows in
-                let col = 1 + Random.int cols in
-                        Food (Foods.Food.constructor ~col ~row ~health 
-                                ~description ~name ~id ~strength))
+  List.map 
+    (fun j -> let id = count () in
+      let health = j |> member "health" |> to_int in
+      let strength = j |> member "strength" |> to_int in
+      let name = j |> member "name" |> to_string in
+      let description = j |> member "description" |> to_string in
+      let row = 1 + Random.int rows in
+      let col = 1 + Random.int cols in
+      let map = "main" in
+      Food (Foods.Food.constructor ~col ~row ~health 
+              ~description ~name ~id ~strength ~map))
   |> Array.of_list
-
 
 
 let weapon_array_builder cols rows jsons: weapon_item array = 
   jsons 
-    |> List.map 
-      (fun j -> let id = count () in
-                let name = j |> member "name" |> to_string in
-                let description = j |> member "description" |> to_string in
-                let strength = j |> member "strength"|> to_int in
-                let row = 1 + Random.int rows in
-                let col = 1 + Random.int cols in
-                      Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
-                                ~description ~name ~id))
-   |> Array.of_list
+  |> List.map 
+    (fun j -> let id = count () in
+      let name = j |> member "name" |> to_string in
+      let description = j |> member "description" |> to_string in
+      let strength = j |> member "strength"|> to_int in
+      let row = 1 + Random.int rows in
+      let col = 1 + Random.int cols in
+      let map = "main" in
+      Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
+                ~description ~name ~id ~map))
+  |> Array.of_list
 
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
@@ -267,42 +267,59 @@ let main_engine_weapon ~(col: int) ~(row: int) =
       else read_weapon handler in
   fun () -> (read_weapon (Unix.opendir "."))
 
+let build_one_map s = (*s is the map-param * .json*)
+  let json = s |> Yojson.Basic.from_file in 
+  let name = json |> member "name" |> to_string in 
+  let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
+  let cols = fst unparsed_size in 
+  let rows = snd unparsed_size in 
+  let size = (cols, rows) in
+  let picture_lists = json |> member "picture" |> to_list in
+  let all_map_param = map_param_array_builder picture_lists in
+      (Maps.map_constructor ~size ~name ~all_map_param), (cols, rows)
 
-let main_engine_map_param : unit -> current_map * (int * int) = 
-  let rec read_map handler = 
+let main_engine_map_param : unit -> (current_map * (int * int)) list = 
+  let rec read_map handler list = 
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler;
-      failwith "no map-param.json is not in current directory"
+      if list = [] then failwith "no map-param.json is in current directory"
+      else lisr
     | s -> let pos = String.length s in 
       if String.length s > 13 
       && (String.sub s (pos-5) 5) = ".json" 
       && contains s "map-param"
       then 
-        let json = s |> Yojson.Basic.from_file in 
-        let name = json |> member "name" |> to_string in 
-        let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
-        let cols = fst unparsed_size in 
-        let rows = snd unparsed_size in 
-        let size = (cols, rows) in
-        let picture_lists = json |> member "picture" |> to_list in
-        let all_map_param = map_param_array_builder picture_lists in 
-        (Maps.map_constructor ~size ~name ~all_map_param), 
-        (cols, rows)
+         read_map handler (build_one_map s)::list
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
 
+  (**[find_one_map_by_name lst name] is the map with its name as [name] from
+  a list of map [lst]
+
+  Require:
+  map with name [map_name] must be inside [lst] *)
+let find_one_map_by_name map_list map_name =
+  List.find (fun map -> Maps.MapParam.get_name map = map_name) map_list
+
+
 let init (): state =
-  let map, (col, row) = main_engine_map_param () in
-  let number = 5 (*this number can be either artificially set or 
-                   stored in json.*) in {
+  let map_list, loc_list = () |> main_engine_map_param |> List.split in
+  let col, row = 10, 5 in
+  let number = 5 (*this number can be either artificially set or stored in json.*) in {
+    player = main_engine_player ();
+    food_inventory = [|Null; Null; Null|];
+    weapon_inventory = [|Null; Null; Null|]; (*the length of inventory shouldn't be changed *)
+    current_map_in_all_maps = 0; (* this shouldn't be changed *)
+    current_map = find_one_map_by_name map_list "main";
+    
+    all_enemies_in_current_map = [||];
+    all_foods_in_current_map = [||]; (* change it later *)
+    all_weapons_in_current_map = [||];
+
+    all_maps = map_list |> Array.of_list;
     all_foods = main_engine_food ~col ~row ();
     all_weapons = main_engine_weapon ~col ~row ();
-    food_inventory = [|Null; Null; Null|];
-    weapon_inventory = [|Null; Null; Null|];
-    player = main_engine_player ();
-    current_map = map;
-    all_maps = [|map|];
-    current_map_in_all_maps = 0;
+
     enemies = (main_engine_enemy ~col ~row ~number) |> Array.of_list;
   }
 
@@ -326,7 +343,7 @@ let get_current_map_size s = s.current_map.size
   let name = s.current_map.name
 *)
 (** [move_player_left] change the current pos (col', row') of player to 
-    (col'-1, row'-1)*)
+    (col'-1, row')*)
 let move_player_left s = 
   try
     match s.player with
@@ -370,36 +387,43 @@ let delete_one_enemy_from_state s enemy =
     else ()
   done
 
-(** raises: UnknownFood if [food_name] 
-    is not a valid food name in player's inventory*)
+(**[eat_one_food s food_name] makes the following updates: 
+   1. [food_name] is removed from the the player's food array in [s].
+   2. the player in [s] increases health and strength by its corresponding food
+   health and strength. 
+   Returns [()] if the following updates are successful (i.e. when [food_name]
+   is a valid food name in the player's inventory.)
+   Raises: [UnknownFood food_name] if [food_name] is not a valid food name in 
+    player's inventory*)
 let eat_one_food s food_name = 
-  let eat_food = 
-    match food_array.(i), s.player with
-       | Food food, Player t 
-        when Foods.Food.get_name food = food_name ->   
-           (let health = Foods.Food.get_health food
-            and strength = Foods.Food.get_strength food in
-            Player.increase_health t health;
-            Player.increase_strength t strength;
-            food_array.(i) <- Null;
-            s.player <- Player t;) 
-            raise SuccessExit
-       | _ -> () in
-    try
-      let food_array = s.food_inventory in
-      for i = 0 to (Array.length food_array) - 1 do 
-      done;
-      raise (UnknownFood food_name)
-    with SuccessExit -> ()
+  let eat_food food_array i= 
+    match (food_array.(i) : food_item), s.player with
+    | Food food, Player t 
+      when Foods.Food.get_name food = food_name ->   
+      (let health = Foods.Food.get_health food
+       and strength = Foods.Food.get_strength food in
+       let _ = Player.increase_health t health in
+       let _ = Player.increase_strength t strength in
+       food_array.(i) <- Null;
+       s.player <- Player t; 
+       raise SuccessExit)
+    | _ -> () in
+  try
+    (let food_array = (s.food_inventory : food_item array) in
+     for i = 0 to (Array.length food_array) - 1 do 
+       eat_food food_array i
+     done);
+    raise (UnknownFood food_name)
+  with SuccessExit -> ()
 
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
   (for i = 0 to (Array.length s.weapon_inventory) do
-    match s.weapon_inventory.(i) with
-    | Null -> ()
-    | Weapon w -> 
-      array.(0) <- (Weapons.Weapon.get_name w) :: array.(0) 
-  done); 
+     match s.weapon_inventory.(i) with
+     | Null -> ()
+     | Weapon w -> 
+       array.(0) <- (Weapons.Weapon.get_name w) :: array.(0) 
+   done); 
   array.(0)
 
 (**[match_weapons s weapon_array i] is a helper function that, if  
@@ -409,27 +433,29 @@ let get_weapon_name_list_of_player_inventory s =
 let equip_weapon_helper s weapon_array i = 
   let for_each_weapon w t j = 
     if s.weapon_inventory.(j) = Null 
-    then s.weapon_inventory.(j) <- Weapon w;
-        Player.increase_strength t (Weapons.Weapon.get_strength w);
-        s.player <- Player t; 
-        raise SuccessExit 
+    then (s.weapon_inventory.(j) <- Weapon w;
+          Player.increase_strength t (Weapons.Weapon.get_strength w);
+          s.player <- Player t; 
+          raise SuccessExit)
     else () in 
   let execute_valid_weapon_player w t = 
     if List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
-           (get_weapon_name_list_of_player_inventory s)
-         && Player.location t = Weapons.Weapon.get_loc w
-     then (weapon_array.(i) <- Null;    
-        for j = 0 to (Array.length s.weapon_inventory) - 1 do 
-          for_each_weapon w t j 
-        done
-     else ()) in 
-    match weapon_array.(i), s.player with
-      | Weapon w, Player t -> 
-          execute_valid_weapon_player w t
-      | _ -> () 
+        (get_weapon_name_list_of_player_inventory s)
+    && Player.location t = Weapons.Weapon.get_loc w
+    then 
+      (weapon_array.(i) <- Null;    
+       for j = 0 to (Array.length s.weapon_inventory) - 1 do 
+         for_each_weapon w t j 
+       done)
+    else () in 
+  match weapon_array.(i), s.player with
+  | Weapon w, Player t -> 
+    execute_valid_weapon_player w t
+  | _ -> () 
 
 (**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
-   possible weapon in [s]. 
+   possible weapon in [s], and returns [()] if the [weapon_name] is known in 
+   [s]. 
    Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
    exist in [s].  *)
 let equip_one_weapon s weapon_name = 

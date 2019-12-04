@@ -10,6 +10,7 @@ module type W = sig
     id:int -> 
     description:string -> 
     strength: int->
+    map: string ->
     weapon
 
   (**[get_name w] is the name of the weapon [w]  *)
@@ -21,6 +22,8 @@ module type W = sig
   (**[get_loc w] is the location of the weapon [w]  *)
   val get_loc : weapon -> int * int
 
+  (**[get_map w] is the map name of which the weapon [f] is currently in*)
+  val get_map : weapon -> string
 end
 
 module Weapon : W = struct 
@@ -30,15 +33,17 @@ module Weapon : W = struct
     id : int;
     weapon_loc : int * int; (*col, row*)
     strength: int;
+    map : string;
   }
 
   let constructor 
-      ~row ~col ~name ~id ~description ~strength = {
+      ~row ~col ~name ~id ~description ~strength ~map = {
     name = name;
     id = id;
     description = description;
     weapon_loc = (col,row);
     strength = strength;
+    map: string;
   }
 
   let get_name w = w.name
@@ -46,4 +51,6 @@ module Weapon : W = struct
   let get_strength w = w.strength
 
   let get_loc w = w.weapon_loc
+
+  let get_map w = w.map
 end

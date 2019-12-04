@@ -19,11 +19,21 @@
     },
     {
       "name": "field",
-      "loc": "2,1",
+      "loc": "1,4",
       "link": ""
     },
     {
       "name": "grass",
+      "loc": "1,5",
+      "link": ""
+    },
+    {
+      "name": "lake",
+      "loc": "2,1",
+      "link": ""
+    },
+    {
+      "name": "lake",
       "loc": "2,2",
       "link": ""
     },
@@ -33,7 +43,17 @@
       "link": ""
     },
     {
-      "name": "field",
+      "name": "lake",
+      "loc": "2,4",
+      "link": ""
+    },
+    {
+      "name": "lake",
+      "loc": "2,5",
+      "link": ""
+    },
+    {
+      "name": "lake",
       "loc": "3,1",
       "link": ""
     },
@@ -45,6 +65,56 @@
     {
       "name": "lake",
       "loc": "3,3",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "3,4",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "3,5",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,1",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,2",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,3",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "3,4",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "3,5",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,1",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,2",
+      "link": ""
+    },
+    {
+      "name": "snow",
+      "loc": "4,3",
       "link": ""
     }
   ]
