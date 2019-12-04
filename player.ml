@@ -115,6 +115,8 @@ module type P = sig
 
   (**[change_map p map] updates the map name of player's currently in.*)
   val change_map: t -> string -> unit
+
+  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!!*)
 end 
 
 module Player : P = struct
@@ -269,4 +271,7 @@ module Player : P = struct
 
   let change_map t map = 
     t.map <- map
+  
+  let switch_loc t loc =
+    t.location <- loc
 end

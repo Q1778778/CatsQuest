@@ -45,7 +45,7 @@ type t = {
   size : int * int; (*total col * total rows *)
   name : string; (*this map name*)
   (**[|((col, row), map_param)|]*)
-  map_params: ((int * int) * MapParam.map_param) array; 
+  map_params: ((int * int) * MapParam.map_param) list; 
 }
 
 let map_constructor 
@@ -61,3 +61,14 @@ let bound_check m c r =
   let cols = fst m.size in 
   let rows = snd m.size in 
   c > 0 && c <= cols && r > 0 && r <= rows
+
+let get_one_map_param_by_loc t loc = 
+  if bound_check t (fst loc) (snd loc)
+  then 
+    t.map_params 
+      |> List.find (fun single, _ -> single = loc)
+      |> snd
+  else failwith "the input loc exceeds the bound of this map"
+
+let get_one_link_by_loc t loc =
+  loc |> get_one_map_param_by_loc t |> MapParam.get_link

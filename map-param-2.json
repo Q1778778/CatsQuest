@@ -1,6 +1,6 @@
 {
   "name": "branched2",
-  "size": "3,3",
+  "size": "5,5",
   "picture": [
     {
       "name": "field",
@@ -108,13 +108,48 @@
       "link": ""
     },
     {
-      "name": "snow",
+      "name": "grass",
       "loc": "4,2",
       "link": ""
     },
     {
-      "name": "snow",
+      "name": "grass",
       "loc": "4,3",
+      "link": ""
+    },
+    {
+      "name": "grass",
+      "loc": "4,4",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "4,5",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "5,1",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "5,2",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "5,3",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "5,4",
+      "link": ""
+    },
+    {
+      "name": "field",
+      "loc": "5,5",
       "link": ""
     }
   ]

@@ -36,19 +36,26 @@ type state = {
   mutable player: player;
   mutable food_inventory: food_item array;
   mutable weapon_inventory: weapon_item array;
-
+  mutable player_old_loc: (int * int);
   mutable current_map_in_all_maps: int;
 
+  branched_map_info: ((int * int) * string) list;
   mutable current_map: current_map;
   mutable all_enemies_in_current_map: enemy array;
   mutable all_foods_in_current_map: food_item array;
   mutable all_weapons_in_current_map: weapon_item array;
 
-  mutable all_maps: current_map array;
+  all_maps: current_map list; (*persistent map *)
   mutable all_foods: food_item array;
   mutable all_weapons: weapon_item array;
   mutable enemies: enemy array;
 }
+
+let branch_map_store = ref []
+
+(*look up the ref right above *)
+let update_branch_map_store name loc =
+  branch_map_store := ((name, loc)::(!branch_map_store))
 
 let count = 
   let counter = ref 0 in fun () -> (incr counter; !counter)
@@ -222,16 +229,19 @@ let parse_dims s =
   (cols |> int_of_string, rows |> int_of_string)
 
 
-let map_param_array_builder jsons : ((int * int) * map_param) array = 
+let map_param_array_builder jsons : ((int * int) * map_param) list = 
   jsons |> List.map ( fun j ->
       let name = j |> member "name" |> to_string in 
       let loc = j |> member "loc" |> to_string in
       let link = j |> member "link" |> to_string in 
+      (*updating branched loc*)
+      let _ = 
+        if link <> "" && name = "main" (* i don't think the later check is necessary *)
+        then update_branch_map_store link loc 
+        else () in
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in 
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
-  |> Array.of_list
-
 
 
 let main_engine_food ~(col: int) ~(row:int)  = 
@@ -270,10 +280,7 @@ let main_engine_weapon ~(col: int) ~(row: int) =
 let build_one_map s = (*s is the map-param * .json*)
   let json = s |> Yojson.Basic.from_file in 
   let name = json |> member "name" |> to_string in 
-  let unparsed_size = json |> member "size" |> to_string |> parse_dims in 
-  let cols = fst unparsed_size in 
-  let rows = snd unparsed_size in 
-  let size = (cols, rows) in
+  let size = json |> member "size" |> to_string |> parse_dims in 
   let picture_lists = json |> member "picture" |> to_list in
   let all_map_param = map_param_array_builder picture_lists in
   (Maps.map_constructor ~size ~name ~all_map_param), (cols, rows)
@@ -290,7 +297,7 @@ let main_engine_map_param : unit -> (current_map * (int * int)) list =
       && contains s "map-param"
       then 
         read_map handler ((build_one_map s)::list)
-      else read_map handler in 
+      else read_map handler list in 
   fun () -> (read_map (Unix.opendir "."))
 
 (**[find_one_map_by_name lst name] is the map with its name as [name] from
@@ -299,7 +306,7 @@ let main_engine_map_param : unit -> (current_map * (int * int)) list =
    Require:
    map with name [map_name] must be inside [lst] *)
 let find_one_map_by_name map_list map_name =
-  List.find (fun map -> Maps.MapParam.get_name map = map_name) map_list
+  List.find (fun map -> map.name = map_name) map_list
 
 
 let init (): state =
@@ -312,11 +319,12 @@ let init (): state =
     current_map_in_all_maps = 0; (* this shouldn't be changed *)
     current_map = find_one_map_by_name map_list "main";
 
+    branched_map_info = !branch_map_store;
     all_enemies_in_current_map = [||];
     all_foods_in_current_map = [||]; (* change it later *)
     all_weapons_in_current_map = [||];
 
-    all_maps = map_list |> Array.of_list;
+    all_maps = map_list;
     all_foods = main_engine_food ~col ~row ();
     all_weapons = main_engine_weapon ~col ~row ();
 
@@ -467,3 +475,35 @@ let equip_one_weapon s weapon_name =
     raise (UnknownWeapon weapon_name)
   with SuccessExit ->
     ()
+
+
+(*map-param related methods *)
+let get_player s = 
+  match s.player with
+  | Player p -> p
+  | Died -> failwith "player is dead"
+
+
+let check_current_linked_map s =
+  if get_current_map_name s <> "main" then false, ""
+  else 
+    try
+      let loc = p |> Player.Player.location in
+      true, (List.assoc loc s.branched_map_info)
+    with Not_found ->
+      false, ""
+
+
+let transfer_player_to_branch_map s = 
+  let status, name =  get_one_link_by_loc s.current_map loc in
+  if status = false then ()
+  else 
+    let map = find_one_map_by_name s.all_maps name in
+    s.player_old_loc <- s |> get_player |> Player.Player.location;
+    s.current_map <- map;
+    s.all_enemies_in_current_map <- [||]; (*TODO *)
+    s.all_foods_in_current_map <- [||];
+    s.all_weapons_in_current_map <- [||];
+    Player.switch_loc (get_player s) (1,1)
+    
+
