@@ -40,7 +40,7 @@ type state = {
   mutable current_map_in_all_maps: int;
 
   mutable current_map: current_map;
-  mutable all_enemies_in_current_map: enemies array;
+  mutable all_enemies_in_current_map: enemy array;
   mutable all_foods_in_current_map: food_item array;
   mutable all_weapons_in_current_map: weapon_item array;
 
@@ -276,28 +276,28 @@ let build_one_map s = (*s is the map-param * .json*)
   let size = (cols, rows) in
   let picture_lists = json |> member "picture" |> to_list in
   let all_map_param = map_param_array_builder picture_lists in
-      (Maps.map_constructor ~size ~name ~all_map_param), (cols, rows)
+  (Maps.map_constructor ~size ~name ~all_map_param), (cols, rows)
 
 let main_engine_map_param : unit -> (current_map * (int * int)) list = 
   let rec read_map handler list = 
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler;
       if list = [] then failwith "no map-param.json is in current directory"
-      else lisr
+      else list
     | s -> let pos = String.length s in 
       if String.length s > 13 
       && (String.sub s (pos-5) 5) = ".json" 
       && contains s "map-param"
       then 
-         read_map handler (build_one_map s)::list
+        read_map handler ((build_one_map s)::list)
       else read_map handler in 
   fun () -> (read_map (Unix.opendir "."))
 
-  (**[find_one_map_by_name lst name] is the map with its name as [name] from
-  a list of map [lst]
+(**[find_one_map_by_name lst name] is the map with its name as [name] from
+   a list of map [lst]
 
-  Require:
-  map with name [map_name] must be inside [lst] *)
+   Require:
+   map with name [map_name] must be inside [lst] *)
 let find_one_map_by_name map_list map_name =
   List.find (fun map -> Maps.MapParam.get_name map = map_name) map_list
 
@@ -311,7 +311,7 @@ let init (): state =
     weapon_inventory = [|Null; Null; Null|]; (*the length of inventory shouldn't be changed *)
     current_map_in_all_maps = 0; (* this shouldn't be changed *)
     current_map = find_one_map_by_name map_list "main";
-    
+
     all_enemies_in_current_map = [||];
     all_foods_in_current_map = [||]; (* change it later *)
     all_weapons_in_current_map = [||];

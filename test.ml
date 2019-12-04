@@ -94,7 +94,7 @@ let make_exc_test n f e =
   let func = fun () -> f in 
   n >:: (fun _ -> assert_raises e func)
 
-let initial_state_tests = [
+let player_state_tests = [
   make_test "init" init_pos (1,1);
   make_test "R" state1_loc (2,1);
   make_test "RL" state2_loc (1,1);
@@ -124,7 +124,7 @@ let initial_state_tests = [
 let suite =
   "test suite for A2" >::: 
   List.flatten [
-    initial_state_tests;
+    player_state_tests;
   ]
 
 
