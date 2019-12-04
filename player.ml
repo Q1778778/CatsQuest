@@ -1,5 +1,3 @@
-open Yojson.Basic.Util
-
 module type P = sig
 
   (** The abstract type of values representing a player's skill. *)
