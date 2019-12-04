@@ -255,7 +255,7 @@ module Player : P = struct
     match List.filter (fun x -> x.name = name ) t.skills with
     | [] -> raise (Unknownskill 
                      (Printf.sprintf "skill name %s does not exist" name))
-    | h::d -> h
+    | h::_ -> h
 
   let skills_list t=
     t.skills
