@@ -14,6 +14,8 @@ let get_strength s = s |> get_player |> Player.strength
 let get_experience s = s |> get_player |> Player.experience
 let get_level s = s |> get_player |> Player.level
 let get_player_map s = s |> get_player |> Player.map
+let map_cols s = s.current_map.size |> fst
+let map_rows s = s.current_map.size |> snd
 
 (** Player state update tests *)
 
@@ -79,13 +81,21 @@ let _ = Player.advance_level (get_player init_state)
 let state13_experience = get_experience init_state (* 10 *)
 let state13_level = get_level init_state (* 11 *)
 
-(* TODO tests: *)
-(* get_skill_by_skill_name *)
-(* skill_name *)
-
 (* change_map to "modified"*)
 let _ = Player.change_map (get_player init_state) "modified"
 let state14_map = get_player_map init_state 
+
+(* move right towards rightmost column, upmost row *)
+let _ = 
+  for i = 1 to (map_cols init_state)+12 do 
+    Engine.move_player_up init_state;
+    Engine.move_player_right init_state;
+  done
+let state15_loc = get_pos init_state
+
+(* TODO tests: *)
+(* get_skill_by_skill_name *)
+(* skill_name *)
 
 (* reduce health -> 88 *)
 let _ = Player.reduce_health (get_player init_state) 12 
@@ -140,6 +150,8 @@ let player_state_tests = [
   make_test "advance level" state13_experience (init_experience + 10);
   make_test "advance level" state13_level 11;
   make_test "change map" state14_map "modified";
+  make_test "upper right bound" state15_loc 
+    (map_cols init_state, map_rows init_state);
 
   make_test "reduce health by 12" state_f3_health (init_health-12);
   make_test "increase all health" state_f2_health init_health;
