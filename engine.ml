@@ -111,6 +111,21 @@ let contains s1 s2 =
     else counter (count + 1) in
   counter 0
 
+let random_number_list_for_enemies_and_items loc_list number =
+  let round f = truncate (f +. 0.5) in
+  let raw_prob = List.map (fun (x, y) -> x * y) loc_list in
+  let rec total_num num = function
+    | [] -> num
+    | h::d -> total_num (num + h) d in
+  let sum = total_num 0 raw_prob in
+  let temp_random_number = (*the probability oper here is pretty messy *)
+    List.map 
+    (fun s -> 
+      ((float_of_int s) /. (float_of_int sum) *. (float_of_int number)) 
+          |> round) raw_prob in 
+  ((List.hd random_number) 
+      + sum - (total_sum 0 random_number))::(List.tl temp_random_number)
+
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
 
@@ -171,20 +186,8 @@ let main_engine_ememy_for_singly_map ~col ~row ~number =
 
 (**[main_engine_enemy ()] read all enemy json files in current directory*) (* add forbidden *)
 let main_engine_enemy ~loc_list ~number =
-  let round f = truncate (f +. 0.5) in
-  let raw_prob = List.map (fun (x, y) -> x * y) loc_list in
-  let rec total_num num = function
-    | [] -> num
-    | h::d -> total_num (num + h) d in
-  let sum = total_num 0 raw_prob in
-  let temp_random_number = (*the probability oper here is pretty messy *)
-    List.map 
-    (fun s -> 
-      ((float_of_int s) /. (float_of_int sum) *. (float_of_int number)) 
-          |> round) raw_prob in 
   let final_random_number = 
-    ((List.hd random_number) 
-      + sum - (total_sum 0 random_number))::(List.tl temp_random_number) in
+    random_number_list_for_enemies_and_items loc_list number in
   (List.map2 
     (fun number (col, row) -> main_engine_ememy_for_singly_map col row number)
       final_random_number loc_list) |> Array.of_list
@@ -328,11 +331,13 @@ let main_engine_map_param : unit -> (current_map * (int * int)) list =
 let find_one_map_by_name map_list map_name =
   List.find (fun map -> map.name = map_name) map_list
 
-
+(* TODO: Unfinished *)
 let init (): state =
   let map_list, loc_list = () |> main_engine_map_param |> List.split in
   let number = 7 (*this number can be either artificially set or stored in json.*) in
-  let all_enemies = (main_engine_enemy ~loc_list ~number) |> Array.of_list in {
+  let all_enemies = (main_engine_enemy ~loc_list ~number) |> Array.of_list in
+  let all_foods = (main_engine_food ~loc_list ~number) |> Array.of_list in
+  let all_weapons = (main_engine_weapon ~loc_list ~number) |> Array.of_list in {
     player = main_engine_player ();
     food_inventory = [|Null; Null; Null|];
     weapon_inventory = [|Null; Null; Null|]; (*the length of inventory shouldn't be changed *)
@@ -342,12 +347,12 @@ let init (): state =
     player_old_loc = (0,0);
     branched_map_info = !branch_map_store;
     all_enemies_in_current_map = all_enemies.(0);
-    all_foods_in_current_map = [||]; (* change it later *)
-    all_weapons_in_current_map = [||];
+    all_foods_in_current_map = all_foods.(0); 
+    all_weapons_in_current_map = all_weapons.(0);
 
     all_maps = map_list;
-    all_foods = main_engine_food ~col ~row ();
-    all_weapons = main_engine_weapon ~col ~row ();
+    all_foods = all_foods;
+    all_weapons = all_weapons;
 
     all_enemies = all_enemies;
   }
@@ -527,3 +532,17 @@ let transfer_player_to_branch_map s =
     s.all_weapons_in_current_map <- [||];
     Player.switch_loc (get_player s) (1,1)
 
+let check_branch_map_status s = (*true indicates player finished this branched map *)
+  get_current_map_name s <> "main" 
+  && Array.for_all (fun enemy -> enemy = Null) s.all_enemies_in_current_map 
+
+let transfer_player_to_main_map s =
+  if check_branch_map_status s
+  then 
+    s.current_map <- List.hd s.all_maps;
+    Player.switch_loc (get_player s) s.player_old_loc;
+    s.all_enemies_in_current_map <- s.all_enemies.(0);
+    s.all_foods_in_current_map <- s.all_foods.(0);
+    s.all_weapons_in_current_map <- s.all_weapons.(0);
+  else
+    ()
