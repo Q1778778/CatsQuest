@@ -468,7 +468,7 @@ let eat_one_food s food_name =
        and strength = Foods.Food.get_strength food in
        let _ = Player.increase_health t health in
        let _ = Player.increase_strength t strength in
-       food_array.(i) <- Null;
+       food_array.(i) <- Eaten;
        s.player <- Player t; 
        raise SuccessExit)
     | _ -> () in
@@ -517,12 +517,12 @@ let equip_weapon_helper s weapon_array i =
     execute_valid_weapon_player w t
   | _ -> () 
 
-  (**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
+(**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
    possible weapon in [s], and returns [()] if the [weapon_name] is known in 
    [s]. 
    Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
    exist in [s].  *)
-  let equip_one_weapon s weapon_name = 
+let equip_one_weapon s weapon_name = 
   try
     (let weapon_array = s.all_weapons_in_current_map in
      for i = 0 to (Array.length weapon_array) - 1 do 
@@ -553,7 +553,7 @@ let get_map_index_by_name s name =
   let rec search acc = function 
     | [] -> failwith "invalid map name"
     | h::d -> if h.name = name then acc else
-      search 0 d in 
+        search 0 d in 
   search 0 s.all_maps
 
 
@@ -562,7 +562,7 @@ let transfer_player_to_branch_map s =
   if status = false then ()
   else 
     let map = find_one_map_by_name s.all_maps name in
-    let map_index = get_map_index_by_name s map in
+    let map_index = get_map_index_by_name s map.name in
     s.player_old_loc <- s |> get_player |> Player.location;
     s.current_map <- map;
     s.all_enemies_in_current_map <- s.all_enemies.(map_index);
