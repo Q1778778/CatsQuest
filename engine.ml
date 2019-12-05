@@ -52,6 +52,9 @@ type state = {
   mutable all_enemies: enemy array array; 
 }
 
+
+
+(*                           helper methods                           *)
 let branch_map_store = ref []
 
 (*look up the ref right above *)
@@ -126,6 +129,20 @@ let random_int_array_for_enemies_and_items loc_array number =
   (((List.hd temp_random_number) 
     + sum - (total_sum 0 temp_random_number))::(List.tl temp_random_number))
   |> Array.of_list
+
+
+(**[parse_dims s] parses [s] and returns [(col, row)]. 
+   Requires: [s] is in the form ["# cols, # rows"]
+*)
+let parse_dims s = 
+  let rows = List.nth (String.split_on_char ',' s) 0 in 
+  let cols = List.nth (String.split_on_char ',' s) 1 in 
+  (cols |> int_of_string, rows |> int_of_string)
+
+(*                        models builder                         *)
+
+
+
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]
 
@@ -145,7 +162,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
     then browse_dir_enemy handler (h::lst) 
     else browse_dir_enemy handler lst
 
-(* change it later *)
+
 let single_enemy_builder j ~id ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
@@ -168,10 +185,12 @@ let single_enemy_builder j ~id ~col ~row =
     Enemy.constructor ~pos ~level ~exp ~name
       ~hp ~id ~descr ~max_hp ~skills ~map )
 
+
 let browse_one_enemy_json j ~id ~col ~row = 
   if (contains j "witch" || contains j "minion" || contains j "goblin")
   then single_enemy_builder (Yojson.Basic.from_file j) ~id ~col ~row
   else failwith "something wrong with browse_dir_enemy. Check it"
+
 
 let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array = 
   try 
@@ -184,11 +203,13 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
-(**[main_engine_enemy ()] read all enemy json files in current directory*) (* add forbidden *)
+
+(**[main_engine_enemy ()] read all enemy json files in current directory*)
 let main_engine_enemy ~loc_array ~final_number_array : enemy array array =
   (Array.map2 
      (fun number (col, row) -> main_engine_ememy_for_single_map col row number)
      (final_number_array) (loc_array))
+
 
 
 let main_engine_player: unit -> player =
@@ -210,6 +231,7 @@ let main_engine_player: unit -> player =
   fun () -> Player (read_map (Unix.opendir "."))
 
 
+
 let food_array_builder cols rows jsons: food_item array = 
   jsons |> 
   Array.map 
@@ -223,45 +245,6 @@ let food_array_builder cols rows jsons: food_item array =
       let map = "main" in
       Food (Foods.Food.constructor ~col ~row ~health 
               ~description ~name ~id ~strength ~map))
-
-
-
-let weapon_array_builder cols rows jsons: weapon_item array = 
-  jsons 
-  |> Array.map 
-    (fun j -> let id = count () in
-      let name = j |> member "name" |> to_string in
-      let description = j |> member "description" |> to_string in
-      let strength = j |> member "strength"|> to_int in
-      let row = 1 + Random.int rows in
-      let col = 1 + Random.int cols in
-      let map = "main" in
-      Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
-                ~description ~name ~id ~map))
-
-
-(**[parse_dims s] parses [s] and returns [(col, row)]. 
-   Requires: [s] is in the form ["# cols, # rows"]
-*)
-let parse_dims s = 
-  let rows = List.nth (String.split_on_char ',' s) 0 in 
-  let cols = List.nth (String.split_on_char ',' s) 1 in 
-  (cols |> int_of_string, rows |> int_of_string)
-
-
-let map_param_array_builder jsons : ((int * int) * map_param) list = 
-  jsons |> List.map ( fun j ->
-      let name = j |> member "name" |> to_string in 
-      let loc = j |> member "loc" |> to_string in
-      let link = j |> member "link" |> to_string in 
-      (*updating branched loc*)
-      let col = parse_dims loc |> fst in 
-      let row = parse_dims loc |> snd in 
-      let _ = 
-        if link <> "" && name = "main" (* i don't think the later check is necessary *)
-        then update_branch_map_store link (col, row) 
-        else () in
-      ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 
 let main_engine_food_for_single_map ~col ~row ~number= 
@@ -289,6 +272,20 @@ let main_engine_food ~(loc_array: (int * int) array)
     final_number_array loc_array
 
 
+let weapon_array_builder cols rows jsons: weapon_item array = 
+  jsons 
+  |> Array.map 
+    (fun j -> let id = count () in
+      let name = j |> member "name" |> to_string in
+      let description = j |> member "description" |> to_string in
+      let strength = j |> member "strength"|> to_int in
+      let row = 1 + Random.int rows in
+      let col = 1 + Random.int cols in
+      let map = "main" in
+      Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
+                ~description ~name ~id ~map))
+
+
 let main_engine_weapon_for_single_map ~(col: int) ~(row: int) ~number =
   let rec read_weapon handler = 
     match Unix.readdir handler with 
@@ -311,6 +308,22 @@ let main_engine_weapon ~loc_array ~final_number_array =
     (fun number (col, row) -> 
        main_engine_weapon_for_single_map col row number)
     final_number_array loc_array
+
+
+
+let map_param_array_builder jsons : ((int * int) * map_param) list = 
+  jsons |> List.map ( fun j ->
+      let name = j |> member "name" |> to_string in 
+      let loc = j |> member "loc" |> to_string in
+      let link = j |> member "link" |> to_string in 
+      (*updating branched loc*)
+      let col = parse_dims loc |> fst in 
+      let row = parse_dims loc |> snd in 
+      let _ = 
+        if link <> "" && name = "main" (* i don't think the later check is necessary *)
+        then update_branch_map_store link (col, row) 
+        else () in
+      ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 
 let build_one_map s = (*s is the map-param * .json*)
@@ -351,16 +364,9 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
   (read_map (Unix.opendir ".") [])
 
 
-(**[find_one_map_by_name lst name] is the map with its name as [name] from
-   a list of map [lst]
 
-   Require:
-   map with name [map_name] must be inside [lst] *)
-let find_one_map_by_name map_array map_name =
-  List.find (fun map -> map.name = map_name) (map_array)
+(*                       initiate the game                           *)
 
-
-(* TODO: Unfinished *)
 (* Invariant: the first map of all maps must be main map !!!*)
 let init (): state =
   let map_array, loc_array = main_engine_map_param () in
@@ -387,6 +393,7 @@ let init (): state =
     all_enemies = all_enemies;
   }
 
+(*                        basic getters                            *)
 let game_state = init ()
 
 let change_player player s = s.player <- player
@@ -396,6 +403,14 @@ let get_player s = s.player
 let get_enemies s = s.all_enemies_in_current_map
 
 let get_map s = s.current_map
+
+(**[find_one_map_by_name lst name] is the map with its name as [name] from
+   a list of map [lst]
+
+   Require:
+   map with name [map_name] must be inside [lst] *)
+let find_one_map_by_name map_array map_name =
+  List.find (fun map -> map.name = map_name) (map_array)
 
 let get_current_map_name s = s.current_map.name
 
@@ -407,9 +422,9 @@ let get_player s =
   | Player p -> p
   | Died -> failwith "player is dead"
 
-(*let get_all_weapons_on_current_map s = 
-  let name = s.current_map.name
-*)
+
+(*                          move player                           *)
+
 (** [move_player_left] change the current pos (col', row') of player to 
     (col'-1, row')*)
 let move_player_left s = 
@@ -421,6 +436,7 @@ let move_player_left s =
       s.player <- Player t
   with Player.Illegal _ -> ()
 
+
 let move_player_right s = 
   try
     match s.player with
@@ -429,6 +445,7 @@ let move_player_right s =
       let () = Player.move_right t s.current_map in
       s.player <- Player t
   with Player.Illegal _ -> ()
+
 
 let move_player_up s = 
   try
@@ -439,6 +456,7 @@ let move_player_up s =
       s.player <- Player t
   with Player.Illegal _ -> ()
 
+
 let move_player_down s = 
   try
     match s.player with
@@ -448,12 +466,17 @@ let move_player_down s =
       s.player <- Player t
   with Player.Illegal _ -> ()
 
+
+
+(*                       change game state                        *)
+
 let delete_one_enemy_from_state s enemy_name =
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     if Enemy.Enemy.get_name s.all_enemies_in_current_map.(i) = enemy 
     then s.all_enemies_in_current_map.(i) <- Deleted 
     else ()
   done
+
 
 (**[eat_one_food s food_name] makes the following updates: 
    1. [food_name] is removed from the the player's food array in [s].
@@ -483,6 +506,8 @@ let eat_one_food s food_name =
      done);
     raise (UnknownFood food_name) (* @Deprecated *)
   with SuccessExit -> ()
+
+
 
 let get_weapon_name_list_of_player_inventory s =
   let array = [|[]|] in
@@ -521,6 +546,7 @@ let equip_weapon_helper s weapon_array i =
     execute_valid_weapon_player w t
   | _ -> () 
 
+
 (**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
    possible weapon in [s], and returns [()] if the [weapon_name] is known in 
    [s]. 
@@ -536,6 +562,8 @@ let equip_one_weapon s weapon_name =
   with SuccessExit ->
     ()
 
+
+
 let check_food_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
   (for i = 0 to (Array.length s.all_foods_in_current_map) do
@@ -545,6 +573,7 @@ let check_food_on_loc_and_return_name_list s loc =
     | _ -> ()
   done)
   store.(0)
+
 
 
 let check_weapon_on_loc_and_return_name_list s loc =
@@ -557,6 +586,8 @@ let check_weapon_on_loc_and_return_name_list s loc =
   done)
   store.(0)
 
+
+
 (* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! *)
 let check_item_on_player_ground s =
   let loc = s |> get_player |> Player.location in
@@ -564,6 +595,7 @@ let check_item_on_player_ground s =
     check_food_on_loc_and_return_name_list s loc,
     check_weapon_on_loc_and_return_name_list s loc
   )
+
 
 let check_current_linked_map s =
   if get_current_map_name s <> "main" then false, ""
@@ -574,12 +606,14 @@ let check_current_linked_map s =
     with Not_found ->
       false, ""
 
+
 let get_map_index_by_name s name = 
   let rec search acc = function 
     | [] -> failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search 0 d in 
   search 0 s.all_maps
+
 
 (* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! *)
 let transfer_player_to_branch_map s = 
