@@ -391,17 +391,21 @@ let game_state = init ()
 
 let change_player player s = s.player <- player
 
-let change_enemies enemies s = s.all_enemies <- enemies
-
 let get_player s = s.player
 
-let get_enemies s = s.all_enemies
+let get_enemies s = s.all_enemies_in_current_map
 
 let get_map s = s.current_map
 
 let get_current_map_name s = s.current_map.name
 
 let get_current_map_size s = s.current_map.size
+
+(*map-param related methods *)
+let get_player s = 
+  match s.player with
+  | Player p -> p
+  | Died -> failwith "player is dead"
 
 (*let get_all_weapons_on_current_map s = 
   let name = s.current_map.name
@@ -444,12 +448,12 @@ let move_player_down s =
       s.player <- Player t
   with Player.Illegal _ -> ()
 
-(*let delete_one_enemy_from_state s enemy =
-  for i = 0 to (Array.length s.all_enemies) - 1 do 
-    if s.all_enemies.(i) = enemy 
-    then s.all_enemies.(i) <- Deleted 
+let delete_one_enemy_from_state s enemy_name =
+  for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
+    if Enemy.Enemy.get_name s.all_enemies_in_current_map.(i) = enemy 
+    then s.all_enemies_in_current_map.(i) <- Deleted 
     else ()
-  done*)
+  done
 
 (**[eat_one_food s food_name] makes the following updates: 
    1. [food_name] is removed from the the player's food array in [s].
@@ -532,16 +536,34 @@ let equip_one_weapon s weapon_name =
   with SuccessExit ->
     ()
 
-let check_food_or_weapon_on_ground s =
-  1
+let check_food_on_loc_and_return_name_list s loc =
+  let store = [|[]|] in
+  (for i = 0 to (Array.length s.all_foods_in_current_map) do
+    match s.all_foods_in_current_map.(i) with
+    | Food f when Foods.Food.get_loc f = loc ->
+      store.(0) <- ((Foods.Food.get_name f)::store.(0))
+    | _ -> ()
+  done)
+  store.(0)
 
 
-(*map-param related methods *)
-let get_player s = 
-  match s.player with
-  | Player p -> p
-  | Died -> failwith "player is dead"
+let check_weapon_on_loc_and_return_name_list s loc =
+  let store = [|[]|] in
+  (for i = 0 to (Array.length s.all_weapons_in_current_map) do
+    match s.all_weapons_in_current_map.(i) with
+    | Weapon w when Weapons.Weapon.get_loc w = loc ->
+      store.(0) <- ((Weapons.Weapon.get_name w)::store.(0))
+    | _ -> ()
+  done)
+  store.(0)
 
+(* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! *)
+let check_item_on_player_ground s =
+  let loc = s |> get_player |> Player.location in
+  (
+    check_food_on_loc_and_return_name_list s loc,
+    check_weapon_on_loc_and_return_name_list s loc
+  )
 
 let check_current_linked_map s =
   if get_current_map_name s <> "main" then false, ""
@@ -559,7 +581,7 @@ let get_map_index_by_name s name =
         search 0 d in 
   search 0 s.all_maps
 
-
+(* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! *)
 let transfer_player_to_branch_map s = 
   let status, name =  check_current_linked_map s in
   if status = false then ()
@@ -578,6 +600,7 @@ let check_branch_map_status s = (*true indicates player finished this branched m
   get_current_map_name s <> "main" 
   && Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
+(* !!!!!!!!!!!!!!!!!!!!!!!! *)
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
