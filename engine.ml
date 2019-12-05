@@ -162,6 +162,8 @@ let parse_dims s =
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   (cols |> int_of_string, rows |> int_of_string)
 
+
+
 (*                        models builder                         *)
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
@@ -308,8 +310,7 @@ let main_engine_food ~(loc_array: (int * int) array)
     final_number_array loc_array
 
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
-   represented by the json array [j_arr] with the dimensions [cols] by [rows] 
-*)
+   represented by the json array [j_arr] with the dimensions [cols] by [rows] *)
 let weapon_array_builder cols rows jsons: weapon_item array = 
   jsons 
   |> Array.map 
@@ -429,7 +430,7 @@ let init (): state =
   let final_number_array = random_int_array_for_enemies_and_items loc_array number in
   let all_enemies = (main_engine_enemy ~loc_array ~final_number_array)  in
   let all_foods = (main_engine_food ~loc_array ~final_number_array)  in
-  let all_weapons = (main_engine_weapon ~loc_array ~final_number_array)  in {
+  let all_weapons = (main_engine_weapon ~loc_array ~final_number_array) in {
     player = main_engine_player ();
     food_inventory = [|Eaten; Eaten; Eaten|];
     weapon_inventory = [|Empty; Empty; Empty|]; (*the length of inventory shouldn't be changed *)
@@ -447,6 +448,9 @@ let init (): state =
     all_weapons = all_weapons;
     all_enemies = all_enemies;
   }
+
+
+
 
 (*                        basic getters                            *)
 
@@ -542,9 +546,10 @@ let move_player_down s =
    from the game state [s] *)
 let delete_one_enemy_from_state s enemy_name =
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
-    if Enemy.get_name s.all_enemies_in_current_map.(i) = enemy_name 
-    then s.all_enemies_in_current_map.(i) <- Deleted 
-    else ()
+    match s.all_enemies_in_current_map.(i) with
+      | Enemy t when Enemy.Enemy.get_name t = enemy_name ->
+        s.all_enemies_in_current_map.(i) <- Deleted 
+      | _ -> ()
   done
 
 
@@ -633,8 +638,9 @@ let equip_one_weapon s weapon_name =
     ()
 
 
-(**[check_food_on_loc_and_return_name_list s loc] returns the array of 
-   foods that are at the location [loc] in the current map in state [s] *)
+(**[check_food_on_loc_and_return_name_list s loc] returns a list of food names
+ (possibly empty) are at the location [loc] 
+ in the current map in state [s] *)
 let check_food_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
   (for i = 0 to Array.length s.all_foods_in_current_map do
@@ -645,8 +651,9 @@ let check_food_on_loc_and_return_name_list s loc =
    done);
   store.(0)
 
-(**[check_weapon_on_loc_and_return_name_list s loc] returns the array of 
-   weapons that are at the location [loc] in the current map in state [s] *)
+(**[check_weapon_on_loc_and_return_name_list s loc] returns a list of 
+   weapon names (possibly empty) that are at the location [loc] 
+   in the current map in state [s] *)
 let check_weapon_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
   (for i = 0 to (Array.length s.all_weapons_in_current_map) do
@@ -659,10 +666,12 @@ let check_weapon_on_loc_and_return_name_list s loc =
 
 
 
-(**[check_item_on_player_ground s] calls 
-   [check_food_on_loc_and_return_name_list] and  
-   [check_weapon_on_loc_and_return_name_list] on [s] and the player's location 
-   at state [s] *)
+(**[check_item_on_player_ground s] is a tuple of 
+(food_name list,  weapon_name list) at player's current position
+   at state [s] 
+   
+   Require:
+   Player MUST BE Alive*)
 let check_item_on_player_ground s =
   let loc = s |> get_player |> Player.location in
   (
@@ -707,6 +716,7 @@ let transfer_player_to_branch_map s =
     s.all_foods_in_current_map <- s.all_foods.(map_index);
     s.all_weapons_in_current_map <- s.all_weapons.(map_index);
     s.current_map_in_all_maps <- map_index;
+    (* the init pos of player in branched map is (1,1) *)
     Player.switch_loc (get_player s) (1,1)
 
 (**[check_branch_map_status s] returns whether the player at state [s] has 
