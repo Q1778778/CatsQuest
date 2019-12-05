@@ -153,6 +153,31 @@ let random_int_array_for_enemies_and_items loc_array number =
     + sum - (total_sum 0 temp_random_number))::(List.tl temp_random_number))
   |> Array.of_list
 
+let sorted_list col row length = 
+  let rec inner_looper col' row' finished count = 
+    if count = 1 then finished
+    else if col' = 1 
+    then 
+      inner_looper col' (row'-1) ((col', row')::finished) (count - 1)
+    else 
+      inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
+    inner_looper col row [] length
+
+
+let unique_location_list col row length =
+  if (length / 2 - col < 2) || (length / 2 - row < 2) then
+    sorted_list col row length (* small map. A sorted list is better for minimizing time complexity*)
+  else
+    let col' = length / 2 in
+    let row' = length - col' in
+    let rec constructor finished count =
+      if count = 0 then finished
+      else let r_col = 1 + Random.int col' in
+      let r_row = 1 + Random.int row' in 
+      if List.mem (r_col, r_row) finished
+      constructor finished count (* try again *)
+      else constructor ((r_col, r_row)::finished) (count - 1)
+    
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"]
@@ -185,14 +210,14 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 (**[single_enemy_builder j id col row] constructs a new enemy represented 
    by the json [j] at location [(col, row)] with id [id] *)
-let single_enemy_builder j ~id ~col ~row =
+let single_enemy_builder j ~id ~col ~row=
   Enemy (
     let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
-    let pos = ((Random.int col)+1, (Random.int row)+1) in  (* random init pos *)
+    let pos = (col, row) in  (* random init pos *)
     let hp = j |> member "HP" |> to_int in
     let max_hp = hp in
     let lst = j |> member "skills" |> to_list in
@@ -227,8 +252,9 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
     let id = count () in 
-    List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
-      expected_enemy_models |> Array.of_list
+    List.map2  (fun x (col, row)-> browse_one_enemy_json x ~id ~col ~row)
+      (expected_enemy_models |> Array.of_list)
+      (unique_location_list col row number)
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
@@ -269,17 +295,16 @@ let main_engine_player: unit -> player =
 *)
 let food_array_builder cols rows jsons: food_item array = 
   jsons |> 
-  Array.map 
-    (fun j -> let id = count () in
+  Array.map2 
+    (fun (col, row) j -> let id = count () in
       let health = j |> member "health" |> to_int in
       let strength = j |> member "strength" |> to_int in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
-      let row = 1 + Random.int rows in
-      let col = 1 + Random.int cols in
       let map = "main" in
       Food (Foods.Food.constructor ~col ~row ~health 
               ~description ~name ~id ~strength ~map))
+    (unique_location_list cols rows (List.length jsons))
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
@@ -314,16 +339,15 @@ let main_engine_food ~(loc_array: (int * int) array)
    represented by the json array [j_arr] with the dimensions [cols] by [rows] *)
 let weapon_array_builder cols rows jsons: weapon_item array = 
   jsons 
-  |> Array.map 
-    (fun j -> let id = count () in
+  |> Array.map2 
+    (fun (col, row) j -> let id = count () in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
       let strength = j |> member "strength"|> to_int in
-      let row = 1 + Random.int rows in
-      let col = 1 + Random.int cols in
       let map = "main" in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~map))
+      (unique_location_list cols rows (List.length jsons))
 
 (**[main_engine_weapon_for_single_map c r n] reads the file ["weapons.json"] 
    in the current directory and returns the parsed weapon item array. 
@@ -543,12 +567,13 @@ let move_player_down s =
 
 (*                       change game state                        *)
 
-(**[delete_one_enemy_from_state s n] deletes the enemy with name [n] 
-   from the game state [s] *)
-let delete_one_enemy_from_state s enemy_name =
+(**[delete_one_enemy_from_state s] deletes the enemy with player's current
+location *)
+let delete_one_enemy_from_state s =
+  let loc = s.player |> get_player |> Player.location in
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
-      | Enemy t when Enemy.Enemy.get_name t = enemy_name ->
+      | Enemy t when Enemy.Enemy.get_pos t = loc ->
         s.all_enemies_in_current_map.(i) <- Deleted 
       | _ -> ()
   done
