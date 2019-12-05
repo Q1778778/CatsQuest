@@ -217,15 +217,16 @@ let browse_one_enemy_json j ~id ~col ~row =
 
 (**[main_engine_ememy_for_single_map col row num] 
    Raises: [Failure "NONE of 'enemy' json exists"] if none of the json 
-   file names are contain ["enemy"] *)
+   file names are contain ["enemy"]
+*)
 let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
     let id = count () in 
-    (List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
-       expected_enemy_models) |> Array.of_list
+    List.map  (fun x -> browse_one_enemy_json x ~id ~col ~row)
+      expected_enemy_models |> Array.of_list
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
@@ -234,9 +235,9 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
    current directory with the corresponding locations in [loc_arr] and 
    numbers in [num_arr], and returns a mapped 2d array with this information *)
 let main_engine_enemy ~loc_array ~final_number_array : enemy array array =
-  (Array.map2 
-     (fun number (col, row) -> main_engine_ememy_for_single_map col row number)
-     (final_number_array) (loc_array))
+  Array.map2 
+    (fun number (col, row) -> main_engine_ememy_for_single_map col row number)
+    (final_number_array) (loc_array)
 
 
 (**[main_engine_player ()] is the main execution method for the 
