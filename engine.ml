@@ -155,28 +155,27 @@ let random_int_array_for_enemies_and_items loc_array number =
 
 let sorted_list col row length = 
   let rec inner_looper col' row' finished count = 
-    if count = 1 then finished
+    if count = 0 then finished
     else if col' = 1 
     then 
-      inner_looper col' (row'-1) ((col', row')::finished) (count - 1)
+      inner_looper col (row'-1) ((col', row')::finished) (count - 1)
     else 
       inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
     inner_looper col row [] length
 
 
 let unique_location_list col row length =
-  if (length / 2 - col < 2) || (length / 2 - row < 2) then
+  if (col - (length / 2) < 1) || (row - (length / 2)< 1) then
     sorted_list col row length (* small map. A sorted list is better for minimizing time complexity*)
   else
-    let col' = length / 2 in
-    let row' = length - col' in
     let rec constructor finished count =
       if count = 0 then finished
-      else let r_col = 1 + Random.int col' in
-      let r_row = 1 + Random.int row' in 
+      else let r_col = 1 + Random.int col in
+      let r_row = 1 + Random.int row in 
       if List.mem (r_col, r_row) finished
-      constructor finished count (* try again *)
-      else constructor ((r_col, r_row)::finished) (count - 1)
+      then constructor finished count (* try again *)
+      else constructor ((r_col, r_row)::finished) (count - 1) in
+    constructor [] length
     
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
