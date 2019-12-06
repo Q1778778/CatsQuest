@@ -729,3 +729,9 @@ let transfer_player_to_main_map s =
      s.current_map_in_all_maps <- 0)
   else
     ()
+
+let list_of_entrance_loc_to_branch_map s =
+  if get_current_map_name s <> "main"
+  then []
+  else
+    s.branched_map_info |> fst
