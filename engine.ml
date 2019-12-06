@@ -285,15 +285,15 @@ let main_engine_player: unit -> player =
 *)
 let food_array_builder cols rows jsons: food_item array = 
   jsons |> List.map2 
-     (fun (col, row) j -> let id = count () in
-       let health = j |> member "health" |> to_int in
-       let strength = j |> member "strength" |> to_int in
-       let name = j |> member "name" |> to_string in
-       let description = j |> member "description" |> to_string in
-       Food (Foods.Food.constructor ~col ~row ~health 
-               ~description ~name ~id ~strength))
-     ((unique_location_list cols rows (List.length jsons))) 
-     |> Array.of_list
+    (fun (col, row) j -> let id = count () in
+      let health = j |> member "health" |> to_int in
+      let strength = j |> member "strength" |> to_int in
+      let name = j |> member "name" |> to_string in
+      let description = j |> member "description" |> to_string in
+      Food (Foods.Food.constructor ~col ~row ~health 
+              ~description ~name ~id ~strength))
+    ((unique_location_list cols rows (List.length jsons))) 
+  |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
@@ -546,8 +546,8 @@ let delete_one_enemy_from_state s =
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
     | Enemy t when Enemy.get_pos t = loc ->
-      s.all_enemies_in_current_map.(i) <- Deleted 
-      Player.increase_experience player (Enemy.get_experience t);
+      s.all_enemies_in_current_map.(i) <- Deleted ;
+      Player.increase_experience player (Enemy.get_experience t)
     | _ -> ()
   done
 
@@ -555,15 +555,15 @@ let delete_one_enemy_from_state s =
 let take_one_food s =
   let update_food_inventory f t =
     (for j = 0 to (Array.length s.food_inventory) - 1 do
-      match s.food_inventory.(j) with
-      | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
-      | _ -> ()
-    done) in
+       match s.food_inventory.(j) with
+       | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
+       | _ -> ()
+     done) in
   let player = s |> get_player in
   let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
-    | Food f when Foods.get_loc f = loc ->
+    | Food f when Foods.Food.get_loc f = loc ->
       update_food_inventory f player
     | _ -> ()
   done
@@ -582,46 +582,46 @@ let take_one_food_in_current_location s =
    health and strength.  *)
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
-      let health = Foods.Food.get_health food
-       and strength = Foods.Food.get_strength food in
-       let _ = Player.increase_health t health in
-       let _ = Player.increase_strength t strength in
-       s.player <- Player t; in
-    let player = s |> get_player in
-     match s.food_inventory.(pos) with
-      | Food f -> 
-        eat_food f player;
-        s.food_inventory.(pos) <- Eaten
-      | _ -> ()
+    let health = Foods.Food.get_health food
+    and strength = Foods.Food.get_strength food in
+    let _ = Player.increase_health t health in
+    let _ = Player.increase_strength t strength in
+    s.player <- Player t; in
+  let player = s |> get_player in
+  match s.food_inventory.(pos) with
+  | Food f -> 
+    eat_food f player;
+    s.food_inventory.(pos) <- Eaten
+  | _ -> ()
 
 
 
 (**[equip_one_weapon s] will check player's inventory and equip player with
-weapon of player's current location if possible. If the weapon inventory is
-already full, the weapon will not be equipped (the game state wouldn't change)
+   weapon of player's current location if possible. If the weapon inventory is
+   already full, the weapon will not be equipped (the game state wouldn't change)
 *)
 let equip_one_weapon s =
   let update_weapon_inventory w t =
     (for j = 0 to (Array.length s.weapon_inventory) - 1 do
-      match s.weapon_inventory.(j) with
-      | Empty -> 
-          (s.weapon_inventory.(j) <- Weapon w;
+       match s.weapon_inventory.(j) with
+       | Empty -> 
+         (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
           raise SuccessExit)
-      | _ -> ()
-    done) in
+       | _ -> ()
+     done) in
   let player = s |> get_player in
   let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
-    | Weapon w when Weapons.get_loc w = loc ->
+    | Weapon w when Weapons.Weapon.get_loc w = loc ->
       update_weapon_inventory w player
     | _ -> ()
   done
 
 (**[equip_one_weapon s] will update the weapon inventory of game state [s]
-if there is any empty slot and weapon in player's current location will be 
-equipped in that slot  *)
+   if there is any empty slot and weapon in player's current location will be 
+   equipped in that slot  *)
 let equip_weapon_in_current_loc s = 
   try
     equip_one_weapon s
