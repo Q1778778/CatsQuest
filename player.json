@@ -1,9 +1,5 @@
 {
-  "location": {
-    "col": 1,
-    "row": 1
-  },
-  "level": 10,
-  "strength": 10,
+  "level": 1,
+  "strength": 20,
   "health": 100
 }

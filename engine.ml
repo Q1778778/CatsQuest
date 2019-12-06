@@ -159,7 +159,7 @@ let sorted_list col row length =
 
 
 let unique_location_list col row length =
-  if (col - (length / 2) < 1) || (row - (length / 2)< 1) then
+  if (col < (length / 2)) || (row < (length / 2)) then
     sorted_list col row length (* small map. A sorted list is better for minimizing time complexity*)
   else
     let rec constructor finished count =
@@ -273,9 +273,7 @@ let main_engine_player: unit -> player =
         let level = player_json |> member "level" |> to_int in
         let strength = player_json |> member "strength" |> to_int in
         let health = player_json |> member "health" |> to_int in
-        let location = player_json |> member "location" in
-        let row = location |> member "row" |> to_int in
-        let col = location |> member "col" |> to_int in
+        let col, row = 1, 1 in
         let experience = 0 in
         Player.constructor ~health ~level ~strength  ~row ~col ~experience ()
       else read_map handler in
@@ -513,36 +511,28 @@ let get_player s =
 let move_player_left s = 
     match s.player with
     | Died -> ()
-    | Player t ->
-      let _ = Player.move_left t s.current_map in
-      s.player <- Player t
+    | Player t -> Player.move_left t s.current_map
 
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
   match s.player with
     | Died -> ()
-    | Player t ->
-      let _ = Player.move_right t s.current_map in
-      s.player <- Player t
+    | Player t -> Player.move_right t s.current_map 
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
 let move_player_up s = 
     match s.player with
     | Died -> ()
-    | Player t ->
-      let _ = Player.move_up t s.current_map in
-      s.player <- Player t
+    | Player t -> Player.move_up t s.current_map
 
 (** [move_player_down s] change the current pos (col', row') of player 
     in state [s] to (col', row'-1) within the map boundaries.*)
 let move_player_down s = 
     match s.player with
     | Died -> ()
-    | Player t ->
-      let _ = Player.move_down t s.current_map in
-      s.player <- Player t
+    | Player t -> Player.move_down t s.current_map
 
 
 
