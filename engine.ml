@@ -517,7 +517,7 @@ let move_player_left s =
     match s.player with
     | Died -> ()
     | Player t ->
-      let () = Player.move_left t s.current_map in
+      let _ = Player.move_left t s.current_map in
       s.player <- Player t
 
 (** [move_player_right s] change the current pos (col', row') of player 
@@ -526,7 +526,7 @@ let move_player_right s =
   match s.player with
     | Died -> ()
     | Player t ->
-      let () = Player.move_right t s.current_map in
+      let _ = Player.move_right t s.current_map in
       s.player <- Player t
 
 (** [move_player_up s] change the current pos (col', row') of player 
@@ -535,7 +535,7 @@ let move_player_up s =
     match s.player with
     | Died -> ()
     | Player t ->
-      let () = Player.move_up t s.current_map in
+      let _ = Player.move_up t s.current_map in
       s.player <- Player t
 
 (** [move_player_down s] change the current pos (col', row') of player 
@@ -544,7 +544,7 @@ let move_player_down s =
     match s.player with
     | Died -> ()
     | Player t ->
-      let () = Player.move_down t s.current_map in
+      let _ = Player.move_down t s.current_map in
       s.player <- Player t
 
 
@@ -554,11 +554,13 @@ let move_player_down s =
 (**[delete_one_enemy_from_state s] deletes the enemy with player's current
    location *)
 let delete_one_enemy_from_state s =
-  let loc = s |> get_player |> Player.location in
+  let player = s |> get_player in
+  let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
     | Enemy t when Enemy.get_pos t = loc ->
       s.all_enemies_in_current_map.(i) <- Deleted 
+      Player.increase_experience player (Enemy.get_experience t);
     | _ -> ()
   done
 
@@ -618,7 +620,6 @@ let equip_one_weapon s =
       | Empty -> 
           (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
-          s.player <- Player t; 
           raise SuccessExit)
       | _ -> ()
     done) in

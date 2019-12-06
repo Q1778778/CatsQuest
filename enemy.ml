@@ -54,10 +54,6 @@ module type EnemySig = sig
   (* Both setters and getters exist *)
 
   (* Setters                        *)
-
-  (**[set_move e p] places enemy [e] at the new position [p] *)
-  val set_move: t -> int * int -> unit
-
   (**[reduce_hp e d] reduces the enemy's hp amount by [d]. *)
   val reduce_hp: t -> int -> unit
 
@@ -142,8 +138,6 @@ module Enemy: EnemySig = struct
   let get_map s = s.map
 
   (* setters are defined here *)
-  let set_move s d = s.pos <- d
-
   let reduce_hp s d = s.hp <- (s.hp - d)
 
   let get_all_skills_name s = 

@@ -35,6 +35,9 @@ module type P = sig
   (** [health p] is the current health of player [p]. *)
   val health : t -> int
 
+  (** [max_health p] is the maximum health of a player [p]*)
+  val max_health: t -> int
+
   (** [experience p] is the current experience value of player [p]. *)
   val experience : t -> int 
 
@@ -161,6 +164,8 @@ module Player : P = struct
 
   let health p = p.health
 
+  let max_health p = 100 + 30 * p.level (* this could be mutable *)
+
   let experience p = p.experience
 
   let strength p = p.strength
@@ -216,7 +221,7 @@ module Player : P = struct
     in p.strength <- new_strength
 
   let advance_level p = 
-    let experience_qual = 100 * p.level in 
+    let experience_qual = 70 + 30 * p.level in 
     if p.experience >= experience_qual 
     then
         p.level <- p.level + 1;
