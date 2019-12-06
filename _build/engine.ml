@@ -203,7 +203,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 (**[single_enemy_builder j id col row] constructs a new enemy represented 
    by the json [j] at location [(col, row)] with id [id] *)
-let single_enemy_builder j ~id ~col ~row=
+let single_enemy_builder j ~id ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
@@ -221,9 +221,8 @@ let single_enemy_builder j ~id ~col ~row=
           let skill_probability = x |> member "probability" |> to_float in
           (Enemy.single_skill_constructor ~skill_name ~skill_strength
              ~skill_probability)) lst in
-    let map = "main" in
     Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills ~map )
+      ~hp ~id ~descr ~max_hp ~skills)
 
 (** [browse_one_enemy_json j id col row] calls 
     [single_enemy_builder j id col row] if [j] is a valid enemy json
@@ -287,16 +286,16 @@ let main_engine_player: unit -> player =
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
 let food_array_builder cols rows jsons: food_item array = 
-  (List.map2 
-     (fun (col, row) j -> let id = count () in
-       let health = j |> member "health" |> to_int in
-       let strength = j |> member "strength" |> to_int in
-       let name = j |> member "name" |> to_string in
-       let description = j |> member "description" |> to_string in
-       let map = "main" in
-       Food (Foods.Food.constructor ~col ~row ~health 
-               ~description ~name ~id ~strength ~map))
-     ((unique_location_list cols rows (List.length jsons))) jsons) |> Array.of_list
+  jsons |> List.map2 
+    (fun (col, row) j -> let id = count () in
+      let health = j |> member "health" |> to_int in
+      let strength = j |> member "strength" |> to_int in
+      let name = j |> member "name" |> to_string in
+      let description = j |> member "description" |> to_string in
+      Food (Foods.Food.constructor ~col ~row ~health 
+              ~description ~name ~id ~strength))
+    ((unique_location_list cols rows (List.length jsons))) 
+  |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
@@ -335,9 +334,8 @@ let weapon_array_builder cols rows jsons: weapon_item array =
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
       let strength = j |> member "strength"|> to_int in
-      let map = "main" in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
-                ~description ~name ~id ~map))
+                ~description ~name ~id))
     (unique_location_list cols rows (List.length jsons))
   |> Array.of_list
 
@@ -516,7 +514,7 @@ let move_player_left s =
   match s.player with
   | Died -> ()
   | Player t ->
-    let () = Player.move_left t s.current_map in
+    let _ = Player.move_left t s.current_map in
     s.player <- Player t
 
 (** [move_player_right s] change the current pos (col', row') of player 
@@ -525,7 +523,7 @@ let move_player_right s =
   match s.player with
   | Died -> ()
   | Player t ->
-    let () = Player.move_right t s.current_map in
+    let _ = Player.move_right t s.current_map in
     s.player <- Player t
 
 (** [move_player_up s] change the current pos (col', row') of player 
@@ -534,7 +532,7 @@ let move_player_up s =
   match s.player with
   | Died -> ()
   | Player t ->
-    let () = Player.move_up t s.current_map in
+    let _ = Player.move_up t s.current_map in
     s.player <- Player t
 
 (** [move_player_down s] change the current pos (col', row') of player 
@@ -543,7 +541,7 @@ let move_player_down s =
   match s.player with
   | Died -> ()
   | Player t ->
-    let () = Player.move_down t s.current_map in
+    let _ = Player.move_down t s.current_map in
     s.player <- Player t
 
 
@@ -553,11 +551,13 @@ let move_player_down s =
 (**[delete_one_enemy_from_state s] deletes the enemy with player's current
    location *)
 let delete_one_enemy_from_state s =
-  let loc = s |> get_player |> Player.location in
+  let player = s |> get_player in
+  let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
     | Enemy t when Enemy.get_pos t = loc ->
-      s.all_enemies_in_current_map.(i) <- Deleted 
+      s.all_enemies_in_current_map.(i) <- Deleted ;
+      Player.increase_experience player (Enemy.get_experience t)
     | _ -> ()
   done
 
@@ -617,7 +617,6 @@ let equip_one_weapon s =
        | Empty -> 
          (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
-          s.player <- Player t; 
           raise SuccessExit)
        | _ -> ()
      done) in

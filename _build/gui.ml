@@ -73,7 +73,7 @@ let dialog text npc name=
 
 let get_player_health ()=
   let s= Engine.get_player(Engine.game_state) in
-  (Player.max_health, Player.health s)
+  (Player.max_health s, Player.health s)
 
 
 let get_player_level ()=
@@ -319,7 +319,7 @@ let item_check s i=
     let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
     match List.nth weapon i with 
     |Engine.Empty->()
-    |Engine.Weapon w->cplace.item_selected <-Some ("weapon",Weapons.Weapon.get_map w);
+    |Engine.Weapon w->cplace.item_selected <-Some ("weapon",Weapons.Weapon.get_name w);
       Graphics.set_color red; 
       whitebox_draw (260+(i*100)) 120 (320+(i*100)) 180 3
 
@@ -355,13 +355,13 @@ let ksensor sta=
   let key=sta.key in 
   match key with 
   |'a'
-  |'A'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
+  |'A'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
   |'d'
-  |'D'->Engine.move_player_right Engine.game_state; cplace.irefresh<-true
+  |'D'->Engine.move_player_up Engine.game_state; cplace.irefresh<-true
   |'w'
-  |'W'->Engine.move_player_up Engine.game_state; cplace.irefresh<-true
+  |'W'->Engine.move_player_right Engine.game_state; cplace.irefresh<-true
   |'s'
-  |'S'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
+  |'S'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
   |_->()
 
 let rec fensor (c:clist) i=

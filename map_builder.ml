@@ -7,7 +7,7 @@ let map_size_cal (t:Maps.t)=
   match col,row with
   |5,5->((300,200),120)
   |3,3->((375,200),150)
-  |10,5->((0,200),120)
+  |5,10->((0,200),120)
   |_->failwith"wrong size of map"
 
 (**[picture_getter s] returns the image RGB matrix given by the 
@@ -33,7 +33,7 @@ let map_text_build ()=
   let rec draw_pic (data:((int * int) * Maps.MapParam.map_param) list) 
       rs cs inter=
     match data with 
-    |((c,r),p)::t-> (let pic=picture_getter p.name p in 
+    |((r,c),p)::t-> (let pic=picture_getter p.name p in 
                      let the_image=Graphics.make_image pic in
                      Graphics.draw_image the_image (rs+(c-1)*inter) 
                        (cs+(r-1)*inter);
@@ -46,7 +46,7 @@ let draw_player () : unit =
   let t=Engine.get_map Engine.game_state in
   let ((rr,cr),interval)=map_size_cal t in 
   let player=Engine.get_player Engine.game_state in 
-  let (col,row)=Player.Player.location player in 
+  let (row,col)=Player.Player.location player in 
   Graphics.set_color Graphics.red;
   Graphics.fill_circle (rr+(col-1)*interval+interval/2) 
     (cr+(row-1)*interval+(interval/2)) (interval/4)
@@ -59,7 +59,7 @@ let draw_items ()=
   let draw_item w=
     match w with 
     |Engine.Weapon w->
-      let (c,r)= Weapons.Weapon.get_loc w in
+      let (r,c)= Weapons.Weapon.get_loc w in
       Graphics.set_color Graphics.yellow;
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
         (cr+(r-1)*interval+(interval/2)) (interval/8) 
