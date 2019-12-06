@@ -57,3 +57,17 @@ val delete_one_enemy_from_state: state -> unit
 the list of (col, row) which each represents an entrance to branch map
 */
 val list_of_entrance_loc_to_branch_map: state -> (int * int) list
+
+/**
+drop the weapon at pos [index] of weapon inventory to player's current location
+
+ex: 
+if the weapon inventory is [|Null; Null; dagger|]
+drop_one_weapon_to_current_location s 2 drops the dagger
+*/
+val drop_one_weapon_to_current_location: state -> int -> unit
+
+/**
+drop the food at pos [index] of food inventory to player's current location
+*/
+val drop_one_food_to_current_location: state -> int -> unit

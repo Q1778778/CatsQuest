@@ -575,6 +575,27 @@ let take_one_food_in_current_location s =
   with SuccessExit ->
     ()
 
+let drop_one_food s pos = 
+  let search_food_array s f = 
+    (for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
+      match s.all_foods_in_current_map.(j) with
+      | Eaten -> 
+        (s.all_foods_in_current_map.(j) <- Food f;
+        raise SuccessExit)
+      | _ -> ()
+    done);
+    (* no empty slot *)
+    s.all_foods_in_current_map <- Array.append 
+      [|Food f|] s.all_foods_in_current_map; in
+  match s.all_foods_in_current_map.(pos) with
+  | Food f -> search_food_array s f;
+  | Eaten -> ()
+
+let drop_one_food_to_current_location s pos =
+  try
+    drop_one_food s pos
+  with SuccessExit ->
+    ()
 
 (**[eat_one_food_in_inventory s pos] makes the following updates: 
    1. the food at index [pos] in player's food inventory is removed from [s]
@@ -628,6 +649,31 @@ let equip_weapon_in_current_loc s =
   with SuccessExit ->
     ()
 
+let drop_one_weapon s pos = 
+  let search_weapon_array s w = 
+    (for j = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
+      match s.all_weapons_in_current_map.(j) with
+      | Null -> 
+        (s.all_weapons_in_current_map.(j) <- Weapon w;
+        raise SuccessExit)
+      | _ -> ()
+    done);
+    (* no empty slot *)
+    s.all_weapons_in_current_map <- Array.append 
+      [|Weapon w|] s.all_weapons_in_current_map; in
+  match s.weapon_inventory.(pos) with
+  | Weapon w -> 
+    let player = s |> get_player in
+    Player.reduce_strength player (Weapons.get_strength w);
+    search_weapon_array s w;
+  | Null -> ()
+
+let drop_one_weapon_to_current_location s pos =
+  try
+    drop_one_weapon s pos
+  with SuccessExit ->
+    ()
+
 
 (**[check_food_on_loc_and_return_name_list s loc] returns a list of food names
    (possibly empty) are at the location [loc] 
@@ -656,7 +702,6 @@ let check_weapon_on_loc_and_return_name_list s loc =
   store.(0)
 
 
-
 (**[check_item_on_player_ground s] is a tuple of 
    (food_name list,  weapon_name list) at player's current position
    at state [s] 
@@ -669,6 +714,9 @@ let check_item_on_player_ground s =
     check_food_on_loc_and_return_name_list s loc,
     check_weapon_on_loc_and_return_name_list s loc
   )
+
+
+
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
    state [s] is not ["main"] or if the player at state [s] is not found in the 
