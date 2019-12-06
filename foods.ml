@@ -11,7 +11,6 @@ module type F = sig
     name:string -> 
     id:int -> 
     strength:int -> 
-    map: string ->
     food
 
   (**[get_name f] is the name of the food [f]  *)
@@ -25,9 +24,6 @@ module type F = sig
 
   (**[get_loc f] is the location of the food [f]  *)
   val get_loc : food -> int * int
-
-  (**[get_map f] is the map name of which the food [f] is currently in*)
-  val get_map : food -> string
 end
 
 
@@ -39,18 +35,16 @@ module Food : F = struct
     location : int * int;
     health : int;
     strength : int;
-    map : string;
   }
 
   let constructor 
-      ~row ~col ~health ~description ~name ~id ~strength ~map = {
+      ~row ~col ~health ~description ~name ~id ~strength = {
     name = name;
     id = id;
     strength = strength;
     health = health;
     location = (col,row);
     description = description;
-    map = map;
   }
 
   let get_name f = f.name
@@ -60,7 +54,5 @@ module Food : F = struct
   let get_health f = f.health
 
   let get_loc f = f.location
-
-  let get_map f = f.map
 end
 

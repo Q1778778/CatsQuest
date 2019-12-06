@@ -203,7 +203,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 (**[single_enemy_builder j id col row] constructs a new enemy represented 
    by the json [j] at location [(col, row)] with id [id] *)
-let single_enemy_builder j ~id ~col ~row=
+let single_enemy_builder j ~id ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
     let id = (Int.to_string (id + 1)) in
@@ -221,9 +221,8 @@ let single_enemy_builder j ~id ~col ~row=
           let skill_probability = x |> member "probability" |> to_float in
           (Enemy.single_skill_constructor ~skill_name ~skill_strength
              ~skill_probability)) lst in
-    let map = "main" in
     Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills ~map )
+      ~hp ~id ~descr ~max_hp ~skills)
 
 (** [browse_one_enemy_json j id col row] calls 
     [single_enemy_builder j id col row] if [j] is a valid enemy json
@@ -293,9 +292,8 @@ let food_array_builder cols rows jsons: food_item array =
        let strength = j |> member "strength" |> to_int in
        let name = j |> member "name" |> to_string in
        let description = j |> member "description" |> to_string in
-       let map = "main" in
        Food (Foods.Food.constructor ~col ~row ~health 
-               ~description ~name ~id ~strength ~map))
+               ~description ~name ~id ~strength))
      ((unique_location_list cols rows (List.length jsons))) 
      |> Array.of_list
 
@@ -336,9 +334,8 @@ let weapon_array_builder cols rows jsons: weapon_item array =
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
       let strength = j |> member "strength"|> to_int in
-      let map = "main" in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
-                ~description ~name ~id ~map))
+                ~description ~name ~id))
     (unique_location_list cols rows (List.length jsons))
   |> Array.of_list
 
