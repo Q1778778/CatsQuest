@@ -8,7 +8,7 @@
     {
       "name": "fire ball",
       "strength": 50,
-      "probability": 0.3
+      "probability": 0.2
     },
     {
       "name": "curses",

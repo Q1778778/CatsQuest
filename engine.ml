@@ -273,9 +273,8 @@ let main_engine_player: unit -> player =
         let level = player_json |> member "level" |> to_int in
         let strength = player_json |> member "strength" |> to_int in
         let health = player_json |> member "health" |> to_int in
-        let col, row = 1, 1 in
         let experience = 0 in
-        Player.constructor ~health ~level ~strength  ~row ~col ~experience ()
+        Player.constructor ~health ~level ~strength ~experience ()
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 

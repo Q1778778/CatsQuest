@@ -3,7 +3,7 @@
   "description": "globins live in the forest.\nThey attack village and rob travelers.\nThey are small but agile!",
   "HP": 50,
   "level": 3,
-  "experience": 50,
+  "experience": 40,
   "skills": [
     {
       "name": "stab",
