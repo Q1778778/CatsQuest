@@ -461,7 +461,7 @@ let rec init flag =
   normal_four_botton cplace;
   health_bar ();
   draw_inventory();
-
+  ground_mon();
   skill_mon();
   ms1_demo flag;
   fensor cplace Normal;

@@ -513,46 +513,38 @@ let get_player s =
 (** [move_player_left s] change the current pos (col', row') of player 
     in state [s] to (col'-1, row') within the map boundaries.*)
 let move_player_left s = 
-  try
-    match s.player with
-    | Died -> ()
-    | Player t ->
-      let () = Player.move_left t s.current_map in
-      s.player <- Player t
-  with Player.Illegal _ -> ()
+  match s.player with
+  | Died -> ()
+  | Player t ->
+    let () = Player.move_left t s.current_map in
+    s.player <- Player t
 
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
-  try
-    match s.player with
-    | Died -> ()
-    | Player t ->
-      let () = Player.move_right t s.current_map in
-      s.player <- Player t
-  with Player.Illegal _ -> ()
+  match s.player with
+  | Died -> ()
+  | Player t ->
+    let () = Player.move_right t s.current_map in
+    s.player <- Player t
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
 let move_player_up s = 
-  try
-    match s.player with
-    | Died -> ()
-    | Player t ->
-      let () = Player.move_up t s.current_map in
-      s.player <- Player t
-  with Player.Illegal _ -> ()
+  match s.player with
+  | Died -> ()
+  | Player t ->
+    let () = Player.move_up t s.current_map in
+    s.player <- Player t
 
 (** [move_player_down s] change the current pos (col', row') of player 
     in state [s] to (col', row'-1) within the map boundaries.*)
 let move_player_down s = 
-  try
-    match s.player with
-    | Died -> ()
-    | Player t ->
-      let () = Player.move_down t s.current_map in
-      s.player <- Player t
-  with Player.Illegal _ -> ()
+  match s.player with
+  | Died -> ()
+  | Player t ->
+    let () = Player.move_down t s.current_map in
+    s.player <- Player t
 
 
 
@@ -572,14 +564,14 @@ let delete_one_enemy_from_state s =
 
 let take_one_food s =
   let update_food_inventory f t =
-    (for j = 0 to Array.length s.food_inventory do
+    (for j = 0 to (Array.length s.food_inventory) - 1 do
        match s.food_inventory.(j) with
        | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
        | _ -> ()
      done) in
   let player = s |> get_player in
   let loc = player |> Player.location in
-  for i = 0 to Array.length s.all_foods_in_current_map do
+  for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
     | Food f when Foods.Food.get_loc f = loc ->
       update_food_inventory f player
@@ -613,13 +605,14 @@ let eat_one_food_in_inventory s pos =
   | _ -> ()
 
 
+
 (**[equip_one_weapon s] will check player's inventory and equip player with
    weapon of player's current location if possible. If the weapon inventory is
    already full, the weapon will not be equipped (the game state wouldn't change)
 *)
 let equip_one_weapon s =
   let update_weapon_inventory w t =
-    (for j = 0 to Array.length s.weapon_inventory do
+    (for j = 0 to (Array.length s.weapon_inventory) - 1 do
        match s.weapon_inventory.(j) with
        | Empty -> 
          (s.weapon_inventory.(j) <- Weapon w;
@@ -630,7 +623,7 @@ let equip_one_weapon s =
      done) in
   let player = s |> get_player in
   let loc = player |> Player.location in
-  for i = 0 to Array.length s.all_weapons_in_current_map do
+  for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapons.Weapon.get_loc w = loc ->
       update_weapon_inventory w player
@@ -652,7 +645,7 @@ let equip_weapon_in_current_loc s =
    in the current map in state [s] *)
 let check_food_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
-  (for i = 0 to Array.length s.all_foods_in_current_map do
+  (for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
      match s.all_foods_in_current_map.(i) with
      | Food f when Foods.Food.get_loc f = loc ->
        store.(0) <- (Foods.Food.get_name f)::store.(0)
@@ -665,7 +658,7 @@ let check_food_on_loc_and_return_name_list s loc =
    in the current map in state [s] *)
 let check_weapon_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
-  (for i = 0 to (Array.length s.all_weapons_in_current_map) do
+  (for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
      match s.all_weapons_in_current_map.(i) with
      | Weapon w when Weapons.Weapon.get_loc w = loc ->
        store.(0) <- ((Weapons.Weapon.get_name w)::store.(0))

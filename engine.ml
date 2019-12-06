@@ -564,27 +564,19 @@ let delete_one_enemy_from_state s =
 
 let take_one_food s =
   let update_food_inventory f t =
-    <<<<<<< HEAD
-      (for j = 0 to Array.length s.food_inventory do
-         match s.food_inventory.(j) with
-         | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
-         | _ -> ()
-       done) in
-  =======
-  (for j = 0 to (Array.length s.food_inventory) - 1 do
-     match s.food_inventory.(j) with
-     | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
-     | _ -> ()
-   done) in
->>>>>>> 3bc6b2131a84a6e7e24c7e80dbbe7f61db5d19e4
-let player = s |> get_player in
-let loc = player |> Player.location in
-for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
-  match s.all_foods_in_current_map.(i) with
-  | Food f when Foods.Food.get_loc f = loc ->
-    update_food_inventory f player
-  | _ -> ()
-done
+    (for j = 0 to (Array.length s.food_inventory) - 1 do
+       match s.food_inventory.(j) with
+       | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
+       | _ -> ()
+     done) in
+  let player = s |> get_player in
+  let loc = player |> Player.location in
+  for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
+    match s.all_foods_in_current_map.(i) with
+    | Food f when Foods.Food.get_loc f = loc ->
+      update_food_inventory f player
+    | _ -> ()
+  done
 
 
 let take_one_food_in_current_location s = 

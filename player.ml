@@ -188,7 +188,7 @@ module Player : P = struct
   exception Illegal of string 
 
   (** [move p m c r] changes the player state for which the player [p] 
-     moves in map [m];  *)
+      moves in map [m];  *)
   let move p m col_diff row_diff = 
     let col' = col_diff + (col p) in
     let row' = row_diff + (row p) in 
@@ -219,15 +219,15 @@ module Player : P = struct
     let experience_qual = 100 * p.level in 
     if p.experience >= experience_qual 
     then
-        p.level <- p.level + 1;
-        p.experience <- p.experience mod experience_qual;
-        p.strength <- p.strength + 10;
+      (p.level <- p.level + 1;
+       p.experience <- p.experience mod experience_qual;
+       p.strength <- p.strength + 10)
     else 
       ()
 
   let increase_experience p e = 
     p.experience <- p.experience + e;
-    advance_level p;
+    advance_level p
 
   let extract_skill_strength_single_skill (skill:skill) = skill.strength
 

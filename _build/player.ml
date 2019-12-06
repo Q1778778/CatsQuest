@@ -6,9 +6,6 @@ module type P = sig
   (** The abstract type of values representing a player. *)
   type t
 
-  (** The exception representing the result of an illegal movement.*)
-  exception Illegal of string
-
   (** [constructor r c s h l e] constructs a new player module located at
       row [r], col [c], with strength [s], health [h], experience [e], 
       at level [l]. *)
@@ -44,16 +41,16 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  (** *)
   val move_up : t -> Maps.t -> unit
 
-  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  (** *)
   val move_down : t -> Maps.t -> unit
 
-  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  (** *)
   val move_right : t -> Maps.t -> unit
 
-  (** Raises: [Illegal] if the move results in out of bounds from the map*)
+  (** *)
   val move_left : t -> Maps.t -> unit
 
   (** [reduce_health p h] reduces the health of player [p] by [h].
@@ -67,16 +64,6 @@ module type P = sig
   (** [increase_experience p e] increases the experience of player [p] by [e].
       Requires: [e] >= 0 *)
   val increase_experience : t -> int -> unit 
-
-  (** [advance_level p] is [Legal p'] if the player [p] has reached the 
-       experience value for that level alone, and [Illegal] otherwise.*)
-  val advance_level : t -> unit 
-
-  (** [max_strength] is the maximum possible strength of a player. *)
-  val max_strength : int
-
-  (** [max_health] is the maximum possible health of a player. *)
-  val max_health : int
 
   (** [skill_constructor p n d s] adds a skill to player [p] with 
       name [n], description [d] and strength [s]. *)
@@ -180,10 +167,6 @@ module Player : P = struct
 
   let level p= p.level
 
-  let max_strength = 100
-
-  let max_health = 100
-
   let col p = fst p.location
 
   let row p = snd p.location
@@ -204,14 +187,15 @@ module Player : P = struct
   (* type result = Legal of t | Illegal of string *)
   exception Illegal of string 
 
-  (* [move p m c r] changes the player state for which the player [p] 
-     moves in map [m];  *)
+  (** [move p m c r] changes the player state for which the player [p] 
+      moves in map [m];  *)
   let move p m col_diff row_diff = 
     let col' = col_diff + (col p) in
     let row' = row_diff + (row p) in 
     if Maps.bound_check m col' row' then 
       p.location <- (col', row')
-    else raise (Illegal "Cannot move out of the map!")
+    else 
+      ()
 
   let move_left p m = move p m (-1) 0
 
@@ -231,22 +215,19 @@ module Player : P = struct
       if p.strength - s >= 0 then p.strength - s else 0 
     in p.strength <- new_strength
 
-  let increase_experience p e = 
-    p.experience <- p.experience + e
-
-  let advance_level p =  begin
-    let lev = p.level in 
-    let experience_qual = 100 * lev in 
-    if p.experience >= experience_qual then
-      begin
-        p.level <- lev + 1;
-        p.experience <- p.experience mod experience_qual;
-      end
+  let advance_level p = 
+    let experience_qual = 100 * p.level in 
+    if p.experience >= experience_qual 
+    then
+      (p.level <- p.level + 1;
+       p.experience <- p.experience mod experience_qual;
+       p.strength <- p.strength + 10)
     else 
-      let error_msg = ("cannot advance level without experience " 
-                       ^ string_of_int experience_qual) in 
-      raise (Illegal error_msg)
-  end
+      ()
+
+  let increase_experience p e = 
+    p.experience <- p.experience + e;
+    advance_level p
 
   let extract_skill_strength_single_skill (skill:skill) = skill.strength
 
