@@ -32,12 +32,6 @@ type map_param = Maps.MapParam.map_param
 (** The abstract type of values representing the current map state *)
 type current_map = Maps.t
 
-(** The exception type of an unknown food. *)
-exception UnknownFood of string
-
-(** The exception type of an unknown weapon. *)
-exception UnknownWeapon of string
-
 (** The exception type of a successful food ate or weapon equipped.
    Used to notify that an operation is successful. *)
 exception SuccessExit
@@ -576,87 +570,79 @@ let delete_one_enemy_from_state s =
   done
 
 
-(**[eat_one_food s food_name] makes the following updates: 
-   1. [food_name] is removed from the the player's food array in [s].
-   2. the player in [s] increases health and strength by its corresponding food
-   health and strength. 
-   Returns [()] if the following updates are successful (i.e. when [food_name]
-   is a valid food name in the player's inventory.)
-   Raises: [UnknownFood food_name] if [food_name] is not a valid food name in 
-    player's inventory*)
-let eat_one_food s food_name = 
-  let eat_food food_array i= 
-    match food_array.(i), s.player with
-    | Food food, Player t 
-      when Foods.Food.get_name food = food_name ->   
-      (let health = Foods.Food.get_health food
-       and strength = Foods.Food.get_strength food in
-       let _ = Player.increase_health t health in
-       let _ = Player.increase_strength t strength in
-       food_array.(i) <- Eaten;
-       s.player <- Player t; 
-       raise SuccessExit)
-    | _ -> () in
+let take_one_food s =
+  let update_food_inventory f t =
+    (for j = 0 to Array.length s.food_inventory do
+       match s.food_inventory.(j) with
+       | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
+       | _ -> ()
+     done) in
+  let player = s |> get_player in
+  let loc = player |> Player.location in
+  for i = 0 to Array.length s.all_foods_in_current_map do
+    match s.all_foods_in_current_map.(i) with
+    | Food f when Foods.Food.get_loc f = loc ->
+      update_food_inventory f player
+    | _ -> ()
+  done
+
+
+let take_one_food_in_current_location s = 
   try
-    (let food_array = (s.food_inventory : food_item array) in
-     for i = 0 to (Array.length food_array) - 1 do 
-       eat_food food_array i
-     done);
-    raise (UnknownFood food_name) (* @Deprecated *)
-  with SuccessExit -> ()
+    take_one_food s
+  with SuccessExit ->
+    ()
 
-(**[get_weapon_name_list_of_player_inventory s] is the array of all 
-   weapon names in the inventory of the player at state [s] *)
-let get_weapon_name_list_of_player_inventory s =
-  let array = [|[]|] in
-  (for i = 0 to (Array.length s.weapon_inventory) do
-     match s.weapon_inventory.(i) with
-     | Empty -> ()
-     | Weapon w -> 
-       array.(0) <- (Weapons.Weapon.get_name w) :: array.(0) 
-   done); 
-  array.(0)
 
-(**[match_weapons s weapon_array i] is a helper function that, if  
-   the [weapon_array.(i)] and [s.player] is a valid and defined weapon 
-   and player, [s] includes the weapon [weapon_array.(i)] in its inventory 
-   and increases the player's health. *)
-let equip_weapon_helper s weapon_array i = 
-  let for_each_weapon w t j = 
-    if s.weapon_inventory.(j) = Empty 
-    then (s.weapon_inventory.(j) <- Weapon w;
+(**[eat_one_food_in_inventory s pos] makes the following updates: 
+   1. the food at index [pos] in player's food inventory is removed from [s]
+   2. the player in [s] increases health and strength by its corresponding food
+   health and strength.  *)
+let eat_one_food_in_inventory s pos = 
+  let eat_food food t = 
+    let health = Foods.Food.get_health food
+    and strength = Foods.Food.get_strength food in
+    let _ = Player.increase_health t health in
+    let _ = Player.increase_strength t strength in
+    s.player <- Player t; in
+  let player = s |> get_player in
+  match s.food_inventory.(pos) with
+  | Food f -> 
+    eat_food f player;
+    s.food_inventory.(pos) <- Eaten
+  | _ -> ()
+
+
+(**[equip_one_weapon s] will check player's inventory and equip player with
+   weapon of player's current location if possible. If the weapon inventory is
+   already full, the weapon will not be equipped (the game state wouldn't change)
+*)
+let equip_one_weapon s =
+  let update_weapon_inventory w t =
+    (for j = 0 to Array.length s.weapon_inventory do
+       match s.weapon_inventory.(j) with
+       | Empty -> 
+         (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
           s.player <- Player t; 
           raise SuccessExit)
-    else () in 
-  let execute_valid_weapon_player w t = 
-    if List.for_all (fun w1 -> w1 <> Weapons.Weapon.get_name w) 
-        (get_weapon_name_list_of_player_inventory s)
-    && Player.location t = Weapons.Weapon.get_loc w
-    then 
-      (weapon_array.(i) <- Empty;    
-       for j = 0 to (Array.length s.weapon_inventory) - 1 do 
-         for_each_weapon w t j 
-       done)
-    else () in 
-  match weapon_array.(i), s.player with
-  | Weapon w, Player t -> 
-    execute_valid_weapon_player w t
-  | _ -> () 
+       | _ -> ()
+     done) in
+  let player = s |> get_player in
+  let loc = player |> Player.location in
+  for i = 0 to Array.length s.all_weapons_in_current_map do
+    match s.all_weapons_in_current_map.(i) with
+    | Weapon w when Weapons.Weapon.get_loc w = loc ->
+      update_weapon_inventory w player
+    | _ -> ()
+  done
 
-
-(**[equip_one_weapon s weapon_name] calls [match_weapons] for every single 
-   possible weapon in [s], and returns [()] if the [weapon_name] is known in 
-   [s]. 
-   Raises [UnknownWeapon weapon_name] if the weapon [weapon_name] does not 
-   exist in [s].  *)
-let equip_one_weapon s weapon_name = 
+(**[equip_one_weapon s] will update the weapon inventory of game state [s]
+   if there is any empty slot and weapon in player's current location will be 
+   equipped in that slot  *)
+let equip_weapon_in_current_loc s = 
   try
-    (let weapon_array = s.all_weapons_in_current_map in
-     for i = 0 to (Array.length weapon_array) - 1 do 
-       equip_weapon_helper s weapon_array i  
-     done);
-    raise (UnknownWeapon weapon_name)
+    equip_one_weapon s
   with SuccessExit ->
     ()
 

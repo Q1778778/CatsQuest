@@ -51,4 +51,20 @@ let draw_player () : unit =
   Graphics.fill_circle (rr+(col-1)*interval+interval/2) 
     (cr+(row-1)*interval+(interval/2)) (interval/4)
 
+let draw_items ()=
+  let t=Engine.get_map Engine.game_state in
+  let ((rr,cr),interval)=map_size_cal t in 
+  let s=Engine.game_state in 
+  let weapons=Array.to_list s.all_weapons_in_current_map in 
+  let draw_item w=
+    match w with 
+    |Engine.Weapon w->
+      let (c,r)= Weapons.Weapon.get_loc w in
+      Graphics.set_color Graphics.yellow;
+      Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
+        (cr+(r-1)*interval+(interval/2)) (interval/8) 
+    |Engine.Empty->() in 
+  List.iter draw_item weapons
+
+
 
