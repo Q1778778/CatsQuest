@@ -61,24 +61,23 @@ let dialog text npc name=
   cplace.dialog<-Dialog_sense name
 
 let get_player_health ()=
-  match Engine.get_player(Engine.game_state) with
-  |Engine.Player s-> (Player.max_health, Player.health s)
-  |Engine.Died ->(Player.max_health, 0)
+  let s= Engine.get_player(Engine.game_state) in
+  (Player.max_health, Player.health s)
+
 
 let get_player_level ()=
-  match Engine.get_player(Engine.game_state) with
-  |Engine.Player s->  (Player.level s)
-  |Engine.Died ->0
+  let s= Engine.get_player(Engine.game_state) in
+  (Player.level s)
+
 
 let get_player_expeience ()=
-  match Engine.get_player(Engine.game_state) with
-  |Engine.Player s->  (Player.experience s)
-  |Engine.Died ->0
+  let s= Engine.get_player(Engine.game_state) in
+  (Player.experience s)
+
 
 let player_reduce_health int=
-  match Engine.get_player(Engine.game_state) with
-  |Engine.Player s->  (Player.reduce_health s int)
-  |Engine.Died ->()
+  let s= Engine.get_player(Engine.game_state) in
+  (Player.reduce_health s int)
 
 let experience_bar ()=
   Graphics.set_color black;
@@ -229,11 +228,9 @@ let rec get_one_enemy name lst=
   |[]->raise (Not_such_enemy name)
 
 let skill_damage name=
-  match Engine.get_player(Engine.game_state) with
-  |Player s->
-    name|> Player.get_skill_by_skill_name s|> Player.extract_skill_strength_single_skill
-  |Died->failwith "died people don't fight"
-
+  let s= Engine.get_player(Engine.game_state) in
+  name|> Player.get_skill_by_skill_name s
+  |> Player.extract_skill_strength_single_skill
 
 let enemy_skill_image name=
   match name with 

@@ -28,7 +28,7 @@ let picture_getter s size=
 let map_text_build ()=
   let t=Engine.get_map Engine.game_state in
   let ((rr,cr),interval)=map_size_cal t in 
-  let photo_data=Array.to_list t.map_params in
+  let photo_data= t.map_params in
   let rec draw_pic (data:((int * int) * Maps.MapParam.map_param) list) 
       rs cs inter=
     match data with 
@@ -45,10 +45,9 @@ let draw_player () : unit =
   let t=Engine.get_map Engine.game_state in
   let ((rr,cr),interval)=map_size_cal t in 
   let player=Engine.get_player Engine.game_state in 
-  match player with 
-  |Player z-> let (col,row)=Player.Player.location z in 
-    Graphics.set_color Graphics.red;
-    Graphics.fill_circle (rr+(col-1)*interval+interval/2) 
-      (cr+(row-1)*interval+(interval/2)) (interval/4)
-  |Died->()
+  let (col,row)=Player.Player.location player in 
+  Graphics.set_color Graphics.red;
+  Graphics.fill_circle (rr+(col-1)*interval+interval/2) 
+    (cr+(row-1)*interval+(interval/2)) (interval/4)
+
 

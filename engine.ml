@@ -395,7 +395,7 @@ let change_enemies enemies s = s.all_enemies <- enemies
 
 let get_player s = s.player
 
-let get_enemies s = s.all_enemies
+let get_enemies s = s.all_enemies_in_current_map
 
 let get_map s = s.current_map
 

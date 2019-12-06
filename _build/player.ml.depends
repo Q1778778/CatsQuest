@@ -1,1 +1,1 @@
-player.ml: List Maps Printf Yojson
+player.ml: List Maps Printf
