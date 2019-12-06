@@ -287,7 +287,7 @@ let main_engine_player: unit -> player =
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
 let food_array_builder cols rows jsons: food_item array = 
-  (List.map2 
+  jsons |> List.map2 
      (fun (col, row) j -> let id = count () in
        let health = j |> member "health" |> to_int in
        let strength = j |> member "strength" |> to_int in
@@ -296,7 +296,8 @@ let food_array_builder cols rows jsons: food_item array =
        let map = "main" in
        Food (Foods.Food.constructor ~col ~row ~health 
                ~description ~name ~id ~strength ~map))
-     ((unique_location_list cols rows (List.length jsons))) jsons) |> Array.of_list
+     ((unique_location_list cols rows (List.length jsons))) 
+     |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
