@@ -10,23 +10,28 @@ let get_player s =
   | Player t -> t
   | Died -> failwith "died"
 
+(**[get_player_prop s f] is the property obtained by calling the function [f] 
+   on the player at state [s]. 
+   Requires: [f] is a defined function inside the [Player] module *)
+let get_player_prop s f = s |> get_player |> f
+
 (**[get_pos s] is the player's location at state [s]  *)
-let get_pos s = s |> get_player |> Player.location 
+let get_pos s = get_player_prop s Player.location 
 
 (**[get_health s] is the player's health at state [s]  *)
-let get_health s = s |> get_player |> Player.health
+let get_health s = get_player_prop s Player.health
 
 (**[get_strength s] is the player's strength at state [s]  *)
-let get_strength s = s |> get_player |> Player.strength
+let get_strength s = get_player_prop s Player.strength
 
 (**[get_experience s] is the player's experience at state [s]  *)
-let get_experience s = s |> get_player |> Player.experience
+let get_experience s = get_player_prop s Player.experience
 
 (**[get_level s] is the player's level at state [s]  *)
-let get_level s = s |> get_player |> Player.level
+let get_level s = get_player_prop s Player.level
 
 (**[get_player_map s] is the player's map at state [s]  *)
-let get_player_map s = s |> get_player |> Player.map
+let get_player_map s = get_player_prop s Player.map
 
 (**[map_cols s] is the # of cols of the player's map at state [s]  *)
 let map_cols s = s.current_map.size |> fst
