@@ -113,10 +113,11 @@ module type P = sig
   (**[increase_strength p s] increases player [p]'s strength by [s].*)
   val increase_strength: t -> int -> unit
 
-  (**[change_map p map] updates the map name of player's currently in.*)
+  (**[change_map p map] updates the map name that player [p]'s currently in.*)
   val change_map: t -> string -> unit
 
-  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!!*)
+  (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
+  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
 end 
 
 module Player : P = struct
@@ -271,7 +272,7 @@ module Player : P = struct
 
   let change_map t map = 
     t.map <- map
-  
+
   let switch_loc t loc =
     t.location <- loc
 end

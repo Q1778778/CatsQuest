@@ -7,6 +7,7 @@ let map_size_cal (t:Maps.t)=
   match col,row with
   |5,5->((300,200),120)
   |3,3->((375,200),150)
+  |10,5->((0,200),120)
   |_->failwith"wrong size of map"
 
 (**[picture_getter s] returns the image RGB matrix given by the 
