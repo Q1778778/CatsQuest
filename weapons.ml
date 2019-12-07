@@ -20,6 +20,8 @@ module type W = sig
 
   (**[get_loc w] is the location of the weapon [w]  *)
   val get_loc : weapon -> int * int
+
+  val set_loc : weapon -> int * int -> unit
 end
 
 module Weapon : W = struct 
@@ -27,7 +29,7 @@ module Weapon : W = struct
     name : string;
     description : string;
     id : int;
-    weapon_loc : int * int; (*col, row*)
+    mutable weapon_loc : int * int; (*col, row*)
     strength: int;
   }
 
@@ -45,4 +47,6 @@ module Weapon : W = struct
   let get_strength w = w.strength
 
   let get_loc w = w.weapon_loc
+
+  let set_loc w loc = w.weapon_loc <- loc
 end
