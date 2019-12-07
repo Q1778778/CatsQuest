@@ -1,3 +1,5 @@
+open Player
+
 module type W = sig 
   (** The abstract type of values representing weapons. *)
   type weapon

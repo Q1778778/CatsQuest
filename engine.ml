@@ -190,6 +190,15 @@ let parse_dims s =
 
 (*                        models builder                         *)
 
+let gain_able_skill_constructor jsons_list = 
+  List.map (fun skill -> 
+    let description = skill |> member "description" |> to_string in
+    let strength = skill |> member "strength" |> to_int in
+    let name = skill |> member "name" |> to_string in
+    let cd = skill |> member "cd" |> to_int in
+    Player.skill_constructor description strength name cd) jsons_list
+
+
 (**[browse_dir_enemy h lst] is a list of enemy json files 
    extracted from the directory handler [h]. 
    Requires: the files in the directory handler [h] must be in valid enemy 
@@ -227,6 +236,8 @@ let single_enemy_builder j ~id ~col ~row =
           let skill_probability = x |> member "probability" |> to_float in
           (Enemy.single_skill_constructor ~skill_name ~skill_strength
              ~skill_probability)) lst in
+    let gainables =
+      j |> member "gainable" |> gain_able_skill_constructor
     Enemy.constructor ~pos ~level ~exp ~name
       ~hp ~id ~descr ~max_hp ~skills)
 

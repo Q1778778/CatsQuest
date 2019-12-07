@@ -10,5 +10,6 @@
       "strength": 10,
       "probability": 1.0
     }
-  ]
+  ],
+  "gainable": []
 }

@@ -15,5 +15,13 @@
       "strength": 20,
       "probability": 1.0
     }
+  ],
+  "gainable": [
+    {
+      "name": "divine trial",
+      "description": "The final day has come and all evils will be purified",
+      "cd": 2,
+      "strength": 30
+    }
   ]
 }
