@@ -535,6 +535,14 @@ let get_current_map_name s = s.current_map.name
 (**[get_current_map_size s] is the size of the current map in game state [s] *)
 let get_current_map_size s = s.current_map.size
 
+
+let reduce_player_health s hp = 
+  match s.player with
+  | Player t -> 
+    if Player.health s <= hp
+    then s.player <- Died
+    else Player.reduce_heath t hp
+  | _ -> ()
 (*map-param related methods *)
 
 
