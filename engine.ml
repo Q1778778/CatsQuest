@@ -592,20 +592,22 @@ let take_one_food_in_current_location s =
    food inventory to the player's current location at state [s]. 
    Raises: [SuccessExit] if the food at index [pos] is successfully dropped. *)
 let drop_one_food s pos = 
-  let search_food_array s f = 
+  let search_food_array s f loc = 
+    Foods.set_loc f loc;
+    let food = Food f in
     (for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
-       match s.all_foods_in_current_map.(j) with
-       | Eaten -> (s.all_foods_in_current_map.(j) <- Food f;
-                   raise SuccessExit)
-       | _ -> ()
-     done);
+      match s.all_foods_in_current_map.(j) with
+      | Eaten -> (s.all_foods_in_current_map.(j) <- food;
+                  raise SuccessExit)
+      | _ -> ()
+    done);
     (* no empty slot *)
     s.all_foods_in_current_map <- Array.append 
-        [|Food f|] s.all_foods_in_current_map; in
-  match s.all_foods_in_current_map.(pos) with
+      [| food |] s.all_foods_in_current_map; in
+  match s.food_inventory.(pos) with
   | Food f -> 
-    s.all_foods_in_current_map.(pos) <- Eaten;
-    search_food_array s f;
+    s.food_inventory.(pos) <- Eaten;
+    search_food_array s f (s |> get_player |> Player.location);
   | Eaten -> ()
 
 (**[drop_one_food_to_current_location s pos] drops the food at index [pos] 
@@ -678,24 +680,26 @@ let equip_weapon_in_current_loc s =
    Raises: [SuccessExit] if the weapon at index [pos] is successfully removed
    from the weapon inventory. *)
 let drop_one_weapon s pos = 
-  let search_weapon_array s w = 
+  let search_weapon_array s w loc = 
+    Weapons.set_loc w loc;
+    let weapon = Weapon w in
     (for j = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
-       match s.all_weapons_in_current_map.(j) with
-       | Empty -> 
-         (s.all_weapons_in_current_map.(j) <- Weapon w;
-          raise SuccessExit)
-       | _ -> ()
-     done);
+      match s.all_weapons_in_current_map.(j) with
+      | Empty -> 
+        (s.all_weapons_in_current_map.(j) <- weapon;
+        raise SuccessExit)
+      | _ -> ()
+    done);
     (* no empty slot *)
     s.all_weapons_in_current_map <- Array.append 
-        [|Weapon w|] s.all_weapons_in_current_map; in
+      [| weapon |] s.all_weapons_in_current_map; in
   match s.weapon_inventory.(pos) with
   | Weapon w -> 
     let player = s |> get_player in
-    Player.reduce_strength player (Weapons.Weapon.get_strength w);
+    Player.reduce_strength player (Weapons.get_strength w);
     s.weapon_inventory.(pos) <- Empty;
-    search_weapon_array s w;
-  | Empty -> ()
+    search_weapon_array s w (player |> Player.location);
+  | _ -> ()
 
 (**[drop_one_weapon_to_current_location s pos] drops the weapon at index 
    [pos] of the player's weapon inventory to the player's current location 
