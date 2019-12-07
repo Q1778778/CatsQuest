@@ -221,7 +221,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 let single_enemy_builder j ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
-    let id = count () in
+    let id = count () |> string_of_int in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
@@ -238,8 +238,8 @@ let single_enemy_builder j ~col ~row =
              ~skill_probability)) lst in
     let gainables =
       j |> member "gainable"|> to_list |> gainable_skill_constructor in 
-    Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills ~gainables)
+    Enemy.constructor ~pos ~level ~exp
+      ~hp ~id ~name ~descr ~max_hp ~skills ~gainables)
 
 (** [browse_one_enemy_json j id col row] calls 
     [single_enemy_builder j id col row] if [j] is a valid enemy json

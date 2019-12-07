@@ -136,7 +136,7 @@ module Enemy: EnemySig = struct
 
   (* setters are defined here *)
   let reduce_hp s d =
-    let tmp_hp = s.hp - d 
+    let tmp_hp = s.hp - d in
     if tmp_hp < 0 then s.hp <- 0
     else s.hp <- tmp_hp
 
