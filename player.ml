@@ -43,16 +43,24 @@ module type P = sig
   (** [strength p] is the current strength of player [p]. *)
   val strength : t -> int
 
-  (** *)
+  (**[move_up p m] moves player [p] to [(col, row+1)] within the bounds
+     of map [m]. The player [p] stays in its place when such a move causes
+     him to move out of bounds. *)
   val move_up : t -> Maps.t -> unit
 
-  (** *)
+  (**[move_down p m] moves player [p] to [(col, row-1)] within the bounds
+     of map [m]. The player [p] stays in its place when such a move causes
+     him to move out of bounds. *)
   val move_down : t -> Maps.t -> unit
 
-  (** *)
+  (**[move_right p m] moves player [p] to [(col+1, row)] within the bounds
+     of map [m]. The player [p] stays in its place when such a move causes
+     him to move out of bounds. *)
   val move_right : t -> Maps.t -> unit
 
-  (** *)
+  (**[move_left p m] moves player [p] to [(col-1, row)] within the bounds
+     of map [m]. The player [p] stays in its place when such a move causes
+     him to move out of bounds. *)
   val move_left : t -> Maps.t -> unit
 
   (** [reduce_health p h] reduces the health of player [p] by [h].
@@ -127,8 +135,11 @@ module Player : P = struct
     mutable map: string;
   }
 
+  (** The exception type of an unknown skill. *)
   exception Unknownskill of string
 
+  (** [skill_constructor p n d s] constructs a new skill of player [p]
+      with strength [s], name [n], description [d].  *)
   let skill_constructor ~player ~name ~description ~strength = 
     player.skills <- ({
         description = description;
@@ -211,6 +222,9 @@ module Player : P = struct
       if p.strength - s >= 0 then p.strength - s else 0 
     in p.strength <- new_strength
 
+  (**[advance_level p] advances player [p] to the next level and updates
+     player [p]'s experience as well. If [p] does not have enough experience
+     to advance, no change will occur. *)
   let advance_level p = 
     let experience_qual = 70 + 30 * p.level in 
     if p.experience >= experience_qual 
