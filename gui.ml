@@ -32,7 +32,7 @@ type clist=
     mutable dialog_in_progress:bool;
     mutable item_selected: (string*int*string) option;
     mutable item_ground: bool;
-    mutable message_display: string
+    mutable message_display: string;
   }
 
 type state={
@@ -268,7 +268,7 @@ let radius_circle x y r rx ry=
   let distance=sqrt(float_of_int(dx*dx+dy*dy))in 
   float_of_int r>=distance
 
-let enemy_list()=Array.to_list(Engine.get_enemies Engine.game_state)
+let enemy_list()=Array.to_list(( Engine.game_state).all_enemies_in_current_map)
 
 let rec get_one_enemy id lst=
   match lst with
@@ -285,6 +285,8 @@ let enemy_skill_image name=
   match name with 
   |"punch"->draw_a_image Color_convert.enemy_punch 500 350
   |"scratch"->draw_a_image Color_convert.enemy_scar 500 350
+  |"fire ball"->draw_a_image Color_convert.fireball 500 300
+  |"curses"->draw_a_image Color_convert.curse 500 300
   |_->failwith"unbound image"
 
 let enemy_skill t=
@@ -295,6 +297,17 @@ let enemy_skill t=
   Graphics.set_color black;
   Graphics.moveto 100 715;
   Graphics.draw_string ("-"^string_of_int damage)
+
+let enemy_mon id=
+  let hp=Enemy.get_hp (get_one_enemy id (enemy_list()))in 
+  if hp<=0 then false else true 
+
+let game_over_mon ()=
+  let (m,h)=get_player_health()in
+  if h<=0 then 
+    (dialog "Game over" Color_convert.cute_cat "cute cat"; 
+     let _=Graphics.wait_next_event [Button_down] in 
+     Graphics.close_graph()) else ()
 
 let skill_helper name=
   Graphics.moveto 850 500;
@@ -314,11 +327,13 @@ let skill_helper name=
       Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
-  let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list())in
   draw_a_image Color_convert.player_in_combat 10 205;
-  Thread.delay 1.0;
-  enemy_skill the_enemy;
-  draw_a_image Color_convert.player_in_combat 10 205
+  if enemy_mon cplace.enemy_to_combat then
+    (Thread.delay 1.0;
+     enemy_skill the_enemy;
+     draw_a_image Color_convert.player_in_combat 10 205;
+     game_over_mon()) else 
+    ()
 
 let skill_image name=
   match name with 
@@ -483,15 +498,7 @@ let skill_mon ()=
     cstate.skill<-List.map (fun x->Player.skill_name x) (Player.skills_list s)
   |Died->()
 
-let enemy_mon id=
-  let hp=Enemy.get_hp (get_one_enemy id (enemy_list()))in 
-  if hp<=0 then false else true 
 
-let game_over_mon ()=
-  let (m,h)=get_player_health()in
-  if h<=0 then (  health_bar ();
-                  dialog "Game over" Color_convert.cute_cat "cute cat"; 
-                  tsensor cplace; Graphics.close_graph()) else ()
 
 let rec combat id=
   status_bar ();
@@ -511,8 +518,8 @@ let rec combat id=
   Graphics.clear_graph();
   if enemy_mon id then
     (combat id) else 
-    cplace.enemy_to_combat<-"none";
-  Engine.delete_one_enemy_from_state Engine.game_state
+    (cplace.enemy_to_combat<-"none";
+     Engine.delete_one_enemy_from_state Engine.game_state)
 
 let combat_mon()=if cplace.enemy_to_combat<>"none" then 
     let name=(get_one_enemy cplace.enemy_to_combat (enemy_list())

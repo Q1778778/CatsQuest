@@ -36,6 +36,8 @@ type current_map = Maps.t
    Used to notify that an operation is successful. *)
 exception SuccessExit
 
+exception PlayerDied
+
 (** The abstract type of values representing the current game state *)
 type state = {
   mutable player: player;
@@ -218,10 +220,10 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 (**[single_enemy_builder j id col row] constructs a new enemy represented 
    by the json [j] at location [(col, row)] with id [id] *)
-let single_enemy_builder j ~id ~col ~row =
+let single_enemy_builder j ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
-    let id = (Int.to_string (id + 1)) in
+    let id = string_of_int (count ()) in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
@@ -246,9 +248,9 @@ let single_enemy_builder j ~id ~col ~row =
     representation. 
     Raises: [Failure "something wrong with browse_dir_enemy. Check it"] if 
     [j] is not a valid enemy json representation. *)
-let browse_one_enemy_json j ~id ~col ~row = 
+let browse_one_enemy_json j ~col ~row = 
   if (contains j "witch" || contains j "minion" || contains j "goblin")
-  then single_enemy_builder (Yojson.Basic.from_file j) ~id ~col ~row
+  then single_enemy_builder (Yojson.Basic.from_file j) ~col ~row
   else failwith "something wrong with browse_dir_enemy. Check it"
 
 (**[main_engine_ememy_for_single_map col row num] 
@@ -259,8 +261,7 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
-    let id = count () in 
-    (List.map2  (fun x (col, row)-> browse_one_enemy_json x ~id ~col ~row)
+    (List.map2  (fun x (col, row)-> browse_one_enemy_json x ~col ~row)
        (expected_enemy_models)
        (unique_location_list col row number))|>Array.of_list
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
@@ -494,11 +495,11 @@ let change_player player s = s.player <- player
 (**[get_player s] returns the player if the player in game state [s]
    is alive. 
 
-   Raises: [Failure "player is dead"] if the player has already died.  *)
+   Raises: [PlayerDied] if the player has already died.  *)
 let get_player s = 
   match s.player with
   | Player p -> p
-  | Died -> failwith "player is dead"
+  | Died -> raise PlayerDied
 
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map

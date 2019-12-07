@@ -36,6 +36,8 @@ type current_map = Maps.t
    Used to notify that an operation is successful. *)
 exception SuccessExit
 
+exception PlayerDied
+
 (** The abstract type of values representing the current game state *)
 type state = {
   mutable player: player;
@@ -221,7 +223,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 let single_enemy_builder j ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
-    let id = count () in
+    let id = string_of_int (count ()) in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
@@ -493,11 +495,11 @@ let change_player player s = s.player <- player
 (**[get_player s] returns the player if the player in game state [s]
    is alive. 
 
-   Raises: [Failure "player is dead"] if the player has already died.  *)
+   Raises: [PlayerDied] if the player has already died.  *)
 let get_player s = 
   match s.player with
   | Player p -> p
-  | Died -> failwith "player is dead"
+  | Died -> raise PlayerDied
 
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map

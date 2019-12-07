@@ -91,22 +91,6 @@ let player_combat=images_of_json (Yojson.Basic.from_file "player_combat.json")
 (**[stab] is the image data extracted from ["stab.json"]  *)
 let stab=images_of_json (Yojson.Basic.from_file "stab.json")
 
-(**[sand5] is the image data extracted from ["sand-120.json"]  *)
-let sand5=images_of_json (Yojson.Basic.from_file "sand-120.json")
-
-(**[grass5] is the image data extracted from ["grass-120.json"]  *)
-let grass5=images_of_json (Yojson.Basic.from_file "grass-120.json")
-
-(**[stone5] is the image data extracted from ["stone-120.json"]  *)
-let stone5=images_of_json (Yojson.Basic.from_file "stone-120.json")
-
-(**[snow5] is the image data extracted from ["snow-120.json"]  *)
-let snow5=images_of_json (Yojson.Basic.from_file "snow-120.json")
-
-(**[water5] is the image data extracted from ["water-120.json"]  *)
-let water5=images_of_json (Yojson.Basic.from_file "water-120.json")
-
-
 (**[enemy_punch] is the RGB color 2d matrix represented by the image 
    ["stab"] *)
 let enemy_punch=(array_color (List.find (fun x->x.name="stab") enemy_stab)
@@ -146,27 +130,23 @@ let the_stab=
 (**[sand_120] is the RGB color 2d matrix represented by the image 
    ["sand-120"] *)
 let sand_120=
-  (array_color (List.find (fun x->x.name="sand-120") sand5).matrix)
+  image_convert "sand-120.json" "sand-120"
 
 (**[grass_120] is the RGB color 2d matrix represented by the image 
    ["grass-120"] *)
-let grass_120=(array_color (List.find (fun x->x.name="grass-120") grass5)
-                           .matrix)
+let grass_120=image_convert "grass-120.json" "grass-120"
 
 (**[stone_120] is the RGB color 2d matrix represented by the image 
    ["stone-120"] *)
-let stone_120=(array_color (List.find (fun x->x.name="stone-120") stone5)
-                           .matrix)
+let stone_120=image_convert "stone-120.json" "stone-120"
 
 (**[snow_120] is the RGB color 2d matrix represented by the image 
    ["snow-120"] *)
-let snow_120=(array_color (List.find (fun x->x.name="snow-120") snow5)
-                          .matrix)
+let snow_120=image_convert "snow-120.json" "snow-120"
 
 (**[water_120] is the RGB color 2d matrix represented by the image 
    ["water-120"] *)
-let water_120=(array_color (List.find (fun x->x.name="water-120") water5)
-                           .matrix)
+let water_120=image_convert "water-120.json" "water-120"
 
 (**[dirt_120] is the RGB color 2d matrix represented by the image 
    ["dirt-120"] *)
@@ -180,6 +160,17 @@ let sword_80=image_convert "sword-80.json" "sword-80"
 
 let dagger_80=image_convert "dagger-80.json" "dagger-80"
 
+let the_goblin=image_convert "goblin-image.json" "goblin"
+
+let the_witch=image_convert "witch-image.json" "witch"
+
+let fireball=image_convert "fireball.json" "fireball"
+
+let curse=image_convert "curse.json" "curse"
+
 (**[enemy_data] is the list that contains a single [eimage] with the minion 
    image.  *)
-let enemy_data=[{name_data="minion";image_data=the_minion}]
+let enemy_data=[{name_data="minion";image_data=the_minion};
+                {name_data="goblin";image_data=the_goblin};
+                {name_data="witch";image_data=the_witch}
+               ]
