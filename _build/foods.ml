@@ -1,3 +1,5 @@
+open Player
+
 module type F = sig 
   (** The abstract type of values representing foods. *)
   type food 

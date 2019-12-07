@@ -70,7 +70,8 @@ let draw_items ()=
       Graphics.set_color Graphics.black;
       let name="Weapon" in
       let pixel=(String.length name)-1 in
-      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3)
+        ((cr+(r-1)*interval+(interval/2))-r/2);
       Graphics.draw_string name
     |Engine.Empty->() in 
   let draw_fitem =function
@@ -82,7 +83,8 @@ let draw_items ()=
       Graphics.set_color Graphics.black;
       let name="Food" in
       let pixel=(String.length name)-1 in
-      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3)
+        ((cr+(r-1)*interval+(interval/2))-r/2);
       Graphics.draw_string name
     |Engine.Eaten->() in
   let draw_enemy =function
@@ -91,11 +93,10 @@ let draw_items ()=
                        Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
                          (cr+(r-1)*interval+(interval/2)) (interval/6);
                        Graphics.set_color Graphics.black;
-                       Graphics.draw_circle(rr+(c-1)*interval+interval/2) 
-                         (cr+(r-1)*interval+(interval/2)) (interval/6);
                        let name=Enemy.Enemy.get_name e in
                        let pixel=(String.length name)-1 in
-                       Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+                       Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3)
+                         ((cr+(r-1)*interval+(interval/2))-r/2);
                        Graphics.draw_string name )
     |Engine.Deleted ->() in 
   List.iter draw_enemy enemy;

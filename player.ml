@@ -83,15 +83,16 @@ module type P = sig
 
 
   (*  skill-related methods *)
-  
+
   (** [skill_constructor p n d s] adds a skill to player [p] with 
       name [n], description [d] and strength [s]. *)
   val skill_constructor: 
     name:string ->
     description:string -> 
     strength:int -> 
+    cd:int->
     skill
-    
+
   (**[get_skill_by_skill_name p n] returns skill [s] with 
      the name [n] of player [p]. 
      Raises [UnknownSkill ("skill name " ^ [n] ^ "does not exist")] 
@@ -111,6 +112,8 @@ module type P = sig
 
   (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill->string
+
+end
 
 module Player : P = struct
 
@@ -134,13 +137,13 @@ module Player : P = struct
   exception Unknownskill of string
 
   (** [skill_constructor n d s] constructs a new skill of 
-  strength [s], name [n], description [d].  *)
+      strength [s], name [n], description [d].  *)
   let skill_constructor ~name ~description ~strength ~cd = {
-        description = description;
-        strength = strength;
-        name = name;
-        cd = cd;
-      }
+    description = description;
+    strength = strength;
+    name = name;
+    cd = cd;
+  }
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 

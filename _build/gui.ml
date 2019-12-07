@@ -32,6 +32,7 @@ type clist=
     mutable dialog_in_progress:bool;
     mutable item_selected: (string*int*string) option;
     mutable item_ground: bool;
+    mutable message_display: string
   }
 
 type state={
@@ -41,7 +42,8 @@ type state={
 exception Not_such_enemy of string
 
 let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
-             difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;item_selected=None;item_ground=false}
+             difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;
+             item_selected=None;item_ground=false;message_display="placeholder"}
 
 let cstate={skill=["stab"]}
 
@@ -49,6 +51,9 @@ let lblue=Graphics.rgb 82 219 255
 
 let grey=Graphics.rgb 192 192 192
 
+(** [whitebox_draw a b c d width] draws a whitebox with lowerleft point at [a,b]
+    and upperright point at [c,d] with linewidth [width]
+    Require: [a b c d width] are non-negative ints*)
 let whitebox_draw a b c d width=
   Graphics.set_line_width width;
   Graphics.moveto a b;
@@ -72,6 +77,8 @@ let dialog text npc name=
   Graphics.draw_string "Click to continue #";
   cplace.dialog<-Dialog_sense name
 
+(** [get_player_health ()] is the max health of the player
+    with the current health*)
 let get_player_health ()=
   let s= Engine.get_player(Engine.game_state) in
   (Player.max_health s, Player.health s)
@@ -163,10 +170,17 @@ let draw_inventory ()=
   if Option.is_some cplace.item_selected then 
     let (t,i,c)=Option.get cplace.item_selected in 
     match t with 
-    |"food"-> Graphics.set_color red; whitebox_draw (260+(i*100)) 120 (320+(i*100)) 180 3
-    |"weapon"-> Graphics.set_color red; whitebox_draw (260+(i*100)) 20 (320+(i*100)) 80 3
+    |"food"-> Graphics.set_color red; 
+      whitebox_draw (260+(i*100)) 120 (320+(i*100)) 180 3
+    |"weapon"-> Graphics.set_color red; 
+      whitebox_draw (260+(i*100)) 20 (320+(i*100)) 80 3
     |_->() else ();
   cplace.fbutton<- fb
+
+let info_bar()=
+  whitebox_draw 540 10 900 190 3;
+  Graphics.moveto 545 175;
+  Graphics.draw_string cplace.message_display
 
 
 let draw_a_image image x y=
@@ -289,9 +303,11 @@ let skill_helper name=
   Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat (enemy_list ()))
     (skill_damage name);
   Thread.delay 1.5;
-  Graphics.clear_graph(); status_bar ();
+  Graphics.clear_graph(); 
+  status_bar ();
   normal_four_botton cplace;
   health_bar ();
+  info_bar();
   combat_four_botton cplace;
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
   let image_of_e=find_enemy_image_data (Enemy.get_name the_enemy)
@@ -299,6 +315,8 @@ let skill_helper name=
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list())in
+  draw_a_image Color_convert.player_in_combat 10 205;
+  Thread.delay 1.0;
   enemy_skill the_enemy;
   draw_a_image Color_convert.player_in_combat 10 205
 
@@ -318,7 +336,8 @@ let item_check s i=
     let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
     match List.nth weapon i with 
     |Engine.Empty->()
-    |Engine.Weapon w->cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w)
+    |Engine.Weapon w->
+      cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w)
 
 let draw_inventory_item_helper name=
   match name with 
@@ -368,7 +387,8 @@ let ground_probe()= let player= Engine.game_state.player in
 let rec parse  c=
   match c with
   |Command d when d="easy"->cplace.difficulty<-"easy"
-  |Guide s when s="first"-> cplace.dialog_in_progress<-true;dialog "this is a GUI tester"
+  |Guide s when s="first"-> cplace.dialog_in_progress<-true;
+    dialog "this is a GUI tester"
       Color_convert.cute_cat "cute cat"
   |Guide s->()
   |Command s->()
@@ -386,13 +406,18 @@ and  order_helper c t=
       |_->()) else if
      c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
                    match t with 
-                   |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                   |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;
+                     cplace.item_selected<-None;cplace.irefresh<-true
                    |_->()) else if 
      c="drop" then (if Option.is_some cplace.item_selected then 
                       (let (t,i,n)=Option.get cplace.item_selected in 
                        match t with 
-                       |"weapon"->Engine.drop_one_weapon_to_current_location Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
-                       |"food"->Engine.drop_one_food_to_current_location Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                       |"weapon"->
+                         Engine.drop_one_weapon_to_current_location Engine.game_state i;
+                         cplace.item_selected<-None;cplace.irefresh<-true
+                       |"food"->
+                         Engine.drop_one_food_to_current_location Engine.game_state i;
+                         cplace.item_selected<-None;cplace.irefresh<-true
                        |_->() ) else ())
    else
      parse  (Command t))
@@ -435,7 +460,8 @@ let rec fensor (c:clist) i=
                        parse (Order(c,t)) else 
                        parse  (Attack t)) else ())
     |Action_box ((x,y,w,h),(st,i))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
-                                       (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button) then
+                                       (y<s.mouse_y)&&((y+h)>s.mouse_y)&&
+                                       s.button) then
         (
           parse (Item (st,i))) else ()
     |Action_circle ((x,y,r),t)->()
@@ -477,6 +503,7 @@ let rec combat id=
   let image_of_e=find_enemy_image_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
+  info_bar();
   draw_a_image Color_convert.player_in_combat 10 205;
   fensor cplace Combat;
   Thread.delay 1.0;
@@ -488,7 +515,11 @@ let rec combat id=
   Engine.delete_one_enemy_from_state Engine.game_state
 
 let combat_mon()=if cplace.enemy_to_combat<>"none" then 
-    (Graphics.clear_graph();combat cplace.enemy_to_combat )
+    let name=(get_one_enemy cplace.enemy_to_combat (enemy_list())
+              |>Enemy.get_name) in
+    (Graphics.clear_graph();
+     cplace.message_display<-"You entered combat with "^name;
+     combat cplace.enemy_to_combat )
   else ()
 
 let ground_mon ()=
@@ -520,6 +551,7 @@ let rec init flag =
   ground_mon();
   normal_four_botton cplace;
   health_bar ();
+  info_bar();
   item_draw ();
   draw_inventory();
   skill_mon();
@@ -535,7 +567,8 @@ let rec beginning () =
   Graphics.draw_string "Welcome to the game";
   Graphics.moveto 500 620;
   Graphics.draw_string "please select difficulty to begin:";
-  cplace.fbutton<-[create_button "easy" green black 500 550 200 50 ("diff","easy")];
+  cplace.fbutton<-[create_button "easy" 
+                     green black 500 550 200 50 ("diff","easy")];
   fensor cplace Normal;
   if cplace.difficulty<>"empty" then 
     (Graphics.clear_graph(); init true )else beginning ()

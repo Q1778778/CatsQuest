@@ -19,9 +19,6 @@ module type P = sig
   (**[level p] is the current level of player [p] *)
   val level : t -> int
 
-  (**[map p] is the current map name of which player is currently in*)
-  val map : t -> string
-
   (** [location p] is the current location of player [p]. *)
   val location : t -> int * int
 
@@ -75,14 +72,26 @@ module type P = sig
       Requires: [e] >= 0 *)
   val increase_experience : t -> int -> unit 
 
+  (**[increase_health p h] increases player [p]'s health by [h].*)
+  val increase_health: t -> int -> unit
+
+  (**[increase_strength p s] increases player [p]'s strength by [s].*)
+  val increase_strength: t -> int -> unit
+
+  (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
+  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
+
+
+  (*  skill-related methods *)
+
   (** [skill_constructor p n d s] adds a skill to player [p] with 
       name [n], description [d] and strength [s]. *)
   val skill_constructor: 
-    player:t ->
     name:string ->
     description:string -> 
     strength:int -> 
-    unit
+    cd:int->
+    skill
 
   (**[get_skill_by_skill_name p n] returns skill [s] with 
      the name [n] of player [p]. 
@@ -104,18 +113,7 @@ module type P = sig
   (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill->string
 
-  (**[increase_health p h] increases player [p]'s health by [h].*)
-  val increase_health: t -> int -> unit
-
-  (**[increase_strength p s] increases player [p]'s strength by [s].*)
-  val increase_strength: t -> int -> unit
-
-  (**[change_map p map] updates the map name that player [p]'s currently in.*)
-  val change_map: t -> string -> unit
-
-  (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
-  val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
-end 
+end
 
 module Player : P = struct
 
@@ -123,6 +121,7 @@ module Player : P = struct
     name: string;
     description: string;
     strength: int;
+    cd: int;
   }
 
   type t = {
@@ -132,20 +131,19 @@ module Player : P = struct
     mutable level : int;
     mutable experience : int;
     mutable skills: skill list;
-    mutable map: string;
   }
 
   (** The exception type of an unknown skill. *)
   exception Unknownskill of string
 
-  (** [skill_constructor p n d s] constructs a new skill of player [p]
-      with strength [s], name [n], description [d].  *)
-  let skill_constructor ~player ~name ~description ~strength = 
-    player.skills <- ({
-        description = description;
-        strength = strength;
-        name = name;
-      }::player.skills)
+  (** [skill_constructor n d s] constructs a new skill of 
+      strength [s], name [n], description [d].  *)
+  let skill_constructor ~name ~description ~strength ~cd = {
+    description = description;
+    strength = strength;
+    name = name;
+    cd = cd;
+  }
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 
@@ -157,16 +155,14 @@ module Player : P = struct
       level = level;
       experience = experience;
       skills = [{
+          (* basic skill *)
           name = "punch";
-          description = "Basic attacks.
-        Player uses fists to challenge the evils!";
+          description = "Basic attacks. 
+                        Player uses fists to challenge the evils!";
           strength = strength;
+          cd = 0;
         }];
-      map = "main" (* The initial map should be the main map 
-                        so I hard-coded this *)
     }
-
-  let map p = p.map
 
   let location p = p.location
 
@@ -256,9 +252,8 @@ module Player : P = struct
   let skill_name skill =
     skill.name
 
-  let change_map t map = 
-    t.map <- map
-
   let switch_loc t loc =
     t.location <- loc
 end
+
+type skill = Player.skill

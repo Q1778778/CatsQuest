@@ -142,8 +142,8 @@ let random_int_array_for_enemies_and_items size_array number =
   let float_num = float_of_int number in
   let temp_random_number = (*the probability oper here is pretty messy *)
     List.map (fun s -> 
-                ((float_of_int s) /. float_sum *. float_num) 
-                |> round) raw_prob in 
+        ((float_of_int s) /. float_sum *. float_num) 
+        |> round) raw_prob in 
   let tl =List.tl temp_random_number in
   (number - (total_sum 0 tl)::(tl))
   |> Array.of_list
@@ -190,13 +190,13 @@ let parse_dims s =
 
 (*                        models builder                         *)
 
-let gain_able_skill_constructor jsons_list = 
+let gainable_skill_constructor jsons_list = 
   List.map (fun skill -> 
-    let description = skill |> member "description" |> to_string in
-    let strength = skill |> member "strength" |> to_int in
-    let name = skill |> member "name" |> to_string in
-    let cd = skill |> member "cd" |> to_int in
-    Player.skill_constructor description strength name cd) jsons_list
+      let description = skill |> member "description" |> to_string in
+      let strength = skill |> member "strength" |> to_int in
+      let name = skill |> member "name" |> to_string in
+      let cd = skill |> member "cd" |> to_int in
+      Player.skill_constructor name description strength cd) jsons_list
 
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
@@ -237,9 +237,9 @@ let single_enemy_builder j ~id ~col ~row =
           (Enemy.single_skill_constructor ~skill_name ~skill_strength
              ~skill_probability)) lst in
     let gainables =
-      j |> member "gainable" |> gain_able_skill_constructor
+      j |> member "gainable"|> to_list |> gainable_skill_constructor in 
     Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills)
+      ~hp ~id ~descr ~max_hp ~skills ~gainables)
 
 (** [browse_one_enemy_json j id col row] calls 
     [single_enemy_builder j id col row] if [j] is a valid enemy json
@@ -493,7 +493,7 @@ let change_player player s = s.player <- player
 
 (**[get_player s] returns the player if the player in game state [s]
    is alive. 
-  
+
    Raises: [Failure "player is dead"] if the player has already died.  *)
 let get_player s = 
   match s.player with
@@ -509,17 +509,17 @@ let check_enemy s store =
     match s.all_enemies_in_current_map.(i) with
     | Enemy e when Enemy.get_pos e = loc ->
       (store.(0) <- Enemy.get_id e;
-      raise SuccessExit)
+       raise SuccessExit)
     | _ -> ()
   done
 
 let check_enemy_in_current_loc s =
   let store = [|""|] in
-    try
-      check_enemy s store;
-      false, ""
-    with SuccessExit ->
-      true, store.(0)
+  try
+    check_enemy s store;
+    false, ""
+  with SuccessExit ->
+    true, store.(0)
 
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map

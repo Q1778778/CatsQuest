@@ -1,3 +1,5 @@
+open Player
+
 module type EnemySig = sig
 
   (** The abstract type of values representing an enemy. *)
@@ -85,6 +87,7 @@ module type EnemySig = sig
     descr:string -> 
     max_hp:int->
     skills: skills list ->
+    gainables: Player.skill list ->
     t
 end
 
@@ -105,6 +108,7 @@ module Enemy: EnemySig = struct
     name: string;
     descr: string;
     max_hp: int;
+    gainables: Player.skill list;
     mutable exp: int;
     mutable level: int;
     (*dynamic fields *)
@@ -153,7 +157,9 @@ module Enemy: EnemySig = struct
       skill_probability = skill_probability;
     }
 
-  let constructor ~pos ~level ~exp ~hp ~id ~name  ~descr ~max_hp ~skills =
+  let constructor ~pos ~level ~exp 
+      ~hp ~id ~name  
+      ~descr ~max_hp ~skills ~gainables =
     {
       id = id;
       name = name;
@@ -164,5 +170,6 @@ module Enemy: EnemySig = struct
       hp = hp;
       max_hp = max_hp;
       skills = skills;
+      gainables = gainables;
     }
 end

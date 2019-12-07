@@ -87,6 +87,7 @@ module type EnemySig = sig
     descr:string -> 
     max_hp:int->
     skills: skills list ->
+    gainables: Player.skill list ->
     t
 end
 
@@ -157,8 +158,8 @@ module Enemy: EnemySig = struct
     }
 
   let constructor ~pos ~level ~exp 
-    ~hp ~id ~name  
-    ~descr ~max_hp ~skills ~gainables =
+      ~hp ~id ~name  
+      ~descr ~max_hp ~skills ~gainables =
     {
       id = id;
       name = name;
