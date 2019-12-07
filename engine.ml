@@ -131,20 +131,21 @@ let contains s1 s2 =
 (**[random_int_array_for_enemies_and_items arr num] returns a 
    probability-driven random int array with the number [num] and the 
    location array [arr] *)
-let random_int_array_for_enemies_and_items loc_array number =
+let random_int_array_for_enemies_and_items size_array number =
   let round f = truncate (f +. 0.5) in
-  let raw_prob = List.map (fun (x, y) -> x * y) (loc_array |> Array.to_list) in
+  let raw_prob = size_array |> Array.to_list in
   let rec total_sum num = function
     | [] -> num
     | h::d -> total_sum (num + h) d in
   let sum = total_sum 0 raw_prob in
+  let float_sum = float_of_int sum in
+  let float_num = float_of_int number in
   let temp_random_number = (*the probability oper here is pretty messy *)
-    List.map 
-      (fun s -> 
-         ((float_of_int s) /. (float_of_int sum) *. (float_of_int number)) 
-         |> round) raw_prob in 
-  (((List.hd temp_random_number) 
-    + sum - (total_sum 0 temp_random_number))::(List.tl temp_random_number))
+    List.map (fun s -> 
+                ((float_of_int s) /. float_sum *. float_num) 
+                |> round) raw_prob in 
+  let tl =List.tl temp_random_number in
+  (number - (total_sum 0 tl)::(tl))
   |> Array.of_list
 
 (**[sorted_list col row n] is [List.rev [(col, row), (col-1, row), ... , 
@@ -435,7 +436,8 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
       else read_map handler list in 
   (read_map (Unix.opendir ".") [])
 
-
+let main_map_size_array map_array : int array = 
+  Array.map (fun map -> let x, y = Maps.size map in x * y) map_array
 
 (*                       initiate the game                           *)
 
@@ -444,7 +446,8 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 let init (): state =
   let map_array, loc_array = main_engine_map_param () in
   let number = 7 (*this number can be either artificially set or stored in json.*) in
-  let final_number_array = random_int_array_for_enemies_and_items loc_array number in
+  let map_size_array = main_map_size_array map_array in
+  let final_number_array = random_int_array_for_enemies_and_items map_size_array number in
   let all_enemies = (main_engine_enemy ~loc_array ~final_number_array)  in
   let all_foods = (main_engine_food ~loc_array ~final_number_array)  in
   let all_weapons = (main_engine_weapon ~loc_array ~final_number_array) in {
