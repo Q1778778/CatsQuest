@@ -563,6 +563,7 @@ let take_one_food s =
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
     | Food f when Foods.Food.get_loc f = loc ->
+      s.all_foods_in_current_map.(i) <- Eaten;
       update_food_inventory f player
     | _ -> ()
   done
@@ -578,16 +579,17 @@ let drop_one_food s pos =
   let search_food_array s f = 
     (for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
       match s.all_foods_in_current_map.(j) with
-      | Eaten -> 
-        (s.all_foods_in_current_map.(j) <- Food f;
-        raise SuccessExit)
+      | Eaten -> (s.all_foods_in_current_map.(j) <- Food f;
+                  raise SuccessExit)
       | _ -> ()
     done);
     (* no empty slot *)
     s.all_foods_in_current_map <- Array.append 
       [|Food f|] s.all_foods_in_current_map; in
   match s.all_foods_in_current_map.(pos) with
-  | Food f -> search_food_array s f;
+  | Food f -> 
+    s.all_foods_in_current_map.(pos) <- Eaten;
+    search_food_array s f;
   | Eaten -> ()
 
 let drop_one_food_to_current_location s pos =
@@ -603,15 +605,14 @@ let drop_one_food_to_current_location s pos =
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
     let health = Foods.Food.get_health food
-    and strength = Foods.Food.get_strength food in
-    let _ = Player.increase_health t health in
-    let _ = Player.increase_strength t strength in
-    s.player <- Player t; in
+    and strength = Foods.Food.get_strength food
+    Player.increase_health t health;
+    Player.increase_strength t strength; in
   let player = s |> get_player in
   match s.food_inventory.(pos) with
   | Food f -> 
     eat_food f player;
-    s.food_inventory.(pos) <- Eaten
+    s.food_inventory.(pos) <- Eaten;
   | _ -> ()
 
 
@@ -635,6 +636,7 @@ let equip_one_weapon s =
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapons.Weapon.get_loc w = loc ->
+      s.all_weapons_in_current_map.(i) <- Null;
       update_weapon_inventory w player
     | _ -> ()
   done
@@ -664,6 +666,7 @@ let drop_one_weapon s pos =
   | Weapon w -> 
     let player = s |> get_player in
     Player.reduce_strength player (Weapons.get_strength w);
+    s.weapon_inventory.(pos) <- Null;
     search_weapon_array s w;
   | Null -> ()
 
