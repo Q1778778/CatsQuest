@@ -492,21 +492,23 @@ let get_player s =
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map
 
-let check_enemy s =
+let check_enemy s store =
   let loc = s |> get_player |> Player.location in
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do
     match s.all_enemies_in_current_map.(i) with
     | Enemy e when Enemy.get_pos e = loc ->
-      raise SuccessExit
+      (store.(0) <- Enemy.get_id e;
+      raise SuccessExit)
     | _ -> ()
   done
 
 let check_enemy_in_current_loc s =
-  try
-    check_enemy s;
-    false
-  with SuccessExit ->
-    true
+  let store = [|""|] in
+    try
+      check_enemy s store;
+      false, ""
+    with SuccessExit ->
+      true, store.(0)
 
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map
