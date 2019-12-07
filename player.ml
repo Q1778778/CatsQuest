@@ -172,7 +172,7 @@ module Player : P = struct
 
   let health p = p.health
 
-  let max_health p = 100 + 30 * p.level (* this could be mutable *)
+  let max_health p = 70 + 30 * p.level (* this could be mutable *)
 
   let experience p = p.experience
 
