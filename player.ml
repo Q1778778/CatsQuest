@@ -191,6 +191,16 @@ module Player : P = struct
 
   let move_down p m = move p m 0 (-1)
 
+  let increase_health t hp = 
+    let new_health = t.health + tp in
+    let max = max_health t in
+    if new_health >= max_health t 
+    then t.health <- max;
+    else t.health <- t.health + hp
+  
+  let increase_strength t st =
+    t.strength <- t.strength + st
+
   let reduce_health p h = 
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
@@ -206,9 +216,9 @@ module Player : P = struct
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;
-       p.health <- p.health + 20;
+       increase_health p 20;
        p.experience <- p.experience mod experience_qual;
-       p.strength <- p.strength + 10)
+       increase_strength p 20)
     else 
       ()
 
@@ -231,12 +241,6 @@ module Player : P = struct
 
   let skill_name skill =
     skill.name
-
-  let increase_strength t st =
-    t.strength <- t.strength + st
-
-  let increase_health t hp = 
-    t.health <- t.health + hp
 
   let change_map t map = 
     t.map <- map
