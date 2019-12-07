@@ -81,6 +81,8 @@ module type P = sig
   (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
   val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
 
+  val update_skill: t -> skill list -> unit
+
   (**[advance_level p] advances player [p] to the next level and updates
      player [p]'s experience as well. If [p] does not have enough experience
      to advance, no change will occur. *)
@@ -112,11 +114,14 @@ module type P = sig
   val extract_skill_description_single_skill: skill -> string
 
   (**[skills_list p] is [p.skills], the skills that the player [p] posesses. *)
-  val skills_list: t-> skill list
+  val available_skills_list: t-> skill list
 
   (**[skill_name s] is the name of the skill [s]. *)
-  val skill_name: skill->string
+  val skill_name: skill -> string
 
+  val skill_strength: skill -> int
+
+  val skill_description: skill -> string
 end
 
 module Player : P = struct
@@ -125,7 +130,7 @@ module Player : P = struct
     name: string;
     description: string;
     strength: int;
-    cd: int;
+    mutable cd: int;
   }
 
   type t = {
@@ -247,14 +252,23 @@ module Player : P = struct
                      (Printf.sprintf "skill name %s does not exist" name))
     | h::_ -> h
 
-  let skills_list t =
-    t.skills
+  let available_skills_list t =
+    t.skill <- Array.map (fun skill -> 
+      if skill.cd <> 0 
+      then skill.cd <- skill.cd - 1
+      else ()) t.skill;
+    List.filter (fun skill -> skill.cd = 0) t.skill
 
-  let skill_name skill =
-    skill.name
+  let skill_name skill = skill.name
 
-  let switch_loc t loc =
-    t.location <- loc
+  let skill_strength skill =  skill.strength
+  
+  let skill_description skill = skill.description
+
+  let update_skill t skill_lst = t.skill <- t.skill @ skill_lst
+  
+  let switch_loc t loc = t.location <- loc
+  
 end
 
 type skill = Player.skill
