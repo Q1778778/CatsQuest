@@ -81,6 +81,10 @@ module type P = sig
   (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
   val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
 
+  (**[advance_level p] advances player [p] to the next level and updates
+     player [p]'s experience as well. If [p] does not have enough experience
+     to advance, no change will occur. *)
+  val advance_level: t -> unit
 
   (*  skill-related methods *)
 
@@ -218,9 +222,6 @@ module Player : P = struct
       if p.strength - s >= 0 then p.strength - s else 0 
     in p.strength <- new_strength
 
-  (**[advance_level p] advances player [p] to the next level and updates
-     player [p]'s experience as well. If [p] does not have enough experience
-     to advance, no change will occur. *)
   let advance_level p = 
     let experience_qual = 70 + 30 * p.level in 
     if p.experience >= experience_qual 
