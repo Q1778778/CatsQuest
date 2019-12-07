@@ -6,19 +6,18 @@ module type P = sig
   (** The abstract type of values representing a player. *)
   type t
 
-  (** [constructor r c s h l e] constructs a new player module located at
-      row [r], col [c], with strength [s], health [h], experience [e], 
+  (** [constructor s h l e ()] constructs a new player module located at
+      row 1, col 1, with strength [s], health [h], experience [e], 
       at level [l]. *)
-  val constructor: row:int ->
-    col:int ->
+  val constructor: 
     ?strength:int ->
-    ?health:int -> ?level:int -> ?experience:int -> unit-> t
+    ?health:int -> 
+    ?level:int -> 
+    ?experience:int -> 
+    unit -> t
 
   (**[level p] is the current level of player [p] *)
   val level : t -> int
-
-  (** The exception type of an unknown skill.  *)
-  exception Unknownskill of string
 
   (**[map p] is the current map name of which player is currently in*)
   val map : t -> string
@@ -112,8 +111,6 @@ end
 
 module Player : P = struct
 
-  (** The abstract type of values representing keyboard keys. *)
-  type key =  Up | Down | Left | Right | Null
   type skill = {
     name: string;
     description: string;
@@ -140,10 +137,10 @@ module Player : P = struct
       }::player.skills)
 
   let constructor 
-      ~row ~col ?strength:(strength=10) ?health:(health=100) 
+      ?strength:(strength=10) ?health:(health=100) 
       ?level:(level=1) ?experience:(experience=0) () = 
     {
-      location = (col,row);
+      location = (1,1);
       strength = strength;
       health = health;
       level = level;
@@ -176,22 +173,6 @@ module Player : P = struct
 
   let row p = snd p.location
 
-  (**[match_keys s] returns the equivalent enum value for the parsed key
-     string [s] from the json file. *)
-  let match_keys = function
-    | "w" 
-    | "\027[A" -> Up
-    | "a"
-    | "\027[D" -> Left
-    | "s" 
-    | "\027[B" -> Down
-    | "d" 
-    | "\027[C" -> Right
-    | _ -> Null
-
-  (* type result = Legal of t | Illegal of string *)
-  exception Illegal of string 
-
   (** [move p m c r] changes the player state for which the player [p] 
       moves in map [m];  *)
   let move p m col_diff row_diff = 
@@ -210,6 +191,16 @@ module Player : P = struct
 
   let move_down p m = move p m 0 (-1)
 
+  let increase_health t hp = 
+    let new_health = t.health + hp in
+    let max = max_health t in
+    if new_health >= max_health t 
+    then t.health <- max
+    else t.health <- t.health + hp
+
+  let increase_strength t st =
+    t.strength <- t.strength + st
+
   let reduce_health p h = 
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
@@ -225,8 +216,9 @@ module Player : P = struct
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;
+       increase_health p 20;
        p.experience <- p.experience mod experience_qual;
-       p.strength <- p.strength + 10)
+       increase_strength p 20)
     else 
       ()
 
@@ -249,12 +241,6 @@ module Player : P = struct
 
   let skill_name skill =
     skill.name
-
-  let increase_strength t st =
-    t.strength <- t.strength + st
-
-  let increase_health t hp = 
-    t.health <- t.health + hp
 
   let change_map t map = 
     t.map <- map

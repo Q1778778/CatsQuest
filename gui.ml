@@ -20,6 +20,7 @@ type trigger=
   |Attack of string
   |Next_con of string
   |Item of string*int
+  |Order of string*string
   |Tnone
 
 type clist=
@@ -30,8 +31,9 @@ type clist=
     mutable difficulty: string;
     mutable enemy_to_combat:string;
     mutable dialog_in_progress:bool;
-    mutable item_selected: (string*string) option;
-    mutable item_ground: bool}
+    mutable item_selected: (string*int*string) option;
+    mutable item_ground: bool;
+  }
 
 type state={
   mutable skill: string list;
@@ -158,6 +160,12 @@ let draw_inventory ()=
          Action_box ((360,120,60,60),("food",1))::
          Action_box ((460,120,60,60),("food",2))::
          cplace.fbutton in 
+  if Option.is_some cplace.item_selected then 
+    let (t,i,c)=Option.get cplace.item_selected in 
+    match t with 
+    |"food"-> Graphics.set_color red; whitebox_draw (260+(i*100)) 120 (320+(i*100)) 180 3
+    |"weapon"-> Graphics.set_color red; whitebox_draw (260+(i*100)) 20 (320+(i*100)) 80 3
+    |_->() else ();
   cplace.fbutton<- fb
 
 
@@ -178,10 +186,10 @@ let create_button text color tcolor x y w h trigger=
 let normal_four_botton c=
   let first=create_button "cat" red black 920 105 130 85 ("dialog","first") in
   let second=if Option.is_some cplace.item_selected then
-      (let (t,n)=Option.get cplace.item_selected in
-       create_button "use" 
-         magenta black 1060 105 130 85 (t,n)) else (create_button "use" 
-                                                      grey white 1060 105 130 85 ("","second")) in
+      (let (t,i,n)=Option.get cplace.item_selected in
+       create_button "use/discard" 
+         magenta black 1060 105 130 85 ("use",n)) else (create_button "use" 
+                                                          grey white 1060 105 130 85 ("","second")) in
   let third=if (cplace.item_ground)then create_button "pick up" blue black 920 10 130 85("weapon","pick") else
       create_button "pick up" grey white 920 10 130 85("weapon","pick") in
   let fourth=create_button "fourth" 
@@ -313,19 +321,58 @@ let item_check s i=
     let food=Array.to_list (Engine.game_state).food_inventory in 
     match List.nth food i with 
     |Engine.Eaten ->()
-    |Engine.Food f->cplace.item_selected <-Some ("food", Foods.Food.get_name f);
-      Graphics.set_color red; 
-      whitebox_draw (260+(i*100)) 20 (320+(i*100)) 80 3 else
+    |Engine.Food f->cplace.item_selected <-Some ("food",i,Foods.Food.get_name f)
+  else
     let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
     match List.nth weapon i with 
     |Engine.Empty->()
-    |Engine.Weapon w->cplace.item_selected <-Some ("weapon",Weapons.Weapon.get_name w);
-      Graphics.set_color red; 
-      whitebox_draw (260+(i*100)) 120 (320+(i*100)) 180 3
+    |Engine.Weapon w->cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w)
+
+let draw_inventory_item_helper name=
+  match name with 
+  |"bread"->Color_convert.bread_80
+  |"Coffee"->Color_convert.coffee_80
+  |"jade sword"->Color_convert.sword_80
+  |"dagger"->Color_convert.dagger_80
+  |_->Color_convert.cute_cat
+
+let item_draw ()=
+  let food=Array.to_list (Engine.game_state).food_inventory in 
+  let rec draw_food foods int : unit =
+    match foods with
+    |h::t->(match h with 
+        |Engine.Eaten->draw_food t (int+1)
+        |Engine.Food f->let name=Foods.Food.get_name f in 
+          let pic= draw_inventory_item_helper name in 
+          draw_a_image pic (260+(int*100)) 120;
+          draw_food t (int+1))
+    |[]->() in 
+  draw_food food 0;
+  let weapons=Array.to_list (Engine.game_state).weapon_inventory in 
+  let rec draw_weapon weapons int : unit =
+    match weapons with
+    |h::t->(match h with 
+        |Engine.Empty->draw_weapon t (int+1)
+        |Engine.Weapon w->let name=Weapons.Weapon.get_name w in 
+          let pic= draw_inventory_item_helper name in 
+          draw_a_image pic (260+(int*100)) 20;
+          draw_weapon t (int+1))
+    |[]->() in 
+  draw_weapon weapons 0
 
 
+let ground_probe()= let player= Engine.game_state.player in 
+  match player with 
+  |Engine.Player _->
+    (let (f,w)=Engine.check_item_on_player_ground Engine.game_state in 
+     match f,w with
+     |[],[]->"None" 
+     |_,h::t->"Weapon"
+     |h::t,_->"Food")
+  |Engine.Died->"None"
 
-let parse  c=
+
+let rec parse  c=
   match c with
   |Command d when d="easy"->cplace.difficulty<-"easy"
   |Guide s when s="first"-> cplace.dialog_in_progress<-true;dialog "this is a GUI tester"
@@ -333,8 +380,19 @@ let parse  c=
   |Guide s->()
   |Command s->()
   |Attack sk->skill_image sk;
-  |Item (s,i)->()
+  |Item (s,i)->item_check s i
   |Next_con s->cplace.dialog_in_progress<-false;Graphics.clear_graph()
+  |Order (c,t)->(if c="dialog" then parse (Guide t)  else if 
+                   c="weapon" then (match ground_probe () with
+      |"Weapon"-> Engine.equip_weapon_in_current_loc Engine.game_state
+      |"Food"->Engine.take_one_food_in_current_location Engine.game_state
+      |_->()) else if
+                   c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
+                                 match t with 
+                                 |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                                 |_->())
+                 else
+                   parse  (Command t))
   |Tnone->()
 
 
@@ -368,17 +426,16 @@ let rec fensor (c:clist) i=
   let sta=Graphics.wait_next_event [Button_down;Key_pressed] in 
   let sense b (s:Graphics.status)=
     match b with
-    |Action_button ((x,y,w,h),(c,t))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
-                                         (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
-                                        =true then (if i=Normal then 
-                                                      (if c="dialog" then parse (Guide t)  else if 
-                                                         c="weapon" then Engine.equip_one_weapon Engine.game_state
-                                                       else
-                                                         parse  (Command t)) else 
-                                                      parse  (Attack t)) else ()
+    |Action_button ((x,y,w,h),(c,t))->
+      (if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
+          (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
+         =true then (if i=Normal then 
+                       parse (Order(c,t)) else 
+                       parse  (Attack t)) else ())
     |Action_box ((x,y,w,h),(st,i))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
-                                       (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button) then 
-        parse (Item (st,i)) else ()
+                                       (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button) then
+        (
+          parse (Item (st,i))) else ()
     |Action_circle ((x,y,r),t)->()
     |Dialog_sense s->()
     |Bnone->fensor c i
@@ -441,7 +498,7 @@ let ground_mon ()=
      match f,w with
      |[],[]->cplace.item_ground<-false 
      |_,h::t->cplace.item_ground<-true
-     |_,_->())
+     |h::t,_->cplace.item_ground<-true)
   |Engine.Died->()
 
 
@@ -458,18 +515,18 @@ let rec init flag =
   Map_builder.draw_items();
   status_bar ();
   experience_bar();
+  ground_mon();
   normal_four_botton cplace;
   health_bar ();
+  item_draw ();
   draw_inventory();
-  ground_mon();
   skill_mon();
   ms1_demo flag;
   fensor cplace Normal;
   tsensor cplace;
   combat_mon();
   clear_screen();
-  if cplace.ecircle=[] then 
-    init false else init true
+  init flag
 
 let rec beginning () =
   Graphics.moveto 500 650;

@@ -56,7 +56,8 @@ let draw_items ()=
   let ((rr,cr),interval)=map_size_cal t in 
   let s=Engine.game_state in 
   let weapons=Array.to_list s.all_weapons_in_current_map in 
-  let draw_item w=
+  let foods=Array.to_list s.all_foods_in_current_map in
+  let draw_witem w=
     match w with 
     |Engine.Weapon w->
       let (r,c)= Weapons.Weapon.get_loc w in
@@ -64,7 +65,15 @@ let draw_items ()=
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
         (cr+(r-1)*interval+(interval/2)) (interval/8) 
     |Engine.Empty->() in 
-  List.iter draw_item weapons
+  let draw_fitem =function
+    |Engine.Food f->
+      let (r,c)= Foods.Food.get_loc f in
+      Graphics.set_color Graphics.green;
+      Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
+        (cr+(r-1)*interval+(interval/2)) (interval/8) 
+    |Engine.Eaten->() in
+  List.iter draw_witem weapons;
+  List.iter draw_fitem foods
 
 
 

@@ -508,30 +508,30 @@ let get_player s =
 (** [move_player_left s] change the current pos (col', row') of player 
     in state [s] to (col'-1, row') within the map boundaries.*)
 let move_player_left s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_left t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_left t s.current_map
 
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
   match s.player with
-    | Died -> ()
-    | Player t -> Player.move_right t s.current_map 
+  | Died -> ()
+  | Player t -> Player.move_right t s.current_map 
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
 let move_player_up s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_up t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_up t s.current_map
 
 (** [move_player_down s] change the current pos (col', row') of player 
     in state [s] to (col', row'-1) within the map boundaries.*)
 let move_player_down s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_down t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_down t s.current_map
 
 
 
@@ -578,14 +578,14 @@ let take_one_food_in_current_location s =
 let drop_one_food s pos = 
   let search_food_array s f = 
     (for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
-      match s.all_foods_in_current_map.(j) with
-      | Eaten -> (s.all_foods_in_current_map.(j) <- Food f;
-                  raise SuccessExit)
-      | _ -> ()
-    done);
+       match s.all_foods_in_current_map.(j) with
+       | Eaten -> (s.all_foods_in_current_map.(j) <- Food f;
+                   raise SuccessExit)
+       | _ -> ()
+     done);
     (* no empty slot *)
     s.all_foods_in_current_map <- Array.append 
-      [|Food f|] s.all_foods_in_current_map; in
+        [|Food f|] s.all_foods_in_current_map; in
   match s.all_foods_in_current_map.(pos) with
   | Food f -> 
     s.all_foods_in_current_map.(pos) <- Eaten;
@@ -605,7 +605,7 @@ let drop_one_food_to_current_location s pos =
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
     let health = Foods.Food.get_health food
-    and strength = Foods.Food.get_strength food
+    and strength = Foods.Food.get_strength food in
     Player.increase_health t health;
     Player.increase_strength t strength; in
   let player = s |> get_player in
@@ -636,7 +636,7 @@ let equip_one_weapon s =
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapons.Weapon.get_loc w = loc ->
-      s.all_weapons_in_current_map.(i) <- Null;
+      s.all_weapons_in_current_map.(i) <- Empty;
       update_weapon_inventory w player
     | _ -> ()
   done
@@ -653,22 +653,22 @@ let equip_weapon_in_current_loc s =
 let drop_one_weapon s pos = 
   let search_weapon_array s w = 
     (for j = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
-      match s.all_weapons_in_current_map.(j) with
-      | Null -> 
-        (s.all_weapons_in_current_map.(j) <- Weapon w;
-        raise SuccessExit)
-      | _ -> ()
-    done);
+       match s.all_weapons_in_current_map.(j) with
+       | Empty -> 
+         (s.all_weapons_in_current_map.(j) <- Weapon w;
+          raise SuccessExit)
+       | _ -> ()
+     done);
     (* no empty slot *)
     s.all_weapons_in_current_map <- Array.append 
-      [|Weapon w|] s.all_weapons_in_current_map; in
+        [|Weapon w|] s.all_weapons_in_current_map; in
   match s.weapon_inventory.(pos) with
   | Weapon w -> 
     let player = s |> get_player in
-    Player.reduce_strength player (Weapons.get_strength w);
-    s.weapon_inventory.(pos) <- Null;
+    Player.reduce_strength player (Weapons.Weapon.get_strength w);
+    s.weapon_inventory.(pos) <- Empty;
     search_weapon_array s w;
-  | Null -> ()
+  | Empty -> ()
 
 let drop_one_weapon_to_current_location s pos =
   try
@@ -784,4 +784,4 @@ let list_of_entrance_loc_to_branch_map s =
   if get_current_map_name s <> "main"
   then []
   else
-    s.branched_map_info |> fst
+    s.branched_map_info |>List.split|> fst
