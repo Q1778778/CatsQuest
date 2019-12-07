@@ -218,10 +218,10 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 
 (**[single_enemy_builder j id col row] constructs a new enemy represented 
    by the json [j] at location [(col, row)] with id [id] *)
-let single_enemy_builder j ~id ~col ~row =
+let single_enemy_builder j ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
-    let id = (Int.to_string (id + 1)) in
+    let id = count () in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
@@ -246,9 +246,9 @@ let single_enemy_builder j ~id ~col ~row =
     representation. 
     Raises: [Failure "something wrong with browse_dir_enemy. Check it"] if 
     [j] is not a valid enemy json representation. *)
-let browse_one_enemy_json j ~id ~col ~row = 
+let browse_one_enemy_json j ~col ~row = 
   if (contains j "witch" || contains j "minion" || contains j "goblin")
-  then single_enemy_builder (Yojson.Basic.from_file j) ~id ~col ~row
+  then single_enemy_builder (Yojson.Basic.from_file j) ~col ~row
   else failwith "something wrong with browse_dir_enemy. Check it"
 
 (**[main_engine_ememy_for_single_map col row num] 
@@ -259,8 +259,7 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
-    let id = count () in 
-    (List.map2  (fun x (col, row)-> browse_one_enemy_json x ~id ~col ~row)
+    (List.map2  (fun x (col, row)-> browse_one_enemy_json x ~col ~row)
        (expected_enemy_models)
        (unique_location_list col row number))|>Array.of_list
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->

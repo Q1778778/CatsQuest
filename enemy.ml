@@ -109,8 +109,8 @@ module Enemy: EnemySig = struct
     descr: string;
     max_hp: int;
     gainables: Player.skill list;
-    mutable exp: int;
-    mutable level: int;
+    exp: int;
+    level: int;
     (*dynamic fields *)
     mutable pos: int * int;
     mutable hp: int;
@@ -135,7 +135,10 @@ module Enemy: EnemySig = struct
   let get_max_hp s=s.max_hp
 
   (* setters are defined here *)
-  let reduce_hp s d = s.hp <- (s.hp - d)
+  let reduce_hp s d =
+    let tmp_hp = s.hp - d 
+    if tmp_hp < 0 then s.hp <- 0
+    else s.hp <- tmp_hp
 
   let get_all_skills_name s = 
     List.map (fun x -> x.skill_name) s.skills
