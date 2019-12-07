@@ -159,7 +159,7 @@ let sorted_list col row length =
 
 
 let unique_location_list col row length =
-  if (col - (length / 2) < 1) || (row - (length / 2)< 1) then
+  if (col < (length / 2)) || (row < (length / 2)) then
     sorted_list col row length (* small map. A sorted list is better for minimizing time complexity*)
   else
     let rec constructor finished count =
@@ -273,11 +273,8 @@ let main_engine_player: unit -> player =
         let level = player_json |> member "level" |> to_int in
         let strength = player_json |> member "strength" |> to_int in
         let health = player_json |> member "health" |> to_int in
-        let location = player_json |> member "location" in
-        let row = location |> member "row" |> to_int in
-        let col = location |> member "col" |> to_int in
         let experience = 0 in
-        Player.constructor ~health ~level ~strength  ~row ~col ~experience ()
+        Player.constructor ~health ~level ~strength ~experience ()
       else read_map handler in
   fun () -> Player (read_map (Unix.opendir "."))
 
@@ -513,36 +510,28 @@ let get_player s =
 let move_player_left s = 
   match s.player with
   | Died -> ()
-  | Player t ->
-    let _ = Player.move_left t s.current_map in
-    s.player <- Player t
+  | Player t -> Player.move_left t s.current_map
 
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
   match s.player with
   | Died -> ()
-  | Player t ->
-    let _ = Player.move_right t s.current_map in
-    s.player <- Player t
+  | Player t -> Player.move_right t s.current_map 
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
 let move_player_up s = 
   match s.player with
   | Died -> ()
-  | Player t ->
-    let _ = Player.move_up t s.current_map in
-    s.player <- Player t
+  | Player t -> Player.move_up t s.current_map
 
 (** [move_player_down s] change the current pos (col', row') of player 
     in state [s] to (col', row'-1) within the map boundaries.*)
 let move_player_down s = 
   match s.player with
   | Died -> ()
-  | Player t ->
-    let _ = Player.move_down t s.current_map in
-    s.player <- Player t
+  | Player t -> Player.move_down t s.current_map
 
 
 
@@ -574,6 +563,7 @@ let take_one_food s =
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
     | Food f when Foods.Food.get_loc f = loc ->
+      s.all_foods_in_current_map.(i) <- Eaten;
       update_food_inventory f player
     | _ -> ()
   done
@@ -585,6 +575,28 @@ let take_one_food_in_current_location s =
   with SuccessExit ->
     ()
 
+let drop_one_food s pos = 
+  let search_food_array s f = 
+    (for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
+       match s.all_foods_in_current_map.(j) with
+       | Eaten -> (s.all_foods_in_current_map.(j) <- Food f;
+                   raise SuccessExit)
+       | _ -> ()
+     done);
+    (* no empty slot *)
+    s.all_foods_in_current_map <- Array.append 
+        [|Food f|] s.all_foods_in_current_map; in
+  match s.all_foods_in_current_map.(pos) with
+  | Food f -> 
+    s.all_foods_in_current_map.(pos) <- Eaten;
+    search_food_array s f;
+  | Eaten -> ()
+
+let drop_one_food_to_current_location s pos =
+  try
+    drop_one_food s pos
+  with SuccessExit ->
+    ()
 
 (**[eat_one_food_in_inventory s pos] makes the following updates: 
    1. the food at index [pos] in player's food inventory is removed from [s]
@@ -594,14 +606,13 @@ let eat_one_food_in_inventory s pos =
   let eat_food food t = 
     let health = Foods.Food.get_health food
     and strength = Foods.Food.get_strength food in
-    let _ = Player.increase_health t health in
-    let _ = Player.increase_strength t strength in
-    s.player <- Player t; in
+    Player.increase_health t health;
+    Player.increase_strength t strength; in
   let player = s |> get_player in
   match s.food_inventory.(pos) with
   | Food f -> 
     eat_food f player;
-    s.food_inventory.(pos) <- Eaten
+    s.food_inventory.(pos) <- Eaten;
   | _ -> ()
 
 
@@ -625,6 +636,7 @@ let equip_one_weapon s =
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapons.Weapon.get_loc w = loc ->
+      s.all_weapons_in_current_map.(i) <- Empty;
       update_weapon_inventory w player
     | _ -> ()
   done
@@ -635,6 +647,32 @@ let equip_one_weapon s =
 let equip_weapon_in_current_loc s = 
   try
     equip_one_weapon s
+  with SuccessExit ->
+    ()
+
+let drop_one_weapon s pos = 
+  let search_weapon_array s w = 
+    (for j = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
+       match s.all_weapons_in_current_map.(j) with
+       | Empty -> 
+         (s.all_weapons_in_current_map.(j) <- Weapon w;
+          raise SuccessExit)
+       | _ -> ()
+     done);
+    (* no empty slot *)
+    s.all_weapons_in_current_map <- Array.append 
+        [|Weapon w|] s.all_weapons_in_current_map; in
+  match s.weapon_inventory.(pos) with
+  | Weapon w -> 
+    let player = s |> get_player in
+    Player.reduce_strength player (Weapons.Weapon.get_strength w);
+    s.weapon_inventory.(pos) <- Empty;
+    search_weapon_array s w;
+  | Empty -> ()
+
+let drop_one_weapon_to_current_location s pos =
+  try
+    drop_one_weapon s pos
   with SuccessExit ->
     ()
 
@@ -666,7 +704,6 @@ let check_weapon_on_loc_and_return_name_list s loc =
   store.(0)
 
 
-
 (**[check_item_on_player_ground s] is a tuple of 
    (food_name list,  weapon_name list) at player's current position
    at state [s] 
@@ -679,6 +716,9 @@ let check_item_on_player_ground s =
     check_food_on_loc_and_return_name_list s loc,
     check_weapon_on_loc_and_return_name_list s loc
   )
+
+
+
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
    state [s] is not ["main"] or if the player at state [s] is not found in the 
@@ -739,3 +779,9 @@ let transfer_player_to_main_map s =
      s.current_map_in_all_maps <- 0)
   else
     ()
+
+let list_of_entrance_loc_to_branch_map s =
+  if get_current_map_name s <> "main"
+  then []
+  else
+    s.branched_map_info |>List.split|> fst

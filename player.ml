@@ -192,12 +192,12 @@ module Player : P = struct
   let move_down p m = move p m 0 (-1)
 
   let increase_health t hp = 
-    let new_health = t.health + tp in
+    let new_health = t.health + hp in
     let max = max_health t in
     if new_health >= max_health t 
-    then t.health <- max;
+    then t.health <- max
     else t.health <- t.health + hp
-  
+
   let increase_strength t st =
     t.strength <- t.strength + st
 

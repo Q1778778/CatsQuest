@@ -508,30 +508,30 @@ let get_player s =
 (** [move_player_left s] change the current pos (col', row') of player 
     in state [s] to (col'-1, row') within the map boundaries.*)
 let move_player_left s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_left t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_left t s.current_map
 
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
   match s.player with
-    | Died -> ()
-    | Player t -> Player.move_right t s.current_map 
+  | Died -> ()
+  | Player t -> Player.move_right t s.current_map 
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
 let move_player_up s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_up t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_up t s.current_map
 
 (** [move_player_down s] change the current pos (col', row') of player 
     in state [s] to (col', row'-1) within the map boundaries.*)
 let move_player_down s = 
-    match s.player with
-    | Died -> ()
-    | Player t -> Player.move_down t s.current_map
+  match s.player with
+  | Died -> ()
+  | Player t -> Player.move_down t s.current_map
 
 
 
@@ -607,7 +607,7 @@ let drop_one_food_to_current_location s pos =
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
     let health = Foods.Food.get_health food
-    and strength = Foods.Food.get_strength food
+    and strength = Foods.Food.get_strength food in
     Player.increase_health t health;
     Player.increase_strength t strength; in
   let player = s |> get_player in
@@ -788,4 +788,4 @@ let list_of_entrance_loc_to_branch_map s =
   if get_current_map_name s <> "main"
   then []
   else
-    s.branched_map_info |> fst
+    s.branched_map_info |>List.split|> fst

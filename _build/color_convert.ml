@@ -64,6 +64,11 @@ let image_of_images i={
 let images_of_json json=
   json|> member"images"|>to_list|>List.map image_of_images
 
+let image_convert json name=
+  let matrix=images_of_json (Yojson.Basic.from_file json) in 
+  (array_color (List.find (fun x->x.name=name) matrix).matrix)
+
+
 (**[enemy_stab] is the image data extracted from ["punch_enemy.json"]  *)
 let enemy_stab=images_of_json (Yojson.Basic.from_file "punch_enemy.json")
 
@@ -101,8 +106,6 @@ let snow5=images_of_json (Yojson.Basic.from_file "snow-120.json")
 (**[water5] is the image data extracted from ["water-120.json"]  *)
 let water5=images_of_json (Yojson.Basic.from_file "water-120.json")
 
-(**[dirt5] is the image data extracted from ["dirt-120.json"]  *)
-let dirt5=images_of_json (Yojson.Basic.from_file "dirt-120.json")
 
 (**[enemy_punch] is the RGB color 2d matrix represented by the image 
    ["stab"] *)
@@ -167,7 +170,15 @@ let water_120=(array_color (List.find (fun x->x.name="water-120") water5)
 
 (**[dirt_120] is the RGB color 2d matrix represented by the image 
    ["dirt-120"] *)
-let dirt_120=(array_color (List.find (fun x->x.name="dirt-120") dirt5).matrix)
+let dirt_120=image_convert "dirt-120.json" "dirt-120"
+
+let bread_80=image_convert "bread-80.json" "bread-80"
+
+let coffee_80=image_convert "coffee-80.json" "coffee-80"
+
+let sword_80=image_convert "sword-80.json" "sword-80"
+
+let dagger_80=image_convert "dagger-80.json" "dagger-80"
 
 (**[enemy_data] is the list that contains a single [eimage] with the minion 
    image.  *)
