@@ -1,3 +1,5 @@
+let purple_red=Graphics.rgb 140 67 86
+
 (**[map_size_cal t] scales the size of the map model object [t] 
    to the size of the GUI screen and returns the dimensions of the 
    scaled map w.r.t the GUI. 
@@ -64,29 +66,42 @@ let draw_items ()=
       let (r,c)= Weapons.Weapon.get_loc w in
       Graphics.set_color Graphics.yellow;
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
-        (cr+(r-1)*interval+(interval/2)) (interval/8) 
+        (cr+(r-1)*interval+(interval/2)) (interval/8);
+      Graphics.set_color Graphics.black;
+      let name="Weapon" in
+      let pixel=(String.length name)-1 in
+      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+      Graphics.draw_string name
     |Engine.Empty->() in 
   let draw_fitem =function
     |Engine.Food f->
       let (r,c)= Foods.Food.get_loc f in
       Graphics.set_color Graphics.green;
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
-        (cr+(r-1)*interval+(interval/2)) (interval/8) 
+        (cr+(r-1)*interval+(interval/2)) (interval/8);
+      Graphics.set_color Graphics.black;
+      let name="Food" in
+      let pixel=(String.length name)-1 in
+      Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+      Graphics.draw_string name
     |Engine.Eaten->() in
   let draw_enemy =function
     |Engine.Enemy e-> (let (r,c)=Enemy.Enemy.get_pos e in 
-                       Graphics.set_color Graphics.red;
+                       Graphics.set_color purple_red;
                        Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
-                         (cr+(r-1)*interval+(interval/2)) (interval/8);
+                         (cr+(r-1)*interval+(interval/2)) (interval/6);
+                       Graphics.set_color Graphics.black;
+                       Graphics.draw_circle(rr+(c-1)*interval+interval/2) 
+                         (cr+(r-1)*interval+(interval/2)) (interval/6);
                        let name=Enemy.Enemy.get_name e in
                        let pixel=(String.length name)-1 in
                        Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
-                       Graphics.set_color Graphics.black;
-                       Graphics.draw_string name; )
+                       Graphics.draw_string name )
     |Engine.Deleted ->() in 
+  List.iter draw_enemy enemy;
   List.iter draw_witem weapons;
-  List.iter draw_fitem foods;
-  List.iter draw_enemy enemy
+  List.iter draw_fitem foods
+
 
 
 

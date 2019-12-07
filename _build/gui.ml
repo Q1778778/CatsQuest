@@ -25,7 +25,6 @@ type trigger=
 
 type clist=
   { mutable fbutton : box list;
-    mutable ecircle : box list;
     mutable dialog: box;
     mutable irefresh: bool;
     mutable difficulty: string;
@@ -41,7 +40,7 @@ type state={
 
 exception Not_such_enemy of string
 
-let cplace= {fbutton=[];ecircle=[];dialog=Bnone; irefresh=false;
+let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
              difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;item_selected=None;item_ground=false}
 
 let cstate={skill=["stab"]}
@@ -248,15 +247,6 @@ let rec find_enemy_image_data name (lst:Color_convert.eimage list)=
   |h::t->find_enemy_image_data name t 
   |[]->failwith "can not find the image"
 
-let draw_enemy name x y r color=
-  Graphics.set_color color;
-  Graphics.fill_circle x y r;
-  let pixel=(String.length name)-1 in
-  Graphics.moveto (x-pixel*3) (y-r/2);
-  Graphics.set_color black;
-  Graphics.draw_string name;
-  cplace.ecircle<-Enemy (name,x,y,r)::(cplace.ecircle)
-
 
 let radius_circle x y r rx ry=
   let dx=x-rx in 
@@ -266,11 +256,11 @@ let radius_circle x y r rx ry=
 
 let enemy_list()=Array.to_list(Engine.get_enemies Engine.game_state)
 
-let rec get_one_enemy name lst=
+let rec get_one_enemy id lst=
   match lst with
-  |Engine.Enemy s::t when ((Enemy.get_name s)=name)->s
-  |h::t -> get_one_enemy name t
-  |[]->raise (Not_such_enemy name)
+  |Engine.Enemy s::t when ((Enemy.get_id s)=id)->s
+  |h::t -> get_one_enemy id t
+  |[]->raise (Not_such_enemy id)
 
 let skill_damage name=
   let s= Engine.get_player(Engine.game_state) in
@@ -304,7 +294,7 @@ let skill_helper name=
   health_bar ();
   combat_four_botton cplace;
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
-  let image_of_e=find_enemy_image_data cplace.enemy_to_combat
+  let image_of_e=find_enemy_image_data (Enemy.get_name the_enemy)
       Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
@@ -451,12 +441,9 @@ let rec fensor (c:clist) i=
     |Action_circle ((x,y,r),t)->()
     |Dialog_sense s->()
     |Bnone->fensor c i
-    |Enemy (n,x,y,r) when (radius_circle s.mouse_x s.mouse_y r x y=true)->
-      cplace.enemy_to_combat<-n 
     |Enemy _->()in
   if sta.button then (let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
-                      let _=List.rev_map 
-                          (fun butt->sense butt sta) c.ecircle in ()) else 
+                      ()) else 
     ksensor sta
 
 
@@ -470,8 +457,8 @@ let skill_mon ()=
     cstate.skill<-List.map (fun x->Player.skill_name x) (Player.skills_list s)
   |Died->()
 
-let enemy_mon name=
-  let hp=Enemy.get_hp (get_one_enemy name (enemy_list()))in 
+let enemy_mon id=
+  let hp=Enemy.get_hp (get_one_enemy id (enemy_list()))in 
   if hp<=0 then false else true 
 
 let game_over_mon ()=
@@ -480,12 +467,13 @@ let game_over_mon ()=
                   dialog "Game over" Color_convert.cute_cat "cute cat"; 
                   tsensor cplace; Graphics.close_graph()) else ()
 
-let rec combat name =
+let rec combat id=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
   combat_four_botton cplace;
-  let the_enemy=get_one_enemy name (enemy_list()) in
+  let the_enemy=get_one_enemy id (enemy_list()) in
+  let name=Enemy.get_name the_enemy in
   let image_of_e=find_enemy_image_data name Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
@@ -494,12 +482,13 @@ let rec combat name =
   Thread.delay 1.0;
   game_over_mon();
   Graphics.clear_graph();
-  if enemy_mon name then
-    (combat name) else 
-    cplace.enemy_to_combat<-"none";cplace.ecircle<-[];()
+  if enemy_mon id then
+    (combat id) else 
+    cplace.enemy_to_combat<-"none";
+  Engine.delete_one_enemy_from_state Engine.game_state
 
 let combat_mon()=if cplace.enemy_to_combat<>"none" then 
-    (Graphics.clear_graph();combat cplace.enemy_to_combat)
+    (Graphics.clear_graph();combat cplace.enemy_to_combat )
   else ()
 
 let ground_mon ()=
@@ -513,10 +502,11 @@ let ground_mon ()=
      |h::t,_->cplace.item_ground<-true)
   |Engine.Died->()
 
+let enemy_loc_mon()=
+  let (b,id)=Engine.check_enemy_in_current_loc Engine.game_state in 
+  if b then cplace.enemy_to_combat<-id else 
+    ()
 
-let ms1_demo flag=
-  if flag then
-    draw_enemy "minion" 600 400 20 red else ()
 
 let rec init flag =
   cplace.fbutton<-[];
@@ -533,9 +523,9 @@ let rec init flag =
   item_draw ();
   draw_inventory();
   skill_mon();
-  ms1_demo flag;
   fensor cplace Normal;
   tsensor cplace;
+  enemy_loc_mon();
   combat_mon();
   clear_screen();
   init flag

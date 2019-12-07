@@ -131,22 +131,26 @@ let contains s1 s2 =
 (**[random_int_array_for_enemies_and_items arr num] returns a 
    probability-driven random int array with the number [num] and the 
    location array [arr] *)
-let random_int_array_for_enemies_and_items loc_array number =
+let random_int_array_for_enemies_and_items size_array number =
   let round f = truncate (f +. 0.5) in
-  let raw_prob = List.map (fun (x, y) -> x * y) (loc_array |> Array.to_list) in
+  let raw_prob = size_array |> Array.to_list in
   let rec total_sum num = function
     | [] -> num
     | h::d -> total_sum (num + h) d in
   let sum = total_sum 0 raw_prob in
+  let float_sum = float_of_int sum in
+  let float_num = float_of_int number in
   let temp_random_number = (*the probability oper here is pretty messy *)
-    List.map 
-      (fun s -> 
-         ((float_of_int s) /. (float_of_int sum) *. (float_of_int number)) 
-         |> round) raw_prob in 
-  (((List.hd temp_random_number) 
-    + sum - (total_sum 0 temp_random_number))::(List.tl temp_random_number))
+    List.map (fun s -> 
+                ((float_of_int s) /. float_sum *. float_num) 
+                |> round) raw_prob in 
+  let tl =List.tl temp_random_number in
+  (number - (total_sum 0 tl)::(tl))
   |> Array.of_list
 
+(**[sorted_list col row n] is [List.rev [(col, row), (col-1, row), ... , 
+   (1, row), (col, row-1), (col-1, row-1), ...]x] containing [n] elements. 
+   Requires: 0 <= [n] <= [col * row] *)
 let sorted_list col row length = 
   let rec inner_looper col' row' finished count = 
     if count = 0 then finished
@@ -157,10 +161,13 @@ let sorted_list col row length =
       inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
   inner_looper col row [] length
 
-
+(**[unique_location_list col row n] returns [sorted_list col row n] if 
+   [col < n/2] or [row < n/2], otherwise it returns a randomly constructed
+   set-like list of [(col, row)] coordinates with length [n]. *)
 let unique_location_list col row length =
   if (col < (length / 2)) || (row < (length / 2)) then
-    sorted_list col row length (* small map. A sorted list is better for minimizing time complexity*)
+    (* small map. A sorted list is better for minimizing time complexity*)
+    sorted_list col row length 
   else
     let rec constructor finished count =
       if count = 0 then finished
@@ -173,8 +180,7 @@ let unique_location_list col row length =
 
 
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
-   Requires: [s] is in the form ["# cols, # rows"]
-*)
+   Requires: [s] is in the form ["# cols, # rows"] *)
 let parse_dims s = 
   let rows = List.nth (String.split_on_char ',' s) 0 in 
   let cols = List.nth (String.split_on_char ',' s) 1 in 
@@ -236,8 +242,7 @@ let browse_one_enemy_json j ~id ~col ~row =
 
 (**[main_engine_ememy_for_single_map col row num] 
    Raises: [Failure "NONE of 'enemy' json exists"] if none of the json 
-   file names are contain ["enemy"]
-*)
+   file names are contain ["enemy"] *)
 let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
@@ -323,7 +328,8 @@ let main_engine_food ~(loc_array: (int * int) array)
     final_number_array loc_array
 
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
-   represented by the json array [j_arr] with the dimensions [cols] by [rows] *)
+   represented by the json array [j_arr] with the dimensions [cols] by [rows] 
+*)
 let weapon_array_builder cols rows jsons: weapon_item array = 
   jsons 
   |> List.map2 
@@ -376,7 +382,8 @@ let map_param_array_builder jsons : ((int * int) * map_param) list =
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in 
       let _ = 
-        if link <> "" && name = "main" (* i don't think the later check is necessary *)
+        (* i don't think the later check is necessary *)
+        if link <> "" && name = "main" 
         then update_branch_map_store link (col, row) 
         else () in
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
@@ -429,7 +436,8 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
       else read_map handler list in 
   (read_map (Unix.opendir ".") [])
 
-
+let main_map_size_array map_array : int array = 
+  Array.map (fun map -> let x, y = Maps.size map in x * y) map_array
 
 (*                       initiate the game                           *)
 
@@ -438,7 +446,8 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 let init (): state =
   let map_array, loc_array = main_engine_map_param () in
   let number = 7 (*this number can be either artificially set or stored in json.*) in
-  let final_number_array = random_int_array_for_enemies_and_items loc_array number in
+  let map_size_array = main_map_size_array map_array in
+  let final_number_array = random_int_array_for_enemies_and_items map_size_array number in
   let all_enemies = (main_engine_enemy ~loc_array ~final_number_array)  in
   let all_foods = (main_engine_food ~loc_array ~final_number_array)  in
   let all_weapons = (main_engine_weapon ~loc_array ~final_number_array) in {
@@ -471,11 +480,35 @@ let game_state = init ()
 (**[change_player p s] changes the player in game state [s] to [p] *)
 let change_player player s = s.player <- player
 
-(**[get_player s] is the player in game state [s] *)
-let get_player s = s.player
+(**[get_player s] returns the player if the player in game state [s]
+   is alive. 
+  
+   Raises: [Failure "player is dead"] if the player has already died.  *)
+let get_player s = 
+  match s.player with
+  | Player p -> p
+  | Died -> failwith "player is dead"
 
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map
+
+let check_enemy s store =
+  let loc = s |> get_player |> Player.location in
+  for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do
+    match s.all_enemies_in_current_map.(i) with
+    | Enemy e when Enemy.get_pos e = loc ->
+      (store.(0) <- Enemy.get_id e;
+      raise SuccessExit)
+    | _ -> ()
+  done
+
+let check_enemy_in_current_loc s =
+  let store = [|""|] in
+    try
+      check_enemy s store;
+      false, ""
+    with SuccessExit ->
+      true, store.(0)
 
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map
@@ -494,13 +527,6 @@ let get_current_map_size s = s.current_map.size
 
 (*map-param related methods *)
 
-(**[get_player s] returns the player if the player in game state [s]
-   is alive. 
-   Raises: [Failure "player is dead"] if the player has already died.  *)
-let get_player s = 
-  match s.player with
-  | Player p -> p
-  | Died -> failwith "player is dead"
 
 
 (*                          move player                           *)
@@ -538,7 +564,7 @@ let move_player_down s =
 (*                       change game state                        *)
 
 (**[delete_one_enemy_from_state s] deletes the enemy with player's current
-   location *)
+   location at state [s] *)
 let delete_one_enemy_from_state s =
   let player = s |> get_player in
   let loc = player |> Player.location in
@@ -550,12 +576,18 @@ let delete_one_enemy_from_state s =
     | _ -> ()
   done
 
-
+(**[take_one_food s] takes food from the player's current location at state
+   [s], if any, and adds it to the first empty slot in the player's food 
+   inventory. 
+   Raises: [SuccessExit] if the food from the player's location was 
+   successfully eaten. *)
 let take_one_food s =
   let update_food_inventory f t =
     (for j = 0 to (Array.length s.food_inventory) - 1 do
        match s.food_inventory.(j) with
-       | Eaten -> (s.food_inventory.(j) <- Food f; raise SuccessExit)
+       | Eaten -> 
+         (s.food_inventory.(j) <- Food f; 
+          raise SuccessExit)
        | _ -> ()
      done) in
   let player = s |> get_player in
@@ -568,13 +600,17 @@ let take_one_food s =
     | _ -> ()
   done
 
-
+(**[take_one_food s] takes food on player's current location at state [s], 
+   if any, to the first empty slot in player's food inventory. *)
 let take_one_food_in_current_location s = 
   try
     take_one_food s
   with SuccessExit ->
     ()
 
+(**[drop_one_food s pos] drops the food at index [pos] of the player's 
+   food inventory to the player's current location at state [s]. 
+   Raises: [SuccessExit] if the food at index [pos] is successfully dropped. *)
 let drop_one_food s pos = 
   let search_food_array s f loc = 
     Foods.Food.set_loc f loc;
@@ -594,16 +630,18 @@ let drop_one_food s pos =
     search_food_array s f (s |> get_player |> Player.location);
   | Eaten -> ()
 
+(**[drop_one_food_to_current_location s pos] drops the food at index [pos] 
+   of the player's food inventory to the player's current location at state 
+   [s]. *)
 let drop_one_food_to_current_location s pos =
   try
     drop_one_food s pos
   with SuccessExit ->
     ()
 
-(**[eat_one_food_in_inventory s pos] makes the following updates: 
-   1. the food at index [pos] in player's food inventory is removed from [s]
-   2. the player in [s] increases health and strength by its corresponding food
-   health and strength.  *)
+(**[eat_one_food_in_inventory s pos] eats the food from the player's current
+   location, if any, with the player increasing health and strength and the 
+   food at index [pos] removed from the player's inventory at state [s].  *)
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
     let health = Foods.Food.get_health food
@@ -621,8 +659,10 @@ let eat_one_food_in_inventory s pos =
 
 (**[equip_one_weapon s] will check player's inventory and equip player with
    weapon of player's current location if possible. If the weapon inventory is
-   already full, the weapon will not be equipped (the game state wouldn't change)
-*)
+   already full, the weapon will not be equipped (the game state wouldn't 
+   change).
+   Raises: [SuccessExit] if the weapon is successfully equipped in the 
+   player's inventory.  *)
 let equip_one_weapon s =
   let update_weapon_inventory w t =
     (for j = 0 to (Array.length s.weapon_inventory) - 1 do
@@ -645,13 +685,20 @@ let equip_one_weapon s =
 
 (**[equip_one_weapon s] will update the weapon inventory of game state [s]
    if there is any empty slot and weapon in player's current location will be 
-   equipped in that slot  *)
+   equipped in that slot.  *)
 let equip_weapon_in_current_loc s = 
   try
     equip_one_weapon s
   with SuccessExit ->
     ()
 
+(**[drop_one_weapon s pos] drops the weapon at index [pos] of the player's 
+   weapon inventory to the player's current location at state [s]. 
+   Example: if the weapon inventory is [|Null; Null; dagger|]
+   [drop_one_weapon s 2] drops [dagger], and the weapon inventory 
+   becomes [|Null; Null; Empty|].
+   Raises: [SuccessExit] if the weapon at index [pos] is successfully removed
+   from the weapon inventory. *)
 let drop_one_weapon s pos = 
   let search_weapon_array s w loc = 
     Weapons.Weapon.set_loc w loc;
@@ -674,6 +721,12 @@ let drop_one_weapon s pos =
     search_weapon_array s w (player |> Player.location);
   | _ -> ()
 
+(**[drop_one_weapon_to_current_location s pos] drops the weapon at index 
+   [pos] of the player's weapon inventory to the player's current location 
+   at state [s]. 
+   Example: if the weapon inventory is [|Null; Null; dagger|]
+   [drop_one_weapon_to_current_location s 2] drops [dagger], and the 
+   weapon inventory becomes [|Null; Null; Empty|]. *)
 let drop_one_weapon_to_current_location s pos =
   try
     drop_one_weapon s pos
@@ -711,9 +764,7 @@ let check_weapon_on_loc_and_return_name_list s loc =
 (**[check_item_on_player_ground s] is a tuple of 
    (food_name list,  weapon_name list) at player's current position
    at state [s] 
-
-   Require:
-   Player MUST BE Alive*)
+   Requires: Player MUST BE Alive *)
 let check_item_on_player_ground s =
   let loc = s |> get_player |> Player.location in
   (
@@ -784,6 +835,8 @@ let transfer_player_to_main_map s =
   else
     ()
 
+(**[list_of_entrance_loc_to_branch_map s] is the list of entrance locations
+   to the branch map named [s]. *)
 let list_of_entrance_loc_to_branch_map s =
   if get_current_map_name s <> "main"
   then []
