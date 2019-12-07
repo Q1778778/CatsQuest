@@ -480,8 +480,14 @@ let game_state = init ()
 (**[change_player p s] changes the player in game state [s] to [p] *)
 let change_player player s = s.player <- player
 
-(**[get_player s] is the player in game state [s] *)
-let get_player s = s.player
+(**[get_player s] returns the player if the player in game state [s]
+   is alive. 
+  
+   Raises: [Failure "player is dead"] if the player has already died.  *)
+let get_player s = 
+  match s.player with
+  | Player p -> p
+  | Died -> failwith "player is dead"
 
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map
@@ -519,13 +525,6 @@ let get_current_map_size s = s.current_map.size
 
 (*map-param related methods *)
 
-(**[get_player s] returns the player if the player in game state [s]
-   is alive. 
-   Raises: [Failure "player is dead"] if the player has already died.  *)
-let get_player s = 
-  match s.player with
-  | Player p -> p
-  | Died -> failwith "player is dead"
 
 
 (*                          move player                           *)
