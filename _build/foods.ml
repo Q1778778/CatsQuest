@@ -24,6 +24,8 @@ module type F = sig
 
   (**[get_loc f] is the location of the food [f]  *)
   val get_loc : food -> int * int
+
+  val set_loc : food -> int * int -> unit
 end
 
 
@@ -32,7 +34,7 @@ module Food : F = struct
     name : string;
     description : string;
     id : int;
-    location : int * int;
+    mutable location : int * int;
     health : int;
     strength : int;
   }
@@ -54,5 +56,7 @@ module Food : F = struct
   let get_health f = f.health
 
   let get_loc f = f.location
+
+  let set_loc f loc = f.location <- loc
 end
 

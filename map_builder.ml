@@ -57,6 +57,7 @@ let draw_items ()=
   let s=Engine.game_state in 
   let weapons=Array.to_list s.all_weapons_in_current_map in 
   let foods=Array.to_list s.all_foods_in_current_map in
+  let enemy=Array.to_list s.all_enemies_in_current_map in
   let draw_witem w=
     match w with 
     |Engine.Weapon w->
@@ -72,8 +73,21 @@ let draw_items ()=
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
         (cr+(r-1)*interval+(interval/2)) (interval/8) 
     |Engine.Eaten->() in
+  let draw_enemy =function
+    |Engine.Enemy e-> (let (r,c)=Enemy.Enemy.get_pos e in 
+                       Graphics.set_color Graphics.red;
+                       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
+                         (cr+(r-1)*interval+(interval/2)) (interval/6);
+                       let name=Enemy.Enemy.get_name e in
+                       let pixel=(String.length name)-1 in
+                       Graphics.moveto ((rr+(c-1)*interval+interval/2)-pixel*3) ((cr+(r-1)*interval+(interval/2))-r/2);
+                       Graphics.set_color Graphics.black;
+                       Graphics.draw_string name; )
+    |Engine.Deleted ->() in 
+  List.iter draw_enemy enemy;
   List.iter draw_witem weapons;
   List.iter draw_fitem foods
+
 
 
 

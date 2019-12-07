@@ -103,6 +103,7 @@ let experience_bar ()=
   ()
 
 let health_bar ()=
+  Graphics.set_color black;
   whitebox_draw 100 730 300 750 5;
   Graphics.set_color white;
   Graphics.fill_rect 100 730 200 20;
@@ -187,13 +188,14 @@ let normal_four_botton c=
   let first=create_button "cat" red black 920 105 130 85 ("dialog","first") in
   let second=if Option.is_some cplace.item_selected then
       (let (t,i,n)=Option.get cplace.item_selected in
-       create_button "use/discard" 
+       create_button "use" 
          magenta black 1060 105 130 85 ("use",n)) else (create_button "use" 
                                                           grey white 1060 105 130 85 ("","second")) in
   let third=if (cplace.item_ground)then create_button "pick up" blue black 920 10 130 85("weapon","pick") else
       create_button "pick up" grey white 920 10 130 85("weapon","pick") in
-  let fourth=create_button "fourth" 
-      green black 1060 10 130 85 ("","second")in
+  let fourth=if (Option.is_some cplace.item_selected)then create_button "drop" 
+        green black 1060 10 130 85 ("drop","second") else 
+      create_button "drop" grey white 1060 10 130 85 ("drop","second")in
   c.fbutton<-(first::second::third::[fourth])
 
 let combat_four_botton c =
@@ -372,6 +374,7 @@ let ground_probe()= let player= Engine.game_state.player in
   |Engine.Died->"None"
 
 
+
 let rec parse  c=
   match c with
   |Command d when d="easy"->cplace.difficulty<-"easy"
@@ -382,18 +385,27 @@ let rec parse  c=
   |Attack sk->skill_image sk;
   |Item (s,i)->item_check s i
   |Next_con s->cplace.dialog_in_progress<-false;Graphics.clear_graph()
-  |Order (c,t)->(if c="dialog" then parse (Guide t)  else if 
-                   c="weapon" then (match ground_probe () with
+  |Order (c,t)->order_helper c t
+  |Tnone->()
+
+and  order_helper c t=
+  (if c="dialog" then parse (Guide t)  else if 
+     c="weapon" then (match ground_probe () with
       |"Weapon"-> Engine.equip_weapon_in_current_loc Engine.game_state
       |"Food"->Engine.take_one_food_in_current_location Engine.game_state
       |_->()) else if
-                   c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
-                                 match t with 
-                                 |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
-                                 |_->())
-                 else
-                   parse  (Command t))
-  |Tnone->()
+     c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
+                   match t with 
+                   |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                   |_->()) else if 
+     c="drop" then (if Option.is_some cplace.item_selected then 
+                      (let (t,i,n)=Option.get cplace.item_selected in 
+                       match t with 
+                       |"weapon"->Engine.drop_one_weapon_to_current_location Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                       |"food"->Engine.drop_one_food_to_current_location Engine.game_state i;cplace.item_selected<-None;cplace.irefresh<-true
+                       |_->() ) else ())
+   else
+     parse  (Command t))
 
 
 let tsensor(c:clist)=
