@@ -311,7 +311,7 @@ let main_engine_player: unit -> player =
 (**[food_array_builder cols rows j_arr] constructs a new food array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let food_array_builder loc_array cols rows jsons: food_item array = 
+let food_array_builder loc_array col row jsons: food_item array = 
   jsons |> List.map2 
     (fun (col, row) j -> let id = count () in
       let health = j |> member "health" |> to_int in
@@ -356,9 +356,9 @@ let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let weapon_array_builder loc_array cols rows jsons: weapon_item array = 
+let weapon_array_builder loc_array col row jsons: weapon_item array = 
   jsons 
-  |> List.map 
+  |> List.map2 
     (fun (col, row) j -> let id = count () in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
