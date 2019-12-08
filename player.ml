@@ -122,6 +122,8 @@ module type P = sig
   val skill_strength: skill -> int
 
   val skill_description: skill -> string
+
+  val choose_this_skill: skill -> unit
 end
 
 module Player : P = struct
@@ -254,12 +256,9 @@ module Player : P = struct
     | h::_ -> h
 
   let available_skills_list t =
-    t.skill <- Array.map (fun skill -> 
-      if skill.cd <> 0 
-      then skill.cd <- skill.cd - 1
-      else ()) t.skill;
     List.filter (fun skill -> skill.cd = 0) t.skill
 
+  let choose_skill_name 
   let skill_name skill = skill.name
 
   let skill_strength skill =  skill.strength
@@ -270,6 +269,10 @@ module Player : P = struct
   
   let switch_loc t loc = t.location <- loc
   
+  let choose_this_skill skill = 
+    let cd_temp = skill.cd - 1 in
+    if cd_temp <> 0 then skill.cd <- cd_temp
+    else ()
 end
 
 type skill = Player.skill
