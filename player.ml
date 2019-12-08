@@ -219,11 +219,11 @@ module Player : P = struct
     in p.health <- new_health
 
   let reduce_strength p str = 
-    let temp_minus = str / (List.length s.skills) in
-    p.skills <- (List.iter 
-        (fun skill -> let temp = skill.strength - temp_minus in
-                        if temp <= 0 then skill.strength <- 0
-                        else skill.strength <- temp) p.skills)
+    let temp_minus = str / (List.length p.skills) in
+    (List.iter 
+       (fun skill -> let temp = skill.strength - temp_minus in
+         if temp <= 0 then skill.strength <- 0
+         else skill.strength <- temp) p.skills)
 
   let advance_level p = 
     let experience_qual = 30 + 30 * p.level in 
@@ -251,7 +251,7 @@ module Player : P = struct
     | h::_ -> h
 
   let available_skills_list t =
-    List.filter (fun skill -> skill.cd = 0) t.skill
+    List.filter (fun skill -> skill.cd = 0) t.skills
 
   (*let choose_skill_name *)
 
@@ -261,7 +261,7 @@ module Player : P = struct
 
   let skill_description skill = skill.description
 
-  let update_skill t skill_lst = t.skill <- t.skill @ skill_lst
+  let update_skill t skill_lst = t.skills <- t.skills @ skill_lst
 
   let switch_loc t loc = t.location <- loc
 

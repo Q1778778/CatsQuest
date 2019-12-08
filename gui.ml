@@ -296,7 +296,8 @@ let enemy_skill t=
   enemy_skill_image name;
   Graphics.set_color black;
   Graphics.moveto 100 715;
-  Graphics.draw_string ("-"^string_of_int damage)
+  Graphics.draw_string ("-"^string_of_int damage);
+  Thread.delay 1.5
 
 let enemy_mon id=
   let hp=Enemy.get_hp (get_one_enemy id (enemy_list()))in 
@@ -309,14 +310,12 @@ let game_over_mon ()=
      let _=Graphics.wait_next_event [Button_down] in 
      Graphics.close_graph()) else ()
 
-let skill_helper name=
-  Graphics.moveto 850 500;
-  Graphics.set_color red;
-  Graphics.draw_string ("-"^string_of_int(skill_damage name));
-  Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat (enemy_list ()))
-    (skill_damage name);
-  Thread.delay 1.5;
-  Graphics.clear_graph(); 
+let skill_image name=
+  match name with 
+  |"punch"->draw_a_image Color_convert.the_stab 500 350;
+  |_->failwith"unbound image"
+
+let skill_info_helper ()=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
@@ -327,19 +326,27 @@ let skill_helper name=
       Color_convert.enemy_data in 
   draw_a_image image_of_e 900 550;
   enemy_health_bar the_enemy;
-  draw_a_image Color_convert.player_in_combat 10 205;
+  draw_a_image Color_convert.player_in_combat 10 205
+
+let skill_helper name=
+  Graphics.clear_graph(); 
+  Graphics.moveto 850 500;
+  Graphics.set_color red;
+  Graphics.draw_string ("-"^string_of_int(skill_damage name));
+  Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat (enemy_list ()))
+    (skill_damage name);
+  skill_info_helper();
+  skill_image name;
+  Thread.delay 1.5;
+  Graphics.clear_graph(); 
   if enemy_mon cplace.enemy_to_combat then
-    (Thread.delay 1.0;
+    (skill_info_helper();
+     Thread.delay 0.6;
+     let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
      enemy_skill the_enemy;
      draw_a_image Color_convert.player_in_combat 10 205;
      game_over_mon()) else 
     ()
-
-let skill_image name=
-  match name with 
-  |"punch"->draw_a_image Color_convert.the_stab 500 350;
-    skill_helper name
-  |_->failwith"unbound image"
 
 let item_check s i=
   if s="food" then 
@@ -407,7 +414,7 @@ let rec parse  c=
       Color_convert.cute_cat "cute cat"
   |Guide s->()
   |Command s->()
-  |Attack sk->skill_image sk;
+  |Attack sk->skill_helper sk;
   |Item (s,i)->item_check s i
   |Next_con s->cplace.dialog_in_progress<-false;Graphics.clear_graph()
   |Order (c,t)->order_helper c t
@@ -502,25 +509,15 @@ let clear_screen ()=
 let skill_mon ()=
   match Engine.game_state.player with
   |Player s->
-    cstate.skill<-List.map (fun x->Player.skill_name x) (Player.skills_list s)
+    cstate.skill<-List.map (fun x->Player.skill_name x) 
+        (Player.available_skills_list (Engine.get_player Engine.game_state))
   |Died->()
 
 
 
 let rec combat id=
-  status_bar ();
-  normal_four_botton cplace;
-  health_bar ();
-  combat_four_botton cplace;
-  let the_enemy=get_one_enemy id (enemy_list()) in
-  let name=Enemy.get_name the_enemy in
-  let image_of_e=find_enemy_image_data name Color_convert.enemy_data in 
-  draw_a_image image_of_e 900 550;
-  enemy_health_bar the_enemy;
-  info_bar();
-  draw_a_image Color_convert.player_in_combat 10 205;
+  skill_info_helper();
   fensor cplace Combat;
-  Thread.delay 1.0;
   game_over_mon();
   Graphics.clear_graph();
   if enemy_mon id then
