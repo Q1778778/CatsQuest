@@ -2,6 +2,9 @@ open OUnit2
 open Player
 open Enemy
 open Engine
+open Foods
+open Maps
+open Weapons
 
 (**[get_player s] returns [t] if the player at state [s] yields [Player t].
    Otherwise, fails with "died" *)
@@ -36,45 +39,65 @@ let map_cols s = s.current_map.size |> fst
 (**[map_rows s] is the # of rows of the player's map at state [s]  *)
 let map_rows s = s.current_map.size |> snd
 
+(**[delete_all_enemies_in_current_map s] removes all enemies in the 
+   current map in state [s].   *)
 let delete_all_enemies_in_current_map s = 
   for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
     s.all_enemies_in_current_map.(i) <- Deleted
   done
 
+(**[switch_to_different_map s pos] switches to the map indexed at 
+   [pos]. *)
 let switch_to_different_map s pos = 
   s.current_map <- List.nth s.all_maps pos;
   s.all_enemies_in_current_map <- s.all_enemies.(pos);
   s.all_foods_in_current_map <- s.all_foods.(pos);
   s.all_weapons_in_current_map <- s.all_weapons.(pos);
   s.current_map_in_all_maps <- pos
+
+
 (** Player state update tests *)
 
-
+(**[get_enemy t] returns the enemy [e] if [t] is a valid enemy type, 
+   and raises [Failure "invalid enemy"] otherwise. *)
 let get_enemy = function
   | Deleted -> failwith "invalid enemy"
   | Enemy e -> e
 
+(**[get_food t] returns the food [f] if [t] is a valid food type, 
+   and raises [Failure "invalid food"] otherwise. *)
 let get_food = function
   | Eaten -> failwith "invalid food"
   | Food f -> f
 
+(**[get_weapon t] returns the weapon [w] if [t] is a valid weapon type, 
+   and raises [Failure "invalid weapon"] otherwise. *)
 let get_weapon = function
   | Empty -> failwith "invalid weapon"
   | Weapon w -> w
 
+(**[enemy_is_alive t] returns [true] if [t] is a valid enemy and [false]
+   otherwise.  *)
 let enemy_is_alive = function
   | Deleted -> false
   | Enemy e -> true
 
+(**[get_one_enemy_pos s] returns the location of the first enemy 
+   in the current map at state [s].  *)
 let get_one_enemy_pos s = 
   s.all_enemies_in_current_map.(0) |> get_enemy |> Enemy.get_pos
 
+(**[get_first_alive_enemy_at_index s pos] returns the first alive enemy of
+   all the enemies indexed at [pos] at state [s]. 
+   Raises: [Failure "all enemies are dead"] if all enemies are dead.  *)
 let get_first_alive_enemy_at_index s pos =
   let store = [||] in
   let rec inner_searcher enemies_array = 
     for i = 0 to Array.length enemies_array - 1 do
-      match get_enemy enemies_array.(i) with
-      | Enemy e -> Array.append [|e|] store; raise SuccessExit
+      match enemies_array.(i) with
+      | Enemy e -> 
+        let _ = Array.append [|e|] store in  
+        raise SuccessExit
       | _ -> ()
     done in
   try
@@ -83,31 +106,41 @@ let get_first_alive_enemy_at_index s pos =
   with SuccessExit ->
     store.(0)
 
+(**[get_first_available_food_at_index s pos] returns the first available food 
+   of all the foods indexed at [pos] at state [s].
+   Raises: [Failure "no foods"] if no food is available.  *)
 let get_first_available_food_at_index s pos =
   let store = [||] in
   let rec inner_searcher food_array = 
     for i = 0 to Array.length food_array - 1 do
-      match get_food food_array.(i) with
-      | Food f -> Array.append [|f|] store; raise SuccessExit
+      match food_array.(i) with
+      | Food f -> 
+        let _ = Array.append [|f|] store in 
+        raise SuccessExit
       | _ -> ()
     done in
   try
     inner_searcher s.all_foods.(pos);
-    failwith "all enemies are dead"
+    failwith "no foods"
   with SuccessExit ->
     store.(0)
 
+(**[get_first_available_weapon_at_index s pos] returns the first available 
+   weapon of all the weapons indexed at [pos] at state [s]. 
+   Raises: [Failure "no weapons"] if no food is available.  *)
 let get_first_available_weapon_at_index s pos =
   let store = [||] in
   let rec inner_searcher weapon_array = 
     for i = 0 to Array.length weapon_array - 1 do
-      match get_food weapon_array.(i) with
-      | Weapon w -> Array.append [|w|] store; raise SuccessExit
+      match weapon_array.(i) with
+      | Weapon w -> 
+        let _ = Array.append [|w|] store in 
+        raise SuccessExit
       | _ -> ()
     done in
   try
     inner_searcher s.all_weapons.(pos);
-    failwith "all enemies are dead"
+    failwith "no weapons"
   with SuccessExit ->
     store.(0)
 
@@ -119,9 +152,7 @@ let get_first_available_weapon_at_index s pos =
 (* initial pos -> 1,1 
    initial map -> 0 *)
 let state = Engine.init () 
-
 let init_health = get_health state
-
 let init_experience = get_experience state
 let init_level = get_level state
 let init_pos = get_pos state
@@ -168,7 +199,7 @@ let state11'_health = get_health state
 
 (* increase experience enough to advance *)
 let _ = Player.increase_experience (get_player state) 
-    (state |> get_player |> level_up_expereince)
+    (state |> get_player |> Player.level_up_expereince)
 let state12_experience = get_experience state 
 let state12_level = get_level state 
 let state12_health = get_health state
@@ -247,8 +278,6 @@ let w_new_loc = Weapon.get_loc one_w
 
 (** Branched map state update tests *)
 
-
-
 (**[make_test n i o] constructs a test [n] to check whether [i] is equal 
    to [o]. *)
 let make_test n i o = 
@@ -298,6 +327,7 @@ let enemy_state_tests = [
     (init_1_level = init_2_level) true;
 ]
 
+(** Test suite for food states  *)
 let food_state_tests = [
   make_test "food's gainable strength should never be changed when we move food"
     (init_1f_strength = init_2f_strength) true;
@@ -306,17 +336,20 @@ let food_state_tests = [
   make_test "change food's location" f_new_loc (2,3);
 ]
 
+(** Test suite for weapon states  *)
 let weapon_state_tests = [
   make_test "weapon's name should be consistent throughout moving"
-  (init_1w_name = init_2w_name) true;
+    (init_1w_name = init_2w_name) true;
   make_test "weapon's strength should be consistent throughout moving"
-  (init_1w_strength = init_2w_strength) true;
+    (init_1w_strength = init_2w_strength) true;
   make_test "weapon's new location should be correct after moving"
-  w_new_loc (2, 3);
+    w_new_loc (2, 3);
 ]
 
+(** Test suite for branched map states  *)
 let branched_map_tests = []
 
+(** All the test suites  *)
 let suite =
   "test suite for A2" >::: 
   List.flatten [
@@ -327,5 +360,5 @@ let suite =
     branched_map_tests;
   ]
 
-
+(** Run all the test suites  *)
 let _ = run_test_tt_main suite
