@@ -19,6 +19,7 @@ module type F = sig
   (**[get_name f] is the name of the food [f]  *)
   val get_name : food -> string
 
+  (**[get_description f] is the description of the food [f]  *)
   val get_description : food -> string
 
   (**[get_strength f] is the strength of the food [f]  *)
@@ -30,8 +31,10 @@ module type F = sig
   (**[get_loc f] is the location of the food [f]  *)
   val get_loc : food -> int * int
 
+  (**[set_loc f loc] sets the location of the food [f] to [loc]  *)
   val set_loc : food -> int * int -> unit
 
+  (**[get_gainables f] is the skill gainables of food [f] *)
   val get_gainables: food -> Player.skill list
 end
 

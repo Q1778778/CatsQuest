@@ -18,6 +18,7 @@ module type W = sig
   (**[get_name w] is the name of the weapon [w]  *)
   val get_name : weapon -> string
 
+  (**[get_description w] is the description of the weapon [w]  *)
   val get_description: weapon -> string
 
   (**[get_strength w] is the strength of the weapon [w]  *)
@@ -26,8 +27,10 @@ module type W = sig
   (**[get_loc w] is the location of the weapon [w]  *)
   val get_loc : weapon -> int * int
 
+  (**[set_loc w loc] sets the location of the weapon [w] to [loc]  *)
   val set_loc : weapon -> int * int -> unit
 
+  (**[get_gainables w] is the skill gainables of weapon [w] *)
   val get_gainables: weapon -> Player.skill list
 end
 
