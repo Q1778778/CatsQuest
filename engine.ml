@@ -93,7 +93,7 @@ let count =
 let probabilty s = 
   (* 0 <= x <= 10 *)
   let x = Int.to_float (Random.int 11) in
-  x <  (s *. 10.0)
+  x < s *. 10.0
 
 (**[random_choice lst] is a random object chosen from list [lst]
    Requires:
@@ -122,7 +122,7 @@ let choose_skill_random s =
   let skills = s |> 
                Enemy.get_all_skills_name_prob_and_strength_to_assoc_list in
   let first_name, _, first_strength = List.hd skills in
-  inner_chooser skills ((first_name,first_strength))
+  inner_chooser skills (first_name,first_strength)
 
 (**[contains s s1] is [true] if [s] contains substring [s1], [false] 
    otherwise *)
@@ -131,9 +131,9 @@ let contains s1 s2 =
     (*let re = Str.regexp_string s2
       in try ignore (Str.search_forward re s1 0); true
       with Not_found -> false*)
-    if (String.length s1) - count < String.length s2 
+    if String.length s1 - count < String.length s2 
     then false
-    else if (String.sub s1 count (String.length s2)) = s2
+    else if String.sub s1 count (String.length s2) = s2
     then true
     else counter (count + 1) in
   counter 0
@@ -152,9 +152,9 @@ let random_int_array_for_enemies_and_items size_array number =
   let float_num = float_of_int number in
   let temp_random_number = (*the probability oper here is pretty messy *)
     List.map (fun s -> 
-        ((float_of_int s) /. float_sum *. float_num) |> round) raw_prob in 
+        (float_of_int s) /. float_sum *. float_num |> round) raw_prob in 
   let tl = List.tl temp_random_number in
-  (number - (total_sum 0 tl)::(tl))
+  number - total_sum 0 tl :: tl
   |> Array.of_list
 
 (**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , 
@@ -524,8 +524,8 @@ let helper_init () =
     main_engine_food ~map_col_row_array ~loc_array ~final_number_array  in
   let all_weapons = 
     main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in 
-  (map_array,loc_array, number, map_size_array, map_col_row_array, 
-   final_number_array, all_enemies, all_foods, all_weapons)
+  map_array,loc_array, number, map_size_array, map_col_row_array, 
+  final_number_array, all_enemies, all_foods, all_weapons
 
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
@@ -698,8 +698,9 @@ let take_one_food s =
     | _ -> ()
   done
 
-(**[take_one_food s] takes food on player's current location at state [s], 
-   if any, to the first empty slot in player's food inventory. *)
+(**[take_one_food_in_current_location s] takes food on player's current 
+   location at state [s],  if any, to the first empty slot in player's food 
+   inventory. *)
 let take_one_food_in_current_location s = 
   try
     take_one_food s
@@ -784,9 +785,9 @@ let equip_one_weapon s =
     | _ -> ()
   done
 
-(**[equip_one_weapon s] will update the weapon inventory of game state [s]
-   if there is any empty slot and weapon in player's current location will be 
-   equipped in that slot.  *)
+(**[equip_weapon_in_current_loc s] will update the weapon inventory of 
+   game state [s] if there is any empty slot and weapon in player's current 
+   location will be equipped in that slot.  *)
 let equip_weapon_in_current_loc s = 
   try
     equip_one_weapon s
