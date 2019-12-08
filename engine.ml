@@ -698,7 +698,7 @@ let equip_one_weapon s =
        | Empty -> 
          (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
-          Player.update_food_inventory t (Weapons.Weapon.get_gainables w);
+          Player.update_skill t (Weapons.Weapon.get_gainables w);
           raise SuccessExit)
        | _ -> ()
      done) in

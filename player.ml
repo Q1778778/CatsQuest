@@ -249,9 +249,9 @@ module Player : P = struct
     | h::_ -> h
 
   let available_skills_list t =
-    (List.iter (fun skill -> let new_cd = skill.cd - 1 in
-      if new_cd <= 0 then skill.cd <- 0 else skill.cd <- new_cd);
-    List.filter (fun skill -> skill.cd = 0) t.skills)
+    List.iter (fun skill -> let new_cd = skill.cd - 1 in
+      if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
+    List.filter (fun skill -> skill.cd = 0) t.skills
 
   (*let choose_skill_name *)
 
@@ -274,4 +274,4 @@ module Player : P = struct
 
 end
 
-type skill = Player.skill
+type skill = Player.skill (* export to other modules*)
