@@ -84,7 +84,7 @@ module type P = sig
   val update_skill: t -> skill list -> unit
 
   (** [level_up_expereince p] is 
-    the experience required to level up player [p]*)
+      the experience required to level up player [p]*)
   val level_up_expereince: t -> int
 
   (**[advance_level p] advances player [p] to the next level and updates
@@ -109,7 +109,7 @@ module type P = sig
      if the player [p] does not have the skill named [n]. *)
   val get_skill_by_skill_name: t -> string -> skill
 
-  (**[skills_list p] is [p.skills], the skills that the player [p] posesses. *)
+  (**[available_skills_list p] is the skills that the player [p] posesses. *)
   val available_skills_list: t-> skill list
 
   (**[skill_name s] is the name of the skill [s]. *)
@@ -161,7 +161,7 @@ module Player : P = struct
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 
-    ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
+      ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
     {
       location = loc;
       health = health;
@@ -228,10 +228,10 @@ module Player : P = struct
 
   let reduce_strength p str = 
     let temp_minus = str / (List.length p.skills) in
-    (List.iter 
-       (fun skill -> let temp = skill.strength - temp_minus in
-         if temp <= 0 then skill.strength <- 0
-         else skill.strength <- temp) p.skills)
+    List.iter 
+      (fun skill -> let temp = skill.strength - temp_minus in
+        if temp <= 0 then skill.strength <- 0
+        else skill.strength <- temp) p.skills
 
   let level_up_expereince p = 30 + 30 * p.level
 
@@ -260,8 +260,6 @@ module Player : P = struct
     List.iter (fun skill -> let new_cd = skill.cd - 1 in
                 if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     List.filter (fun skill -> skill.cd = 0) t.skills
-
-  (*let choose_skill_name *)
 
   let skill_name skill = skill.name
 
