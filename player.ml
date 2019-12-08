@@ -119,8 +119,6 @@ module type P = sig
   val skill_strength: skill -> int
 
   val skill_description: skill -> string
-
-  val choose_this_skill: skill -> unit
 end
 
 module Player : P = struct
@@ -251,7 +249,9 @@ module Player : P = struct
     | h::_ -> h
 
   let available_skills_list t =
-    List.filter (fun skill -> skill.cd = 0) t.skills
+    (List.iter (fun skill -> let new_cd = skill.cd - 1 in
+      if new_cd <= 0 then skill.cd <- 0 else skill.cd <- new_cd);
+    List.filter (fun skill -> skill.cd = 0) t.skills)
 
   (*let choose_skill_name *)
 
@@ -261,14 +261,17 @@ module Player : P = struct
 
   let skill_description skill = skill.description
 
-  let update_skill t skill_lst = t.skills <- t.skills @ skill_lst
+  let assert_skill_name_NOT_in_list t name =
+    (List.filter (fun s -> s.name = name) t.skills) = []
+  
+  let update_skill t skill_lst = 
+    let new_skill_list = 
+      t.skills @ (List.filter 
+        (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
+    t.skills <- new_skill_list
 
   let switch_loc t loc = t.location <- loc
 
-  let choose_this_skill skill = 
-    let cd_temp = skill.cd - 1 in
-    if cd_temp <> 0 then skill.cd <- cd_temp
-    else ()
 end
 
 type skill = Player.skill
