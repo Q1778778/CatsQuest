@@ -73,7 +73,11 @@ let branch_map_store = ref []
    appending [(n,l)] to the front of the list referenced 
    by [branch_map_store].  *)
 let update_branch_map_store (loc, name) =
-  branch_map_store := (loc, name) :: !branch_map_store
+  let tmp = !branch_map_store in
+  if List.filter (fun s -> s = (loc, name)) tmp = [] 
+  then
+    branch_map_store := (loc, name) :: tmp
+  else ()
 
 (**[count ()] returns [c], the # of times this function has been called. 
    Each time this function gets called, [c] gets incremented. *)
@@ -460,7 +464,7 @@ let main_map_size_array map_array : int array =
 
 (** [init ()] is the init state of the entire game. 
     Invariant: the first map of all maps must be main map !!! *)
-let init (): state =
+let init unit : state =
   let map_array, loc_array = main_engine_map_param () in
   let number = 15 (*this number can be either artificially set or stored in json.*) in
   let map_size_array = main_map_size_array map_array in
