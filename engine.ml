@@ -266,7 +266,7 @@ let browse_one_enemy_json j ~col ~row =
 (**[main_engine_ememy_for_single_map col row num] 
    Raises: [Failure "NONE of 'enemy' json exists"] if none of the json 
    file names are contain ["enemy"] *)
-let main_engine_ememy_for_single_map ~loc_array ~number  : enemy array = 
+let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
@@ -340,15 +340,14 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
       then json 
            |> Yojson.Basic.from_file 
            |> to_list 
-           |> food_array_builder col row
+           |> food_array_builder loc_array col row
       else read_food handler in
   (read_food (Unix.opendir "."))
 
 (**[main_engine_food locs nums] calls [main_engine_food_for_single_map] for
    each location in [locs] and final number in [nums], and returns the
    mapped 2d array with this information.  *)
-let main_engine_food ~map_col_row_array ~loc_array
-    ~final_number_array : food_item array array =
+let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
   Array.map2
     (fun number (col, row) -> 
       main_engine_food_for_single_map loc_array number col row)
