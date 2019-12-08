@@ -391,18 +391,18 @@ let main_engine_weapon ~loc_array ~final_number_array =
 
 (**[map_param_array_builder j_arr] constructs a new map param array 
    represented by the json array [j_arr]. *)
-let map_param_array_builder jsons : ((int * int) * map_param) list = 
+let map_param_array_builder jsons flag : ((int * int) * map_param) list = 
   jsons |> List.map ( fun j ->
       let name = j |> member "name" |> to_string in 
       let loc = j |> member "loc" |> to_string in
       let link = j |> member "link" |> to_string in 
       (*updating branched loc*)
       let col = parse_dims loc |> fst in 
-      let row = parse_dims loc |> snd in 
-        (* i don't think the later check is necessary *)
-      let _ = if link <> ""
+      let row = parse_dims loc |> snd in
+      let _ = if flag && link <> "" 
       then update_branch_map_store ((col, row), link)
       else () in
+        (* i don't think the later check is necessary *)
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 (**[build_one_map s] returns the constructed map from the json file name [s].
@@ -413,7 +413,7 @@ let build_one_map s =
   let name = json |> member "name" |> to_string in 
   let size = json |> member "size" |> to_string |> parse_dims in 
   let picture_lists = json |> member "picture" |> to_list in
-  let all_map_param = map_param_array_builder picture_lists in
+  let all_map_param = map_param_array_builder picture_lists (name = "main") in
   (Maps.map_constructor ~size ~name ~all_map_param), size
 
 (**[reformat_output_map comb_list] is the array representation of 
