@@ -1,0 +1,22 @@
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:1:R.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Test test suite for A2:1:R is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:1:R.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:3:RLL = RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Test test suite for A2:3:RLL = RL is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:3:RLL = RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:5:RLU.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Test test suite for A2:5:RLU is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:5:RLU.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:7:RLUUD.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Test test suite for A2:7:RLUUD is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:7:RLUUD.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:9:advance level failed.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Test test suite for A2:9:advance level failed is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:9:advance level failed.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: Start test test suite for A2:11:increase exp to advance 1.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 E: Test test suite for A2:11:increase exp to advance 1 has failed.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 E: not equal in test test suite for A2:11:increase exp to advance 1.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 E: Raised at file "src/oUnitAssert.ml", line 45, characters 8-27
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 E: 
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#02 I: End test test suite for A2:11:increase exp to advance 1.

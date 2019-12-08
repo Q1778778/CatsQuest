@@ -1,0 +1,39 @@
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:0:init.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:0:init is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:0:init.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:2:RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:2:RL is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:2:RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:4:RLLD = RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:4:RLLD = RL is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:4:RLLD = RL.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:6:RLUU.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:6:RLUU is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:6:RLUU.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:8:advance level failed.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:8:advance level failed is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:8:advance level failed.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:10:increase exp.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:10:increase exp is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:10:increase exp.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:12:increase exp to advance 2.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:12:increase exp to advance 2 is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:12:increase exp to advance 2.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:13:upper right bound.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:13:upper right bound is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:13:upper right bound.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:14:health before advanced level.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:14:health before advanced level is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:14:health before advanced level.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:15:health after advanced level.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:15:health after advanced level is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:15:health after advanced level.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:16:reduce health by 12.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:16:reduce health by 12 is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:16:reduce health by 12.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:17:increase all health.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:17:increase all health is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:17:increase all health.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:18:reduce all health.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:18:reduce all health is successful.
+2019-12-08T18:06:00+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:18:reduce all health.

@@ -214,31 +214,24 @@ let normal_four_botton c=
       create_button "drop" grey white 1060 10 130 85 ("drop","second")in
   c.fbutton<-(first::second::third::[fourth])
 
-let combat_four_botton c =
+let combat_four_botton int =
   let fskill=(List.nth_opt (cplace.skills) 0) in
   let sskill=(List.nth_opt (cplace.skills) 1) in
   let tskill=(List.nth_opt (cplace.skills) 2) in
   let forskill=(List.nth_opt (cplace.skills) 3) in
-  if Option.is_some forskill then
-    (let first=create_button (Option.get fskill)
-         lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get sskill)
-         lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
-     let third=create_button (Option.get tskill) 
-         lblue black 920 10 130 85("skill",(Option.get fskill)) in
-     let forth=create_button (Option.get forskill) 
-         lblue black 1060 10 130 85 ("skill",(Option.get fskill))in
-     c.fbutton<-(first::second::third::[forth])) else if 
-    Option.is_some tskill then 
-    (let first=create_button (Option.get fskill)
-         lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get sskill)
-         lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
-     let third=create_button (Option.get tskill) 
-         lblue black 920 10 130 85("skill",(Option.get fskill)) in
-     let _=create_button "None" 
-         grey black 1060 10 130 85 ("skill","None")in
-     c.fbutton<-(first::second::[third])) else if  Option.is_some sskill then
+  if int=4 then
+    (let forth=create_button (Option.get forskill) 
+         lblue black 1060 10 130 85 ("skill",(Option.get forskill))in
+     cplace.fbutton<-([forth])) else 
+    (let _=create_button "None" 
+         grey black 1060 10 130 85 ("skill","None") in ());
+  if int>=3 then 
+    (let third=create_button (Option.get tskill) 
+         lblue black 920 10 130 85("skill",(Option.get tskill)) in
+     cplace.fbutton<-(third::cplace.fbutton)) else
+    (let _=create_button "None" 
+         grey black 920 10 130 85 ("skill","None") in ());
+  if int>=2 then
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
      let second=create_button (Option.get sskill)
@@ -247,7 +240,7 @@ let combat_four_botton c =
          grey black 920 10 130 85("skill","None") in
      let _=create_button "None" 
          grey black 1060 10 130 85 ("skill","None")in
-     c.fbutton<-(first::[second])) else
+     cplace.fbutton<-(first::[second])) else
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
      let _=create_button "None"
@@ -256,7 +249,11 @@ let combat_four_botton c =
          grey black 920 10 130 85("skill","None") in
      let _=create_button "None" 
          grey black 1060 10 130 85 ("skill","None")in
-     c.fbutton<-([first]))
+     cplace.fbutton<-([first]))
+
+let combat_botton_helper ()=
+  let lst=cplace.skills in 
+  combat_four_botton (List.length lst)
 
 let rec find_enemy_image_data name (lst:Color_convert.eimage list)=
   match lst with
@@ -324,7 +321,7 @@ let skill_info_helper ()=
   normal_four_botton cplace;
   health_bar ();
   info_bar();
-  combat_four_botton cplace;
+  combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
   let image_of_e=find_enemy_image_data (Enemy.get_name the_enemy)
       Color_convert.enemy_data in 

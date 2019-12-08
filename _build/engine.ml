@@ -480,9 +480,9 @@ let init () : state =
   let map_size_array = main_map_size_array map_array in
   let map_col_row_array = main_map_col_row map_array in
   let final_number_array = random_int_array_for_enemies_and_items map_size_array number in
-  let all_enemies = (main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array)  in
-  let all_foods = (main_engine_food ~map_col_row_array ~loc_array ~final_number_array)  in
-  let all_weapons = (main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array) in {
+  let all_enemies = main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array in
+  let all_foods = main_engine_food ~map_col_row_array ~loc_array ~final_number_array  in
+  let all_weapons = main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in {
     player = main_engine_player ();
     food_inventory = [|Eaten; Eaten; Eaten|];
     weapon_inventory = [|Empty; Empty; Empty|]; (*the length of inventory shouldn't be changed *)
@@ -611,9 +611,9 @@ let delete_one_enemy_from_state s =
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
     | Enemy t when Enemy.get_pos t = loc ->
-      s.all_enemies_in_current_map.(i) <- Deleted;
       Player.increase_experience player (Enemy.get_experience t);
-      Player.update_skill player (Enemy.get_gainable_skill t)
+      Player.update_skill player (Enemy.get_gainable_skill t);
+      s.all_enemies_in_current_map.(i) <- Deleted
     | _ -> ()
   done
 
@@ -837,7 +837,7 @@ let get_map_index_by_name s name =
   let rec search acc = function 
     | [] -> failwith "invalid map name"
     | h::d -> if h.name = name then acc else
-        search 0 d in 
+        search (acc+1) d in 
   search 0 s.all_maps
 
 

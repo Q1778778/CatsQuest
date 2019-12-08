@@ -55,7 +55,7 @@ module Food : F = struct
     health = health;
     location = (col,row);
     description = description;
-    gainables: Player.skill list;
+    gainables = gainables;
   }
 
   let get_name f = f.name

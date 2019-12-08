@@ -281,11 +281,7 @@ let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row =
    current directory with the corresponding locations in [loc_arr] and 
    numbers in [num_arr], and returns a mapped 2d array with this information *)
 let main_engine_enemy 
-<<<<<<< HEAD
     ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
-=======
-  ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
->>>>>>> d8c4c99453a72b5b425d765f2a44d50ec543a433
   Array.map2
     (fun number (col, row) -> 
        main_engine_ememy_for_single_map loc_array col row number)
