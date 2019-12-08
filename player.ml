@@ -171,6 +171,7 @@ module Player : P = struct
                         Player uses fists to challenge the evils!";
           strength = strength;
           cd = 0;
+          old_cd = 0;
         }];
     }
 
@@ -280,6 +281,8 @@ module Player : P = struct
 
   let switch_loc t loc = t.location <- loc
 
+  let choose_skill s = 
+    s.cd <- s.old_cd
 end
 
 type skill = Player.skill (* export to other modules*)
