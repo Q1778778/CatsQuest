@@ -83,6 +83,10 @@ module type P = sig
      skills repertoire of player [p] *)
   val update_skill: t -> skill list -> unit
 
+  (** [level_up_expereince p] is 
+    the experience required to level up player [p]*)
+  val level_up_expereince: t -> int
+
   (**[advance_level p] advances player [p] to the next level and updates
      player [p]'s experience as well. If [p] does not have enough experience
      to advance, no change will occur. *)
@@ -220,8 +224,10 @@ module Player : P = struct
          if temp <= 0 then skill.strength <- 0
          else skill.strength <- temp) p.skills)
 
+  let level_up_expereince p = 30 + 30 * p.level
+
   let advance_level p = 
-    let experience_qual = 30 + 30 * p.level in 
+    let experience_qual = level_up_expereince p in 
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;

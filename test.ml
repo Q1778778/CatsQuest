@@ -49,14 +49,77 @@ let switch_to_different_map s pos =
   s.current_map_in_all_maps <- pos
 (** Player state update tests *)
 
+
 let get_enemy = function
-  | Deleted -> failwith "invalid"
+  | Deleted -> failwith "invalid enemy"
   | Enemy e -> e
+
+let get_food = function
+  | Eaten -> failwith "invalid food"
+  | Food f -> f
+
+let get_weapon = function
+  | Empty -> failwith "invalid weapon"
+  | Weapon w -> w
+
+let enemy_is_alive = function
+  | Deleted -> false
+  | Enemy e -> true
 
 let get_one_enemy_pos s = 
   s.all_enemies_in_current_map.(0) |> get_enemy |> Enemy.get_pos
 
-let state = Engine.init () (* initial pos -> 1,1 *)
+let get_first_alive_enemy_at_index s pos =
+  let store = [||] in
+  let rec inner_searcher enemies_array = 
+    for i = 0 to Array.length enemies_array - 1 do
+      match get_enemy enemies_array.(i) with
+      | Enemy e -> Array.append [|e|] store; raise SuccessExit
+      | _ -> ()
+    done in
+  try
+    inner_searcher s.all_enemies.(pos);
+    failwith "all enemies are dead"
+  with SuccessExit ->
+    store.(0)
+
+let get_first_available_food_at_index s pos =
+  let store = [||] in
+  let rec inner_searcher food_array = 
+    for i = 0 to Array.length food_array - 1 do
+      match get_food food_array.(i) with
+      | Food f -> Array.append [|f|] store; raise SuccessExit
+      | _ -> ()
+    done in
+  try
+    inner_searcher s.all_foods.(pos);
+    failwith "all enemies are dead"
+  with SuccessExit ->
+    store.(0)
+
+let get_first_available_weapon_at_index s pos =
+  let store = [||] in
+  let rec inner_searcher weapon_array = 
+    for i = 0 to Array.length weapon_array - 1 do
+      match get_food weapon_array.(i) with
+      | Weapon w -> Array.append [|w|] store; raise SuccessExit
+      | _ -> ()
+    done in
+  try
+    inner_searcher s.all_weapons.(pos);
+    failwith "all enemies are dead"
+  with SuccessExit ->
+    store.(0)
+
+
+
+(*                initiate testing param                    *)
+
+
+(* initial pos -> 1,1 
+   initial map -> 0 *)
+let state = Engine.init () 
+
 let init_health = get_health state
 
 let init_experience = get_experience state
@@ -105,14 +168,14 @@ let state11'_health = get_health state
 
 (* increase experience enough to advance *)
 let _ = Player.increase_experience (get_player state) 
-    (70 + 30 * init_level)
+    (state |> get_player |> level_up_expereince)
 let state12_experience = get_experience state 
 let state12_level = get_level state 
 let state12_health = get_health state
 
 (* move right towards rightmost column, upmost row *)
 let _ = 
-  for i = 1 to (map_cols state)+12 do 
+  for i = 1 to (map_cols state) + 15 do 
     Engine.move_player_up state;
     Engine.move_player_right state;
   done
@@ -137,6 +200,52 @@ let player_f = state.player
 
 
 (** Enemy state update tests *)
+let new_s = init ()
+
+let one_e = get_first_alive_enemy_at_index new_s 0
+
+let init_1_hp = Enemy.get_hp one_e
+let init_1_level = Enemy.get_level one_e
+let skill_list_1 = 
+  Enemy.get_all_skills_name_prob_and_strength_to_assoc_list one_e <> []
+
+let _ = Enemy.reduce_hp one_e 10
+
+let init_2_hp = Enemy.get_hp one_e
+let init_2_level = Enemy.get_level one_e
+let skill_list_2 = 
+  Enemy.get_all_skills_name_prob_and_strength_to_assoc_list one_e <> []
+
+(** Food state update tests *)
+
+let new_s1 = init ()
+
+let one_f = get_first_available_food_at_index new_s1 0
+
+let init_1f_strength = Food.get_strength one_f
+let init_1f_health = Food.get_health one_f
+
+let _ = Food.set_loc one_f (2,3)
+
+let init_2f_strength = Food.get_strength one_f
+let init_2f_health = Food.get_health one_f
+let f_new_loc = Food.get_loc one_f
+
+
+(** Weapon state update tests *)
+let new_s2 = init ()
+
+let one_w = get_first_available_weapon_at_index new_s2 0
+let init_1w_name = Weapon.get_name one_w
+let init_1w_strength = Weapon.get_strength one_w
+
+
+let _ = Weapon.set_loc one_w (2,3)
+let init_2w_name = Weapon.get_name one_w
+let init_2w_strength = Weapon.get_strength one_w
+let w_new_loc = Weapon.get_loc one_w
+
+(** Branched map state update tests *)
 
 
 
@@ -176,19 +285,46 @@ let player_state_tests = [
   make_test "reduce health by 12" state_f3_health (init_health+8);
   make_test "increase all health" state_f2_health (get_max_health state);
   make_test "reduce all health" state_f_health 0;
-  (* make_test "died" player_f Died; *)
 ]
 
 (** Test suite for enemy states  *)
 let enemy_state_tests = [
-
+  make_test "reduce enemy hp" (init_2_hp - init_1_hp) 10;
+  make_test "always ensure the skills output of enemies are valid"
+    (skill_list_2) true;
+  make_test "always ensure the skills output of enemies are valid"
+    (skill_list_1) true;
+  make_test "enemy level is a static field and it shouldn't be changed"
+    (init_1_level = init_2_level) true;
 ]
+
+let food_state_tests = [
+  make_test "food's gainable strength should never be changed when we move food"
+    (init_1f_strength = init_2f_strength) true;
+  make_test "food's gainable health should never be changed when we move food"
+    (init_1f_health = init_2f_health) true;
+  make_test "change food's location" f_new_loc (2,3);
+]
+
+let weapon_state_tests = [
+  make_test "weapon's name should be consistent throughout moving"
+  (init_1w_name = init_2w_name) true;
+  make_test "weapon's strength should be consistent throughout moving"
+  (init_1w_strength = init_2w_strength) true;
+  make_test "weapon's new location should be correct after moving"
+  w_new_loc (2, 3);
+]
+
+let branched_map_tests = []
 
 let suite =
   "test suite for A2" >::: 
   List.flatten [
     player_state_tests;
     enemy_state_tests;
+    food_state_tests;
+    weapon_state_tests;
+    branched_map_tests;
   ]
 
 
