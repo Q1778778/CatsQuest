@@ -218,7 +218,7 @@ module Player : P = struct
 
   let increase_strength t st =
     let incr = st / (List.length t.skills) in
-    List.iter (fun s -> s.strength <- s.strength + incr) t.skills
+    List.iter (fun s -> (s.strength <- s.strength + incr);) t.skills
 
   let reduce_health p h = 
     let new_health = 
@@ -258,17 +258,18 @@ module Player : P = struct
   let available_skills_list t =
     List.filter (fun skill -> skill.cd = 0) t.skill
 
-  let choose_skill_name 
+  (*let choose_skill_name *)
+
   let skill_name skill = skill.name
 
   let skill_strength skill =  skill.strength
-  
+
   let skill_description skill = skill.description
 
   let update_skill t skill_lst = t.skill <- t.skill @ skill_lst
-  
+
   let switch_loc t loc = t.location <- loc
-  
+
   let choose_this_skill skill = 
     let cd_temp = skill.cd - 1 in
     if cd_temp <> 0 then skill.cd <- cd_temp

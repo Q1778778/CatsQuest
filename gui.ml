@@ -45,7 +45,7 @@ let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
              difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;
              item_selected=None;item_ground=false;message_display="placeholder"}
 
-let cstate={skill=[]}
+let cstate={skill=["stab"]}
 
 let lblue=Graphics.rgb 82 219 255
 
