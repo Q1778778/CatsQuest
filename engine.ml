@@ -46,13 +46,13 @@ type state = {
   mutable player_old_loc: (int * int);
   mutable current_map_in_all_maps: int;
 
-  branched_map_info: ((int * int) * string) list; (* Array doesn't have a find function, so I use List instead *)
+  mutable branched_map_info: ((int * int) * string) list; (* Array doesn't have a find function, so I use List instead *)
   mutable current_map: current_map;
   mutable all_enemies_in_current_map: enemy array;
   mutable all_foods_in_current_map: food_item array;
   mutable all_weapons_in_current_map: weapon_item array;
 
-  all_maps: current_map list; (*persistent map *)
+  mutable all_maps: current_map list; (*persistent map *)
   mutable all_foods: food_item array array;
   mutable all_weapons: weapon_item array array;
   (* each element represents an array of enemies in ONE map *)
@@ -196,6 +196,15 @@ let parse_dims s =
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   (cols |> int_of_string, rows |> int_of_string)
 
+
+let filter_one_element_out_from_array array pos = 
+  let store = [|[]|] in
+  (for i = 0 to (Array.length array) - 1 do
+    if i <> pos
+    then store.(0) <- array.(i)::store.(0)
+    else ()
+  done);
+  store.(0) |> Array.of_list
 
 
 (*                        models builder                         *)
@@ -629,7 +638,7 @@ let take_one_food s =
          (s.food_inventory.(j) <- Food f; 
           raise SuccessExit)
        | _ -> ()
-     done) in
+     done); in
   let player = s |> get_player in
   let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
@@ -751,7 +760,7 @@ let drop_one_weapon s pos =
          (s.all_weapons_in_current_map.(j) <- weapon;
           raise SuccessExit)
        | _ -> ()
-     done);
+     done)
     (* no empty slot *)
     s.all_weapons_in_current_map <- Array.append 
         [| weapon |] s.all_weapons_in_current_map; in
@@ -786,7 +795,7 @@ let check_food_on_loc_and_return_name_list s loc =
      | Food f when Foods.Food.get_loc f = loc ->
        store.(0) <- (Foods.Food.get_name f)::store.(0)
      | _ -> ()
-   done);
+   done)
   store.(0)
 
 (**[check_weapon_on_loc_and_return_name_list s loc] returns a list of 
@@ -799,7 +808,7 @@ let check_weapon_on_loc_and_return_name_list s loc =
      | Weapon w when Weapons.Weapon.get_loc w = loc ->
        store.(0) <- ((Weapons.Weapon.get_name w)::store.(0))
      | _ -> ()
-   done);
+   done)
   store.(0)
 
 
@@ -814,7 +823,13 @@ let check_item_on_player_ground s =
     check_weapon_on_loc_and_return_name_list s loc
   )
 
-
+let delete_map_pos s pos name = 
+  s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
+  s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
+  s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
+  s.branched_map_info <- 
+    List.filter (fun (_, map_name) -> map_name <> name) s.branched_map_info;
+  s.all_maps <- List.filter (fun m -> Maps.name m <> name) s.all_maps;
 
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
@@ -868,12 +883,15 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
-    (s.current_map <- List.hd s.all_maps;
+    let map_name = get_current_map_name s in
+    let map_pos = get_map_index_by_name s.all_maps name in
+     s.current_map <- List.hd s.all_maps;
      Player.switch_loc (get_player s) s.player_old_loc;
      s.all_enemies_in_current_map <- s.all_enemies.(0);
      s.all_foods_in_current_map <- s.all_foods.(0);
      s.all_weapons_in_current_map <- s.all_weapons.(0);
-     s.current_map_in_all_maps <- 0)
+     s.current_map_in_all_maps <- 0;
+     delete_map_pos s map_pos name;
   else
     ()
 
@@ -883,4 +901,4 @@ let list_of_entrance_loc_to_branch_map s =
   if get_current_map_name s <> "main"
   then []
   else
-    s.branched_map_info |> List.split|> fst
+    s.branched_map_info |> List.split |> fst
