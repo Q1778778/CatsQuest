@@ -20,12 +20,12 @@ type player =
 
 (** The abstract type of values representing a food item in the game engine *)
 type food_item = 
-  | Food of Foods.Food.food
+  | Food of Food.food
   | Eaten (*once a weapon or food has been taken, this weapon becomes null *)
 
-(** The abstract type of values representing a weapon item in the game engine *)
+(** The abstract type of values representing a weapon item in the game engine*)
 type weapon_item =
-  | Weapon of  Weapons.Weapon.weapon
+  | Weapon of  Weapon.weapon
   | Empty
 
 (** The abstract type of values representing a map param in the game engine *)
@@ -370,7 +370,7 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
            |> to_list 
            |> food_array_builder loc_array col row
       else read_food handler in
-  (read_food (Unix.opendir "."))
+  read_food (Unix.opendir ".")
 
 (**[main_engine_food dims locs nums] calls [main_engine_food_for_single_map] 
    for each map dimension in [dims], location in [locs], and final number in 
@@ -962,103 +962,133 @@ let list_of_entrance_loc_to_branch_map s =
 
 (*            System Instruction             *)
 
-let main_map_instr p = (* player *)
-  let loc = Player.location t in
-    if (List.filter (fun (ent, _) -> ent = loc) s.branched_map_info) <> []
-    then "You are now exploring a branched map. 
+(**[main_map_instr] is the instruction in which the player has entered the 
+   main map. *)
+let main_map_instr s = (* player *)
+  let loc = Player.location (get_player s) in
+  if List.filter (fun (ent, _) -> ent = loc) s.branched_map_info <> []
+  then "You are now exploring a branched map. 
      You will return to the main map once you defeat all enemies in this branch"
-     ^ "map. Good Luck!" 
-    else "Enemies are attacking villages and defeating them!
+       ^ "map. Good Luck!" 
+  else "Enemies are attacking villages and defeating them!
      You will find weapons and foods are quite helpful and pick up then on your"
-     ^ "adventure"
+       ^ "adventure"
 
+(**[branch_map_instr] is the instruction in which the player has entered
+   a branched map.   *)
 let branch_map_instr = 
   "You are now in a branch map. Picking up weapons and foods as soon as"
-    ^ "possible. You will return to the main map immediately once you have"
-    ^ "defeated all enemies here."
+  ^ "possible. You will return to the main map immediately once you have"
+  ^ "defeated all enemies here."
 
+(**[died_instr] is the instruction in which the player has died.  *)
 let died_instr = 
   "You have died, but don't worry. You can still gain an extra life by"
-    ^ "pressing that button. Good luck on your next adventure"
+  ^ "pressing that button. Good luck on your next adventure"
 
+(**[string_of_loc (col,row)] is [" (col, row) "] *)
 let string_of_loc (col, row) = 
   Printf.sprintf " (%d, %d) " col row
 
+(**[enemy_instr_helper s store] loads the instruction regarding enemies at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "All enemies are dead in this map. Congratulations! "] 
+   if there all enemies in the map at state [s] have been killed. 
+   Raises: [SuccessExit] if the enemy instruction has been loaded successfully
+*)
 let enemy_instr_helper s store =
-  (for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
+  for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
     match s.all_enemies_in_current_map.(i) with
-      | Enemy e -> store := 
-      ("Enemy " 
-      ^ (Enemy.get_name e) ^ "is in location" 
-      ^ (e |> Enemy.get_pos |> string_of_loc)
-      ^ "\nTry to defeat it!"); 
-        raise SuccessExit
-      | _ -> ()
-  done);
+    | Enemy e -> store := 
+        "Enemy " 
+        ^ Enemy.get_name e ^ "is in location" 
+        ^ (e |> Enemy.get_pos |> string_of_loc)
+        ^ "\nTry to defeat it!"; 
+      raise SuccessExit
+    | _ -> ()
+  done;
   raise (Failure "All enemies are dead in this map. Congratulations! ")
-  
+
+(**[enemy_instr s] is the instruction regarding enemies at state [s] *)
 let enemy_instr s =
   let store = ref "" in
   try
     enemy_instr_helper s store
   with 
-    | SuccessExit -> !store
-    | Failure s -> s
+  | SuccessExit -> !store
+  | Failure s -> s
 
+(**[food_instr_helper s store] loads the instruction regarding foods at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "There are no food in this map now"] if there is no 
+   such food in the map at state [s]. 
+   Raises: [SuccessExit] if the food instruction has been loaded successfully
+*)
 let food_instr_helper s store =
-  (for i = 0 to Array.length s.all_foods_in_current_map - 1 do
+  for i = 0 to Array.length s.all_foods_in_current_map - 1 do
     match s.all_foods_in_current_map.(i) with
-      | Food f -> store := 
-      ("Food " 
-      ^ (Food.get_name f) ^ "is in location" 
-      ^ (e |> Food.get_loc |> string_of_loc)
-      ^ "\nMove there and take it!"); 
-        raise SuccessExit
-      | _ -> ()
-  done);
+    | Food f -> store := 
+        "Food " 
+        ^ Food.get_name f ^ "is in location" 
+        ^ (f |> Food.get_loc |> string_of_loc)
+        ^ "\nMove there and take it!"; 
+      raise SuccessExit
+    | _ -> ()
+  done;
   raise (Failure "There are no food in this map now/")
-  
+
+(**[food_instr s] is the instruction regarding foods at state [s]  *)
 let food_instr s =
   let store = ref "" in
   try
     food_instr_helper s store
   with 
-    | SuccessExit -> !store
-    | Failure s -> s
+  | SuccessExit -> !store
+  | Failure s -> s
 
+(**[weapon_instr_helper s store] loads the instruction regarding weapons at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "There are no weapon in this map now"] if there is no 
+   such weapon in the map at state [s]. 
+   Raises: [SuccessExit] if the weapon instruction has been loaded successfully
+*)
 let weapon_instr_helper s store =
-  (for i = 0 to Array.length s.all_weapons_in_current_map - 1 do
+  for i = 0 to Array.length s.all_weapons_in_current_map - 1 do
     match s.all_weapons_in_current_map.(i) with
-      | Weapon w -> store := 
-      ("Food " 
-      ^ (Weapon.get_name f) ^ "is in location" 
-      ^ (e |> Weapon.get_loc |> string_of_loc)
-      ^ "\nMove there and equip it!"); 
-        raise SuccessExit
-      | _ -> ()
-  done);
-  raise (Failure "There are no food in this map now/")
-  
+    | Weapon w -> store := 
+        "Food " 
+        ^ Weapon.get_name w ^ "is in location" 
+        ^ (w |> Weapon.get_loc |> string_of_loc)
+        ^ "\nMove there and equip it!"; 
+      raise SuccessExit
+    | _ -> ()
+  done;
+  raise (Failure "There are no weapon in this map now/")
+
+(**[weapon_instr s] is the instruction regarding weapons at state [s]  *)
 let weapon_instr s =
   let store = ref "" in
   try
     weapon_instr_helper s store
   with 
-    | SuccessExit -> !store
-    | Failure s -> s
+  | SuccessExit -> !store
+  | Failure s -> s
 
+(**[system_instr s] is the instruction to the player at state [s] *)
 let system_instr s =
   let basic_instr = 
-  match get_current_map_name s, s.player with
-  | "main", Player t -> main_map_instr t
-  | name, Player t -> branch_map_instr
-  | _, Died -> died_instr in
+    match get_current_map_name s, s.player with
+    | "main", Player _ -> main_map_instr s
+    | name, Player t -> branch_map_instr
+    | _, Died -> died_instr in
   let enemy_ins = enemy_instr s in
   let food_ins = food_instr s in
   let weapon_ins = weapon_instr s in
   basic_instr ^ "\n" ^ enemy_ins ^ "\n" ^ food_ins ^ "\n" ^ weapon_ins
 
+(**[check_wins s] returns whether the player at state [s] is in the 
+   winning state.  *)
 let check_wins s =  
   Array.for_all (fun single_enemy_map ->
-    Array.for_all (fun enemy -> enemy = Deleted) single_enemy_map) 
-      s.all_enemies
+      Array.for_all (fun enemy -> enemy = Deleted) single_enemy_map) 
+    s.all_enemies
