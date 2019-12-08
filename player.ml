@@ -14,6 +14,7 @@ module type P = sig
     ?health:int -> 
     ?level:int -> 
     ?experience:int -> 
+    ?loc: (int * int) ->
     unit -> t
 
   (**[level p] is the current level of player [p] *)
@@ -148,9 +149,9 @@ module Player : P = struct
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 
-      ?level:(level=1) ?experience:(experience=0) () = 
+    ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
     {
-      location = (1,1);
+      location = loc;
       health = health;
       level = level;
       experience = experience;
