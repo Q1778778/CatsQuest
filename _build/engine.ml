@@ -310,7 +310,7 @@ let main_engine_player: unit -> player =
 (**[food_array_builder cols rows j_arr] constructs a new food array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let food_array_builder loc_array cols rows jsons: food_item array = 
+let food_array_builder loc_array col row jsons: food_item array = 
   jsons |> List.map2 
     (fun (col, row) j -> let id = count () in
       let health = j |> member "health" |> to_int in
@@ -321,7 +321,7 @@ let food_array_builder loc_array cols rows jsons: food_item array =
                       |> gainable_skill_constructor in
       Food (Foods.Food.constructor ~col ~row ~health 
               ~description ~name ~id ~strength ~gainables))
-    ((unique_location_list loc_array cols rows (List.length jsons))) 
+    ((unique_location_list loc_array col row (List.length jsons))) 
   |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
@@ -346,8 +346,7 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
 (**[main_engine_food locs nums] calls [main_engine_food_for_single_map] for
    each location in [locs] and final number in [nums], and returns the
    mapped 2d array with this information.  *)
-let main_engine_food ~map_col_row_array ~loc_array
-    ~final_number_array : food_item array array =
+let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
   Array.map2
     (fun number (col, row) -> 
        main_engine_food_for_single_map loc_array number col row)
@@ -357,9 +356,9 @@ let main_engine_food ~map_col_row_array ~loc_array
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let weapon_array_builder loc_array cols rows jsons: weapon_item array = 
+let weapon_array_builder loc_array col row jsons: weapon_item array = 
   jsons 
-  |> List.map 
+  |> List.map2 
     (fun (col, row) j -> let id = count () in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in

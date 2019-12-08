@@ -290,6 +290,7 @@ let enemy_skill_image name=
   |"scratch"->draw_a_image Color_convert.enemy_scar 500 350
   |"fire ball"->draw_a_image Color_convert.fireball 500 300
   |"curses"->draw_a_image Color_convert.curse 500 300
+  |"stab"->draw_a_image Color_convert.hit 500 300
   |_->failwith"unbound image"
 
 let enemy_skill t=
@@ -571,8 +572,8 @@ let rec main () =
   try (cplace.fbutton<-[];
        cplace.dialog<-Bnone;
        cplace.irefresh<-false;
-       Engine.transfer_player_to_main_map Engine.game_state;
        Engine.transfer_player_to_branch_map Engine.game_state;
+       Engine.transfer_player_to_main_map Engine.game_state;
        Map_builder.map_text_build();
        Map_builder.draw_items();
        Map_builder.draw_player();
