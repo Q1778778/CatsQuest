@@ -437,7 +437,7 @@ let reformat_output_map comb_list: current_map array * (int * int) array =
    and returns the parsed map representation. 
    Raises: [Failure "no map-param.json is in current directory"] if there
    is no file with the format ["map-param*.json"] *)
-let main_engine_map_param () : (current_map array) * (int * int) array = 
+let main_engine_map_param unit : (current_map array) * (int * int) array = 
   let rec read_map handler list = 
     match Unix.readdir handler with
     | exception _ -> Unix.closedir handler;
