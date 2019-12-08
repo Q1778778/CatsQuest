@@ -40,13 +40,10 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 # Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, thread, traverse }
 ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
 + ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
-File "engine.ml", line 286, characters 2-131:
-286 | ..Array.map
-287 |     (fun number (col, row) -> 
-288 |        main_engine_ememy_for_single_map loc_array col row number)
-289 |     final_number_array
-Error: This expression has type (int * int -> enemy array) array
-       but an expression was expected of type enemy array array
-       Type int * int -> enemy array is not compatible with type enemy array 
+File "engine.ml", line 371, characters 36-39:
+371 |     (unique_location_list loc_array col row (List.length jsons))
+                                          ^^^
+Error: Unbound value col
+Hint: Did you mean cols or cos?
 Command exited with code 2.
 # Compilation unsuccessful.
