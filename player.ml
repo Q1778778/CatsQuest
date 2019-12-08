@@ -37,9 +37,6 @@ module type P = sig
   (** [experience p] is the current experience value of player [p]. *)
   val experience : t -> int 
 
-  (** [strength p] is the current strength of player [p]. *)
-  val strength : t -> int
-
   (**[move_up p m] moves player [p] to [(col, row+1)] within the bounds
      of map [m]. The player [p] stays in its place when such a move causes
      him to move out of bounds. *)
@@ -137,7 +134,6 @@ module Player : P = struct
 
   type t = {
     mutable location : int * int;
-    mutable strength : int;
     mutable health : int;
     mutable level : int;
     mutable experience : int;
@@ -161,7 +157,6 @@ module Player : P = struct
       ?level:(level=1) ?experience:(experience=0) () = 
     {
       location = (1,1);
-      strength = strength;
       health = health;
       level = level;
       experience = experience;
@@ -182,8 +177,6 @@ module Player : P = struct
   let max_health p = 70 + 30 * p.level (* this could be mutable *)
 
   let experience p = p.experience
-
-  let strength p = p.strength
 
   let level p= p.level
 
@@ -218,20 +211,22 @@ module Player : P = struct
 
   let increase_strength t st =
     let incr = st / (List.length t.skills) in
-    List.iter (fun s -> s.strength <- s.strength + incr) t.skills
+    List.iter (fun s -> (s.strength <- s.strength + incr);) t.skills
 
   let reduce_health p h = 
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
     in p.health <- new_health
 
-  let reduce_strength p s = 
-    let new_strength = 
-      if p.strength - s >= 0 then p.strength - s else 0 
-    in p.strength <- new_strength
+  let reduce_strength p str = 
+    let temp_minus = str / (List.length s.skills) in
+    p.skills <- (List.iter 
+        (fun skill -> let temp = skill.strength - temp_minus in
+                        if temp <= 0 then skill.strength <- 0
+                        else skill.strength <- temp) p.skills)
 
   let advance_level p = 
-    let experience_qual = 70 + 30 * p.level in 
+    let experience_qual = 30 + 30 * p.level in 
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;
