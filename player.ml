@@ -78,6 +78,8 @@ module type P = sig
   (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
   val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
 
+  (**[update_skill p lst] appends the new skill list [lst] to the existing
+     skills repertoire of player [p] *)
   val update_skill: t -> skill list -> unit
 
   (**[advance_level p] advances player [p] to the next level and updates
@@ -102,22 +104,16 @@ module type P = sig
      if the player [p] does not have the skill named [n]. *)
   val get_skill_by_skill_name: t -> string -> skill
 
-  (**[extract_skill_strength_single_skill s] is the strength amount of the 
-     skill [s]. *)
-  val extract_skill_strength_single_skill: skill -> int
-
-  (**[extract_skill_description_single_skill s] is the description of the 
-     skill [s]  *)
-  val extract_skill_description_single_skill: skill -> string
-
   (**[skills_list p] is [p.skills], the skills that the player [p] posesses. *)
   val available_skills_list: t-> skill list
 
   (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill -> string
 
+  (**[skill_strength s] is the strength of the skill [s]. *)
   val skill_strength: skill -> int
 
+  (**[skill_description s] is the description of the skill [s]. *)
   val skill_description: skill -> string
 end
 
@@ -176,7 +172,7 @@ module Player : P = struct
 
   let experience p = p.experience
 
-  let level p= p.level
+  let level p = p.level
 
   let col p = fst p.location
 
@@ -238,10 +234,6 @@ module Player : P = struct
     p.experience <- p.experience + e;
     advance_level p
 
-  let extract_skill_strength_single_skill (skill:skill) = skill.strength
-
-  let extract_skill_description_single_skill skill = skill.description
-
   let get_skill_by_skill_name t name = 
     match List.filter (fun x -> x.name = name ) t.skills with
     | [] -> raise (Unknownskill 
@@ -250,7 +242,7 @@ module Player : P = struct
 
   let available_skills_list t =
     List.iter (fun skill -> let new_cd = skill.cd - 1 in
-      if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
+                if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     List.filter (fun skill -> skill.cd = 0) t.skills
 
   (*let choose_skill_name *)
@@ -261,13 +253,17 @@ module Player : P = struct
 
   let skill_description skill = skill.description
 
+  (**[assert_skill_name_NOT_in_list p n] returns [true] if there are no 
+     skills in the skill list of player [p] with name [n], and [false]
+     otherwise.  *)
   let assert_skill_name_NOT_in_list t name =
     (List.filter (fun s -> s.name = name) t.skills) = []
-  
+
   let update_skill t skill_lst = 
     let new_skill_list = 
-      t.skills @ (List.filter 
-        (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
+      t.skills @ 
+      (List.filter 
+         (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
     t.skills <- new_skill_list
 
   let switch_loc t loc = t.location <- loc
