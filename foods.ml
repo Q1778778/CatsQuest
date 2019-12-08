@@ -20,7 +20,7 @@ module type F = sig
   val get_name : food -> string
 
   val get_description : food -> string
-  
+
   (**[get_strength f] is the strength of the food [f]  *)
   val get_strength : food -> int
 
@@ -55,7 +55,7 @@ module Food : F = struct
     health = health;
     location = (col,row);
     description = description;
-    gainables: gainables;
+    gainables = gainables;
   }
 
   let get_name f = f.name
