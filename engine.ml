@@ -322,7 +322,7 @@ let food_array_builder loc_array cols rows jsons: food_item array =
                         |> gainable_skill_constructor in
       Food (Foods.Food.constructor ~col ~row ~health 
             ~description ~name ~id ~strength ~gainables))
-    ((unique_location_list loc_array cols rows (List.length jsons))) 
+    ((unique_location_list loc_array col row (List.length jsons))) 
   |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
@@ -330,7 +330,7 @@ let food_array_builder loc_array cols rows jsons: food_item array =
    file *)
 let main_engine_food_for_single_map ~loc_array ~number ~col ~row = 
   let rec read_food handler = 
-    match Unix.readdir handler  with 
+    match Unix.readdir handler with 
     | exception _ -> Unix.closedir handler; 
       failwith "foods.json is not in current directory"
     | json ->  let pos = String.length json in 
@@ -367,7 +367,7 @@ let weapon_array_builder loc_array cols rows jsons: weapon_item array =
                         |> gainable_skill_constructor in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~gainables))
-    (unique_location_list loc_array cols rows (List.length jsons))
+    (unique_location_list loc_array col row (List.length jsons))
   |> Array.of_list
 
 (**[main_engine_weapon_for_single_map c r n] reads the file ["weapons.json"] 
