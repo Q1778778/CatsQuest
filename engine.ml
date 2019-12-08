@@ -591,8 +591,9 @@ let delete_one_enemy_from_state s =
   for i = 0 to (Array.length s.all_enemies_in_current_map) - 1 do 
     match s.all_enemies_in_current_map.(i) with
     | Enemy t when Enemy.get_pos t = loc ->
-      s.all_enemies_in_current_map.(i) <- Deleted ;
-      Player.increase_experience player (Enemy.get_experience t)
+      s.all_enemies_in_current_map.(i) <- Deleted;
+      Player.increase_experience player (Enemy.get_experience t);
+      Player.update_skill player (Enemy.get_gainable_skill t)
     | _ -> ()
   done
 
