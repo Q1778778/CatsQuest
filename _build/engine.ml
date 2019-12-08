@@ -674,7 +674,8 @@ let eat_one_food_in_inventory s pos =
     let health = Foods.Food.get_health food
     and strength = Foods.Food.get_strength food in
     Player.increase_health t health;
-    Player.increase_strength t strength; in
+    Player.increase_strength t strength;
+    Player.update_skill t (Foods.Food.get_gainables food) in
   let player = s |> get_player in
   match s.food_inventory.(pos) with
   | Food f -> 
@@ -697,6 +698,7 @@ let equip_one_weapon s =
        | Empty -> 
          (s.weapon_inventory.(j) <- Weapon w;
           Player.increase_strength t (Weapons.Weapon.get_strength w);
+          Player.update_food_inventory t (Weapons.Weapon.get_gainables w);
           raise SuccessExit)
        | _ -> ()
      done) in

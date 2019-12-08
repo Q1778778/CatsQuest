@@ -12,7 +12,7 @@ module type W = sig
     id:int -> 
     description:string -> 
     strength: int->
-    gainables: Player.skill list->
+    gainables: Player.skill list ->
     weapon
 
   (**[get_name w] is the name of the weapon [w]  *)
