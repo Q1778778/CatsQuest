@@ -2,6 +2,8 @@ open Enemy
 open Player
 open Maps
 open Yojson.Basic.Util
+open Foods
+open Weapons
 
 (*some constructors below required an id, which is created by the functions *)
 (*instead of contained in json                                              *)
@@ -299,7 +301,7 @@ let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row =
     List.map2  (fun x (col, row)-> browse_one_enemy_json x ~col ~row)
       (expected_enemy_models)
       (unique_location_list loc_array col row number) |> Array.of_list
-  with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
+  with Unix.Unix_error (Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
 
@@ -345,9 +347,9 @@ let food_array_builder loc_array col row jsons: food_item array =
       let description = j |> member "description" |> to_string in
       let gainables = j |> member "gainables" |> to_list 
                       |> gainable_skill_constructor in
-      Food (Foods.Food.constructor ~col ~row ~health 
+      Food (Food.constructor ~col ~row ~health 
               ~description ~name ~id ~strength ~gainables))
-    ((unique_location_list loc_array col row (List.length jsons))) 
+    (unique_location_list loc_array col row (List.length jsons)) 
   |> Array.of_list
 
 (**[main_engine_food_for_single_map locs num cols rows] reads the file 
@@ -391,7 +393,7 @@ let weapon_array_builder loc_array col row jsons: weapon_item array =
       let strength = j |> member "strength"|> to_int in
       let gainables = j |> member "gainables" |> to_list 
                       |> gainable_skill_constructor in
-      Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
+      Weapon (Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~gainables))
     (unique_location_list loc_array col row (List.length jsons))
   |> Array.of_list
@@ -528,8 +530,8 @@ let helper_init () =
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
 let init () : state =
-  let (map_array,loc_array, number, map_size_array, map_col_row_array, 
-       final_number_array, all_enemies, all_foods, all_weapons) = 
+  let map_array,loc_array, number, map_size_array, map_col_row_array, 
+      final_number_array, all_enemies, all_foods, all_weapons = 
     helper_init () in 
   {
     player = main_engine_player ();
@@ -619,6 +621,7 @@ let reduce_player_health s hp =
     then s.player <- Died
     else Player.reduce_health t hp
   | _ -> ()
+
 (*map-param related methods *)
 
 
@@ -744,7 +747,7 @@ let eat_one_food_in_inventory s pos =
     and strength = Foods.Food.get_strength food in
     Player.increase_health t health;
     Player.increase_strength t strength;
-    Player.update_skill t (Foods.Food.get_gainables food) in
+    Player.update_skill t (Food.get_gainables food) in
   let player = s |> get_player in
   match s.food_inventory.(pos) with
   | Food f -> 
@@ -767,7 +770,7 @@ let equip_one_weapon s =
       | Empty -> 
         s.weapon_inventory.(j) <- Weapon w;
         Player.increase_strength t (Weapons.Weapon.get_strength w);
-        Player.update_skill t (Weapons.Weapon.get_gainables w);
+        Player.update_skill t (Weapon.get_gainables w);
         raise SuccessExit
       | _ -> ()
     done in
