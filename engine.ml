@@ -74,10 +74,9 @@ let branch_map_store = ref []
    by [branch_map_store].  *)
 let update_branch_map_store (loc, name) =
   let tmp = !branch_map_store in
-  if List.filter (fun s -> s = (loc, name)) tmp = [] 
-  then
-    branch_map_store := (loc, name) :: tmp
-  else ()
+  if List.mem (loc, name) tmp 
+  then ()
+  else branch_map_store := (loc, name) :: tmp
 
 (**[count ()] returns [c], the # of times this function has been called. 
    Each time this function gets called, [c] gets incremented. *)
@@ -148,8 +147,7 @@ let random_int_array_for_enemies_and_items size_array number =
   let float_num = float_of_int number in
   let temp_random_number = (*the probability oper here is pretty messy *)
     List.map (fun s -> 
-        ((float_of_int s) /. float_sum *. float_num) 
-        |> round) raw_prob in 
+        ((float_of_int s) /. float_sum *. float_num) |> round) raw_prob in 
   let tl =List.tl temp_random_number in
   (number - (total_sum 0 tl)::(tl))
   |> Array.of_list
@@ -157,31 +155,37 @@ let random_int_array_for_enemies_and_items size_array number =
 (**[sorted_list col row n] is [List.rev [(col, row), (col-1, row), ... , 
    (1, row), (col, row-1), (col-1, row-1), ...]x] containing [n] elements. 
    Requires: 0 <= [n] <= [col * row] *)
-let sorted_list col row length = 
+let sorted_list loc_list col row length = 
   let rec inner_looper col' row' finished count = 
     if count = 0 then finished
-    else if col' = 1 
-    then 
-      inner_looper col (row'-1) ((col', row')::finished) (count - 1)
-    else 
-      inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
+    else let r_loc = (col', row') in
+      let check = List.mem r_loc loc_list in
+      if check && col' = 1 then
+        inner_looper col (row' - 1) finished count
+      else if check then (* col' != 1 *)
+        inner_looper (col'-1) (row') finished count
+      else if col' = 1 
+      then 
+        inner_looper col (row'-1) ((col', row')::finished) (count - 1)
+      else 
+        inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
   inner_looper col row [] length
 
 (**[unique_location_list col row n] returns [sorted_list col row n] if 
    [col < n/2] or [row < n/2], otherwise it returns a randomly constructed
    set-like list of [(col, row)] coordinates with length [n]. *)
-let unique_location_list col row length =
+let unique_location_list ~loc_array ~col ~row length =
+  let loc_list = loc_array |> Array.to_list in
   if (col < (length / 2)) || (row < (length / 2)) then
     (* small map. A sorted list is better for minimizing time complexity*)
-    sorted_list col row length 
+    sorted_list loc_list col row length 
   else
     let rec constructor finished count =
       if count = 0 then finished
-      else let r_col = 1 + Random.int col in
-        let r_row = 1 + Random.int row in 
-        if List.mem (r_col, r_row) finished
+      else let r_loc = (1 + Random.int col, 1 + Random.int row) in
+        if List.mem r_loc finished || List.mem r_loc loc_list
         then constructor finished count (* try again *)
-        else constructor ((r_col, r_row)::finished) (count - 1) in
+        else constructor (r_loc::finished) (count - 1) in
     constructor [] length
 
 
@@ -262,14 +266,15 @@ let browse_one_enemy_json j ~col ~row =
 (**[main_engine_ememy_for_single_map col row num] 
    Raises: [Failure "NONE of 'enemy' json exists"] if none of the json 
    file names are contain ["enemy"] *)
-let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array = 
+let main_engine_ememy_for_single_map 
+    ~loc_array ~col ~row ~(number:int)  : enemy array = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
     (List.map2  (fun x (col, row)-> browse_one_enemy_json x ~col ~row)
        (expected_enemy_models)
-       (unique_location_list col row number))|>Array.of_list
+       (unique_location_list loc_array col row number))|> Array.of_list
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
@@ -278,9 +283,10 @@ let main_engine_ememy_for_single_map ~col ~row ~(number:int) : enemy array =
    current directory with the corresponding locations in [loc_arr] and 
    numbers in [num_arr], and returns a mapped 2d array with this information *)
 let main_engine_enemy ~loc_array ~final_number_array : enemy array array =
-  Array.map2 
-    (fun number (col, row) -> main_engine_ememy_for_single_map col row number)
-    (final_number_array) (loc_array)
+  Array.map
+    (fun number (col, row) -> 
+       main_engine_ememy_for_single_map loc_array col row number)
+    final_number_array
 
 
 (**[main_engine_player ()] is the main execution method for the 
@@ -305,7 +311,7 @@ let main_engine_player: unit -> player =
 (**[food_array_builder cols rows j_arr] constructs a new food array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let food_array_builder cols rows jsons: food_item array = 
+let food_array_builder loc_array cols rows jsons: food_item array = 
   jsons |> List.map2 
     (fun (col, row) j -> let id = count () in
       let health = j |> member "health" |> to_int in
@@ -316,13 +322,13 @@ let food_array_builder cols rows jsons: food_item array =
                       |> gainable_skill_constructor in
       Food (Foods.Food.constructor ~col ~row ~health 
               ~description ~name ~id ~strength ~gainables))
-    ((unique_location_list cols rows (List.length jsons))) 
+    ((unique_location_list loc_array cols rows (List.length jsons))) 
   |> Array.of_list
 
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
    file *)
-let main_engine_food_for_single_map ~col ~row ~number= 
+let main_engine_food_for_single_map ~loc_array ~col ~row ~number = 
   let rec read_food handler = 
     match Unix.readdir handler  with 
     | exception _ -> Unix.closedir handler; 
@@ -343,16 +349,17 @@ let main_engine_food_for_single_map ~col ~row ~number=
    mapped 2d array with this information.  *)
 let main_engine_food ~(loc_array: (int * int) array) 
     ~(final_number_array: int array) : food_item array array =
-  Array.map2 
-    (fun number (col, row) -> (main_engine_food_for_single_map col row number))
-    final_number_array loc_array
+  Array.map
+    (fun number (col, row) -> 
+       main_engine_food_for_single_map loc_array col row number)
+    final_number_array 
 
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
 *)
-let weapon_array_builder cols rows jsons: weapon_item array = 
+let weapon_array_builder loc_array cols rows jsons: weapon_item array = 
   jsons 
-  |> List.map2 
+  |> List.map 
     (fun (col, row) j -> let id = count () in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
@@ -361,14 +368,15 @@ let weapon_array_builder cols rows jsons: weapon_item array =
                       |> gainable_skill_constructor in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~gainables))
-    (unique_location_list cols rows (List.length jsons))
+    (unique_location_list loc_array cols rows (List.length jsons))
   |> Array.of_list
 
 (**[main_engine_weapon_for_single_map c r n] reads the file ["weapons.json"] 
    in the current directory and returns the parsed weapon item array. 
    Raises: [Failure "weapons.json is not in current directory"] if the 
    the current directory does not contain the file ["weapons.json"] *)
-let main_engine_weapon_for_single_map ~(col: int) ~(row: int) ~number =
+let main_engine_weapon_for_single_map
+    ~loc_array ~(col: int) ~(row: int) ~number =
   let rec read_weapon handler = 
     match Unix.readdir handler with 
     | exception _ -> Unix.closedir handler; 
@@ -379,7 +387,7 @@ let main_engine_weapon_for_single_map ~(col: int) ~(row: int) ~number =
       && contains json "weapons"
       then json |> Yojson.Basic.from_file 
            |> to_list 
-           |> weapon_array_builder col row
+           |> weapon_array_builder loc_array col row
       else read_weapon handler in
   (read_weapon (Unix.opendir "."))
 
@@ -387,9 +395,9 @@ let main_engine_weapon_for_single_map ~(col: int) ~(row: int) ~number =
    each location in [locs] and final number in [nums], and returns the
    mapped 2d array with this information.  *)
 let main_engine_weapon ~loc_array ~final_number_array = 
-  Array.map2 
+  Array.map 
     (fun number (col, row) -> 
-       main_engine_weapon_for_single_map col row number)
+       main_engine_weapon_for_single_map loc_array col row number)
     final_number_array loc_array
 
 
@@ -464,7 +472,7 @@ let main_map_size_array map_array : int array =
 
 (** [init ()] is the init state of the entire game. 
     Invariant: the first map of all maps must be main map !!! *)
-let init unit : state =
+let init () : state =
   let map_array, loc_array = main_engine_map_param () in
   let number = 15 (*this number can be either artificially set or stored in json.*) in
   let map_size_array = main_map_size_array map_array in
