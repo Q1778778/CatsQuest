@@ -82,6 +82,7 @@ let draw_items ()=
   let weapons=Array.to_list s.all_weapons_in_current_map in 
   let foods=Array.to_list s.all_foods_in_current_map in
   let enemy=Array.to_list s.all_enemies_in_current_map in
+  let portal_lst=Engine.list_of_entrance_loc_to_branch_map Engine.game_state in
   let draw_witem w=
     match w with 
     |Engine.Weapon w->
@@ -121,9 +122,17 @@ let draw_items ()=
                          ((cr+(r-1)*interval+(interval/2))-r/2);
                        Graphics.draw_string name )
     |Engine.Deleted ->() in 
+  let rec draw_portal lst=
+    let lst=Engine.list_of_entrance_loc_to_branch_map Engine.game_state in 
+    match lst with 
+    |(r,c)::t->Graphics.draw_image (Option.get !portal) (rr+(c-1)*interval+interval/2-22) 
+                 (cr+(r-1)*interval+(interval/2)-22);
+      draw_portal t 
+    |[]->()in 
   List.iter draw_enemy enemy;
   List.iter draw_witem weapons;
-  List.iter draw_fitem foods
+  List.iter draw_fitem foods;
+  draw_portal portal_lst
 
 
 

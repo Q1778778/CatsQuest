@@ -400,9 +400,9 @@ let map_param_array_builder jsons flag : ((int * int) * map_param) list =
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in
       let _ = if flag && link <> "" 
-      then update_branch_map_store ((col, row), link)
-      else () in
-        (* i don't think the later check is necessary *)
+        then update_branch_map_store ((col, row), link)
+        else () in
+      (* i don't think the later check is necessary *)
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 (**[build_one_map s] returns the constructed map from the json file name [s].

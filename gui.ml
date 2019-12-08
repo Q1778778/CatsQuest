@@ -195,7 +195,7 @@ let create_button text color tcolor x y w h trigger=
   Graphics.set_color color;
   Graphics.fill_rect x y w h;
   let pixel=(String.length text)-1 in
-  (Graphics.moveto (x+w/2-pixel*6) (y+h/2);
+  (Graphics.moveto (x+w/2-pixel*3) (y+h/2);
    Graphics.set_color tcolor;
    Graphics.draw_string text);
   Action_button ((x,y,w,h),trigger)
@@ -222,26 +222,26 @@ let combat_four_botton c =
   if Option.is_some forskill then
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get fskill)
+     let second=create_button (Option.get sskill)
          lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
-     let third=create_button (Option.get fskill) 
+     let third=create_button (Option.get tskill) 
          lblue black 920 10 130 85("skill",(Option.get fskill)) in
-     let forth=create_button (Option.get fskill) 
+     let forth=create_button (Option.get forskill) 
          lblue black 1060 10 130 85 ("skill",(Option.get fskill))in
      c.fbutton<-(first::second::third::[forth])) else if 
     Option.is_some tskill then 
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get fskill)
+     let second=create_button (Option.get sskill)
          lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
-     let third=create_button (Option.get fskill) 
+     let third=create_button (Option.get tskill) 
          lblue black 920 10 130 85("skill",(Option.get fskill)) in
      let _=create_button "None" 
          grey black 1060 10 130 85 ("skill","None")in
      c.fbutton<-(first::second::[third])) else if  Option.is_some sskill then
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get fskill)
+     let second=create_button (Option.get sskill)
          lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
      let _=create_button "None"
          grey black 920 10 130 85("skill","None") in
