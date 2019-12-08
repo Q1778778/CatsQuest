@@ -571,9 +571,11 @@ let rec main () =
   try (cplace.fbutton<-[];
        cplace.dialog<-Bnone;
        cplace.irefresh<-false;
+       Engine.transfer_player_to_main_map Engine.game_state;
+       Engine.transfer_player_to_branch_map Engine.game_state;
        Map_builder.map_text_build();
-       Map_builder.draw_player();
        Map_builder.draw_items();
+       Map_builder.draw_player();
        status_bar ();
        experience_bar();
        ground_mon();

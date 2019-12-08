@@ -114,7 +114,7 @@ let draw_items ()=
     |Engine.Enemy e-> (let (r,c)=Enemy.Enemy.get_pos e in 
                        Graphics.set_color purple_red;
                        Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
-                         (cr+(r-1)*interval+(interval/2)) (interval/6);
+                         (cr+(r-1)*interval+(interval/2)) (interval/4);
                        Graphics.set_color Graphics.black;
                        let name=Enemy.Enemy.get_name e in
                        let pixel=(String.length name)-1 in
@@ -123,7 +123,6 @@ let draw_items ()=
                        Graphics.draw_string name )
     |Engine.Deleted ->() in 
   let rec draw_portal lst=
-    let lst=Engine.list_of_entrance_loc_to_branch_map Engine.game_state in 
     match lst with 
     |(r,c)::t->Graphics.draw_image (Option.get !portal) (rr+(c-1)*interval+interval/2-22) 
                  (cr+(r-1)*interval+(interval/2)-22);
