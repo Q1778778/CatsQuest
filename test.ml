@@ -24,9 +24,6 @@ let get_health s = get_player_prop s Player.health
 (**[get_max_health s] is the player's maximum health at state [s] *)
 let get_max_health s = get_player_prop s Player.max_health
 
-(**[get_strength s] is the player's strength at state [s]  *)
-let get_strength s = get_player_prop s Player.strength
-
 (**[get_experience s] is the player's experience at state [s]  *)
 let get_experience s = get_player_prop s Player.experience
 
@@ -39,12 +36,29 @@ let map_cols s = s.current_map.size |> fst
 (**[map_rows s] is the # of rows of the player's map at state [s]  *)
 let map_rows s = s.current_map.size |> snd
 
+let delete_all_enemies_in_current_map s = 
+  for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
+    s.all_enemies_in_current_map.(i) <- Deleted
+  done
 
+let switch_to_different_map s pos = 
+  s.current_map <- List.nth s.all_maps pos;
+  s.all_enemies_in_current_map <- s.all_enemies.(pos);
+  s.all_foods_in_current_map <- s.all_foods.(pos);
+  s.all_weapons_in_current_map <- s.all_weapons.(pos);
+  s.current_map_in_all_maps <- pos
 (** Player state update tests *)
+
+let get_enemy = function
+  | Deleted -> failwith "invalid"
+  | Enemy e -> e
+
+let get_one_enemy_pos s = 
+  s.all_enemies_in_current_map.(0) |> get_enemy |> Enemy.get_pos
 
 let state = Engine.init () (* initial pos -> 1,1 *)
 let init_health = get_health state
-let init_strength = get_strength state
+
 let init_experience = get_experience state
 let init_level = get_level state
 let init_pos = get_pos state
@@ -77,17 +91,6 @@ let state6_loc = get_pos state
 let _  = Engine.move_player_down state 
 let state7_loc = get_pos state
 
-(* reduce strength -> init_strength-12 *)
-let _ = Player.reduce_strength (get_player state) 12 
-let state8_strength = get_strength state
-
-(* reduce strength -> 0 *)
-let _ = Player.reduce_strength (get_player state) (init_strength+12)
-let state9_strength = get_strength state
-
-(* increase strength -> 13 *)
-let _ = Player.increase_strength (get_player state) 13
-let state10_strength = get_strength state
 
 (* increase experience -> init_experience+10 *)
 let _ = Player.increase_experience (get_player state) 10
@@ -159,9 +162,6 @@ let player_state_tests = [
   make_test "RLU" state5_loc (1,2);
   make_test "RLUU" state6_loc (1,3);
   make_test "RLUUD" state7_loc (1,2);
-  make_test "reduce strength by 12" state8_strength (init_strength-12);
-  make_test "reduce all strength" state9_strength 0;
-  make_test "increase strength by 13" state10_strength 13;
   make_test "advance level failed" state11_experience state11'_experience;
   make_test "advance level failed" state11_level state11'_level;
   make_test "increase exp" state11_experience 
