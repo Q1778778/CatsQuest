@@ -45,7 +45,7 @@ let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
              difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;
              item_selected=None;item_ground=false;message_display="placeholder"}
 
-let cstate={skill=["stab"]}
+let cstate={skill=[]}
 
 let lblue=Graphics.rgb 82 219 255
 
@@ -589,6 +589,7 @@ let rec beginning () =
 
 let init () =
   Graphics.open_graph " 1200x800+100";
+  Map_builder.text_init();
   beginning ()
 
 let ()=init ()

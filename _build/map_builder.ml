@@ -1,5 +1,25 @@
 let purple_red=Graphics.rgb 140 67 86
 
+let field=ref None
+
+let beach=ref None
+
+let mountain=ref None
+
+let lake=ref None
+
+let snow=ref None
+
+let grass=ref None
+
+let text_init()=
+  field:=Some (Graphics.make_image Color_convert.dirt_120);
+  beach:=Some (Graphics.make_image Color_convert.sand_120);
+  mountain:=Some (Graphics.make_image Color_convert.stone_120);
+  lake:=Some (Graphics.make_image Color_convert.water_120);
+  snow:=Some(Graphics.make_image Color_convert.snow_120);
+  grass:=Some (Graphics.make_image Color_convert.grass_120)
+
 (**[map_size_cal t] scales the size of the map model object [t] 
    to the size of the GUI screen and returns the dimensions of the 
    scaled map w.r.t the GUI. 
@@ -18,12 +38,12 @@ let map_size_cal (t:Maps.t)=
    a valid picture name. *)
 let picture_getter s size=
   match s,size with
-  |"field",size->Color_convert.dirt_120
-  |"beach",size->Color_convert.sand_120
-  |"mountain",size->Color_convert.stone_120
-  |"lake",size->Color_convert.water_120
-  |"snow",size->Color_convert.snow_120
-  |"grass",size->Color_convert.grass_120
+  |"field",size->Option.get !field
+  |"beach",size->Option.get !beach
+  |"mountain",size->Option.get !mountain
+  |"lake",size->Option.get !lake
+  |"snow",size->Option.get !snow
+  |"grass",size->Option.get !grass
   |_->failwith "wrong name of picture, broken json or code"
 
 (**[map_text_build ()] draws the map on the GUI based on the map params 
@@ -36,8 +56,7 @@ let map_text_build ()=
       rs cs inter=
     match data with 
     |((r,c),p)::t-> (let pic=picture_getter p.name p in 
-                     let the_image=Graphics.make_image pic in
-                     Graphics.draw_image the_image (rs+(c-1)*inter) 
+                     Graphics.draw_image pic (rs+(c-1)*inter) 
                        (cs+(r-1)*inter);
                      draw_pic t rs cs inter )
     |[]->() in 
