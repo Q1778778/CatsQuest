@@ -13,10 +13,10 @@
     "health": 20,
     "gainables": [
       {
-        "name": "divine spirit",
-        "description": "Wish this land receives the virtue of the God.",
-        "strength": 20,
-        "cd": 1
+        "name": "fire",
+        "description": "Fire is the natural tools to defeat evils",
+        "cd": 1,
+        "strength": 20
       }
     ]
   }
