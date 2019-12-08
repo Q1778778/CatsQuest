@@ -129,7 +129,7 @@ module Player : P = struct
   type skill = {
     name: string;
     description: string;
-    strength: int;
+    mutable strength: int;
     mutable cd: int;
   }
 
@@ -215,7 +215,8 @@ module Player : P = struct
     else t.health <- t.health + hp
 
   let increase_strength t st =
-    t.strength <- t.strength + st
+    let incr = st / (List.length t.skills) in
+    List.iter (fun s -> s.strength <- s.strength + incr) t.skills
 
   let reduce_health p h = 
     let new_health = 

@@ -137,6 +137,7 @@ module Enemy: EnemySig = struct
   let get_max_hp s=s.max_hp
 
   let get_gainable_skill s = s.gainables
+  
   (* setters are defined here *)
   let reduce_hp s d =
     let tmp_hp = s.hp - d in
