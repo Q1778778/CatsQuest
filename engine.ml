@@ -897,7 +897,6 @@ let transfer_player_to_main_map s =
 
 let renew_one_player s =
   s.player <- main_engine_player ();
-  Player.switch_loc (s |> get_player) (s.player_old_loc);
 
 (**[list_of_entrance_loc_to_branch_map s] is the list of entrance locations
    to the branch map named [s]. *)
