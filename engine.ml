@@ -455,7 +455,7 @@ let main_map_size_array map_array : int array =
     Invariant: the first map of all maps must be main map !!! *)
 let init (): state =
   let map_array, loc_array = main_engine_map_param () in
-  let number = 7 (*this number can be either artificially set or stored in json.*) in
+  let number = 15 (*this number can be either artificially set or stored in json.*) in
   let map_size_array = main_map_size_array map_array in
   let final_number_array = random_int_array_for_enemies_and_items map_size_array number in
   let all_enemies = (main_engine_enemy ~loc_array ~final_number_array)  in
