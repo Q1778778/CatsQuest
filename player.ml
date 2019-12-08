@@ -123,6 +123,9 @@ module type P = sig
 
   (**[choose_skill s] will update the cd of skill [s]*)
   val choose_skill: skill -> unit
+
+  (**[get_all_skill_format s] is a list of (skill name, skill cd)*)
+  val get_all_skill_format : t -> (string * int) list
 end
 
 module Player : P = struct
@@ -283,6 +286,9 @@ module Player : P = struct
 
   let choose_skill s = 
     s.cd <- s.old_cd
+
+  let get_all_skill_format s =  
+    List.map (fun skill -> (skill.name, skill.cd)) s.skills
 end
 
 type skill = Player.skill (* export to other modules*)
