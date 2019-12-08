@@ -120,6 +120,9 @@ module type P = sig
 
   (**[skill_description s] is the description of the skill [s]. *)
   val skill_description: skill -> string
+
+  (**[choose_skill s] will update the cd of skill [s]*)
+  val choose_skill: skill -> unit
 end
 
 module Player : P = struct
@@ -127,6 +130,7 @@ module Player : P = struct
   type skill = {
     name: string;
     description: string;
+    old_cd: int;
     mutable strength: int;
     mutable cd: int;
   }
@@ -149,6 +153,7 @@ module Player : P = struct
     strength = strength;
     name = name;
     cd = cd;
+    old_cd = cd;
   }
 
   let constructor 
