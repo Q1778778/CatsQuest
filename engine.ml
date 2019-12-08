@@ -266,8 +266,7 @@ let browse_one_enemy_json j ~col ~row =
 (**[main_engine_ememy_for_single_map col row num] 
    Raises: [Failure "NONE of 'enemy' json exists"] if none of the json 
    file names are contain ["enemy"] *)
-let main_engine_ememy_for_single_map 
-    ~loc_array ~col ~row ~(number:int)  : enemy array = 
+let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row = 
   try 
     let all_enemy_models = browse_dir_enemy (Unix.opendir ".") [] in
     let expected_enemy_models =
@@ -278,15 +277,15 @@ let main_engine_ememy_for_single_map
   with Unix.Unix_error(Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
 
-
 (**[main_engine_enemy loc_arr num_arr] reads all enemy json files in 
    current directory with the corresponding locations in [loc_arr] and 
    numbers in [num_arr], and returns a mapped 2d array with this information *)
-let main_engine_enemy ~loc_array ~final_number_array : enemy array array =
-  Array.map
+let main_engine_enemy 
+    ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
+  Array.map2
     (fun number (col, row) -> 
        main_engine_ememy_for_single_map loc_array col row number)
-    final_number_array
+    final_number_array map_col_row_array
 
 
 (**[main_engine_player ()] is the main execution method for the 
@@ -328,9 +327,9 @@ let food_array_builder loc_array cols rows jsons: food_item array =
 (**[main_engine_food_for_single_map col row num] reads the file ["foods.json"]
    from the current directory, and returns the food array parsed from that 
    file *)
-let main_engine_food_for_single_map ~loc_array ~col ~row ~number = 
+let main_engine_food_for_single_map ~loc_array ~number ~col ~row = 
   let rec read_food handler = 
-    match Unix.readdir handler  with 
+    match Unix.readdir handler with 
     | exception _ -> Unix.closedir handler; 
       failwith "foods.json is not in current directory"
     | json ->  let pos = String.length json in 
@@ -340,19 +339,20 @@ let main_engine_food_for_single_map ~loc_array ~col ~row ~number =
       then json 
            |> Yojson.Basic.from_file 
            |> to_list 
-           |> food_array_builder col row
+           |> food_array_builder loc_array col row
       else read_food handler in
   (read_food (Unix.opendir "."))
 
 (**[main_engine_food locs nums] calls [main_engine_food_for_single_map] for
    each location in [locs] and final number in [nums], and returns the
    mapped 2d array with this information.  *)
-let main_engine_food ~(loc_array: (int * int) array) 
-    ~(final_number_array: int array) : food_item array array =
-  Array.map
+let main_engine_food ~map_col_row_array ~loc_array
+    ~final_number_array : food_item array array =
+  Array.map2
     (fun number (col, row) -> 
-       main_engine_food_for_single_map loc_array col row number)
-    final_number_array 
+       main_engine_food_for_single_map loc_array number col row)
+    final_number_array map_col_row_array
+
 
 (**[weapon_array_builder cols rows j_arr] constructs a new weapon array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows] 
@@ -368,15 +368,15 @@ let weapon_array_builder loc_array cols rows jsons: weapon_item array =
                       |> gainable_skill_constructor in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~gainables))
-    (unique_location_list loc_array cols rows (List.length jsons))
+    (unique_location_list loc_array col row (List.length jsons))
   |> Array.of_list
+
 
 (**[main_engine_weapon_for_single_map c r n] reads the file ["weapons.json"] 
    in the current directory and returns the parsed weapon item array. 
    Raises: [Failure "weapons.json is not in current directory"] if the 
    the current directory does not contain the file ["weapons.json"] *)
-let main_engine_weapon_for_single_map
-    ~loc_array ~(col: int) ~(row: int) ~number =
+let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
   let rec read_weapon handler = 
     match Unix.readdir handler with 
     | exception _ -> Unix.closedir handler; 
@@ -394,11 +394,11 @@ let main_engine_weapon_for_single_map
 (**[main_engine_weapon locs nums] calls [main_engine_weapon_for_single_map] for
    each location in [locs] and final number in [nums], and returns the
    mapped 2d array with this information.  *)
-let main_engine_weapon ~loc_array ~final_number_array = 
-  Array.map 
+let main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array = 
+  Array.map2 
     (fun number (col, row) -> 
        main_engine_weapon_for_single_map loc_array col row number)
-    final_number_array loc_array
+    final_number_array map_col_row_array
 
 
 (**[map_param_array_builder j_arr] constructs a new map param array 
@@ -468,6 +468,9 @@ let main_engine_map_param unit : (current_map array) * (int * int) array =
 let main_map_size_array map_array : int array = 
   Array.map (fun map -> let x, y = Maps.size map in x * y) map_array
 
+let main_map_col_row map_array = 
+  Array.map (fun map -> Maps.size map) map_array
+
 (*                       initiate the game                           *)
 
 (** [init ()] is the init state of the entire game. 
@@ -476,10 +479,11 @@ let init () : state =
   let map_array, loc_array = main_engine_map_param () in
   let number = 15 (*this number can be either artificially set or stored in json.*) in
   let map_size_array = main_map_size_array map_array in
+  let map_col_row_array = main_map_col_row map_array in
   let final_number_array = random_int_array_for_enemies_and_items map_size_array number in
-  let all_enemies = (main_engine_enemy ~loc_array ~final_number_array)  in
-  let all_foods = (main_engine_food ~loc_array ~final_number_array)  in
-  let all_weapons = (main_engine_weapon ~loc_array ~final_number_array) in {
+  let all_enemies = (main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array)  in
+  let all_foods = (main_engine_food ~map_col_row_array ~loc_array ~final_number_array)  in
+  let all_weapons = (main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array) in {
     player = main_engine_player ();
     food_inventory = [|Eaten; Eaten; Eaten|];
     weapon_inventory = [|Empty; Empty; Empty|]; (*the length of inventory shouldn't be changed *)
