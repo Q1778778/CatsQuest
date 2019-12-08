@@ -223,7 +223,7 @@ let rec browse_dir_enemy (handler: Unix.dir_handle)(lst: string list)=
 let single_enemy_builder j ~col ~row =
   Enemy (
     let name = j |> member "name" |> to_string in
-    let id = string_of_int (count ()) in
+    let id = count () |> string_of_int in
     let descr = j |> member "description" |> to_string in
     let exp = j |> member "experience" |> to_int in
     let level = j |> member "level" |> to_int in
@@ -240,8 +240,8 @@ let single_enemy_builder j ~col ~row =
              ~skill_probability)) lst in
     let gainables =
       j |> member "gainable"|> to_list |> gainable_skill_constructor in 
-    Enemy.constructor ~pos ~level ~exp ~name
-      ~hp ~id ~descr ~max_hp ~skills ~gainables)
+    Enemy.constructor ~pos ~level ~exp
+      ~hp ~id ~name ~descr ~max_hp ~skills ~gainables)
 
 (** [browse_one_enemy_json j id col row] calls 
     [single_enemy_builder j id col row] if [j] is a valid enemy json
@@ -537,6 +537,14 @@ let get_current_map_name s = s.current_map.name
 (**[get_current_map_size s] is the size of the current map in game state [s] *)
 let get_current_map_size s = s.current_map.size
 
+
+let reduce_player_health s hp = 
+  match s.player with
+  | Player t -> 
+    if Player.health t <= hp
+    then s.player <- Died
+    else Player.reduce_health t hp
+  | _ -> ()
 (*map-param related methods *)
 
 

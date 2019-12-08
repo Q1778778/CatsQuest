@@ -303,9 +303,11 @@ let enemy_mon id=
   if hp<=0 then false else true 
 
 let game_over_mon ()=
-  dialog "Game over" Color_convert.cute_cat "cute cat"; 
-  let _=Graphics.wait_next_event [Button_down] in 
-  Graphics.close_graph()
+  let (m,h)=get_player_health()in
+  if h<=0 then 
+    (dialog "Game over" Color_convert.cute_cat "cute cat"; 
+     let _=Graphics.wait_next_event [Button_down] in 
+     Graphics.close_graph()) else ()
 
 let skill_helper name=
   Graphics.moveto 850 500;
@@ -330,8 +332,7 @@ let skill_helper name=
     (Thread.delay 1.0;
      enemy_skill the_enemy;
      draw_a_image Color_convert.player_in_combat 10 205;
-     try (let _=Engine.get_player Engine.game_state in ()) with
-       Engine.PlayerDied->game_over_mon()) else 
+     game_over_mon()) else 
     ()
 
 let skill_image name=
@@ -415,23 +416,30 @@ let rec parse  c=
 and  order_helper c t=
   (if c="dialog" then parse (Guide t)  else if 
      c="weapon" then (match ground_probe () with
-      |"Weapon"-> Engine.equip_weapon_in_current_loc Engine.game_state
-      |"Food"->Engine.take_one_food_in_current_location Engine.game_state
+      |"Weapon"-> Engine.equip_weapon_in_current_loc Engine.game_state;
+        cplace.message_display<-"you have picked up a weapon";cplace.irefresh<-true
+      |"Food"->Engine.take_one_food_in_current_location Engine.game_state;
+        cplace.message_display<-"you have picked up a food";cplace.irefresh<-true
       |_->()) else if
      c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
                    match t with 
                    |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;
-                     cplace.item_selected<-None;cplace.irefresh<-true
+                     cplace.item_selected<-None;cplace.irefresh<-true;
+                     cplace.message_display<-"You ate "^n^ " and recovered health"
                    |_->()) else if 
      c="drop" then (if Option.is_some cplace.item_selected then 
                       (let (t,i,n)=Option.get cplace.item_selected in 
                        match t with 
                        |"weapon"->
                          Engine.drop_one_weapon_to_current_location Engine.game_state i;
-                         cplace.item_selected<-None;cplace.irefresh<-true
+                         cplace.item_selected<-None;
+                         cplace.irefresh<-true;
+                         cplace.message_display<-"you have dropped down "^n
                        |"food"->
                          Engine.drop_one_food_to_current_location Engine.game_state i;
-                         cplace.item_selected<-None;cplace.irefresh<-true
+                         cplace.item_selected<-None;
+                         cplace.irefresh<-true;
+                         cplace.message_display<-"you have dropped down "^n
                        |_->() ) else ())
    else
      parse  (Command t))
@@ -545,28 +553,28 @@ let enemy_loc_mon()=
     ()
 
 
-let rec init flag =
-  cplace.fbutton<-[];
-  cplace.dialog<-Bnone;
-  cplace.irefresh<-false;
-  Map_builder.map_text_build();
-  Map_builder.draw_player();
-  Map_builder.draw_items();
-  status_bar ();
-  experience_bar();
-  ground_mon();
-  normal_four_botton cplace;
-  health_bar ();
-  info_bar();
-  item_draw ();
-  draw_inventory();
-  skill_mon();
-  fensor cplace Normal;
-  tsensor cplace;
-  enemy_loc_mon();
-  combat_mon();
-  clear_screen();
-  init flag
+let rec main () =
+  try (cplace.fbutton<-[];
+       cplace.dialog<-Bnone;
+       cplace.irefresh<-false;
+       Map_builder.map_text_build();
+       Map_builder.draw_player();
+       Map_builder.draw_items();
+       status_bar ();
+       experience_bar();
+       ground_mon();
+       normal_four_botton cplace;
+       health_bar ();
+       info_bar();
+       item_draw ();
+       draw_inventory();
+       skill_mon();
+       fensor cplace Normal;
+       tsensor cplace;
+       enemy_loc_mon();
+       combat_mon();
+       clear_screen();
+       main ()) with Graphics.Graphic_failure s->()
 
 let rec beginning () =
   Graphics.moveto 500 650;
@@ -577,11 +585,11 @@ let rec beginning () =
                      green black 500 550 200 50 ("diff","easy")];
   fensor cplace Normal;
   if cplace.difficulty<>"empty" then 
-    (Graphics.clear_graph(); init true )else beginning ()
+    (Graphics.clear_graph(); main () )else beginning ()
 
-let open_g () =
+let init () =
   Graphics.open_graph " 1200x800+100";
   beginning ()
 
-let ()=open_g ()
+let ()=init ()
 

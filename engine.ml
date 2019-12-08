@@ -541,9 +541,9 @@ let get_current_map_size s = s.current_map.size
 let reduce_player_health s hp = 
   match s.player with
   | Player t -> 
-    if Player.health s <= hp
+    if Player.health t <= hp
     then s.player <- Died
-    else Player.reduce_heath t hp
+    else Player.reduce_health t hp
   | _ -> ()
 (*map-param related methods *)
 
