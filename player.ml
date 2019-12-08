@@ -14,6 +14,7 @@ module type P = sig
     ?health:int -> 
     ?level:int -> 
     ?experience:int -> 
+    ?loc: (int * int) ->
     unit -> t
 
   (**[level p] is the current level of player [p] *)
@@ -78,7 +79,13 @@ module type P = sig
   (**[switch_loc p loc] changes the location of player [p] to [loc].  *)
   val switch_loc: t -> int * int -> unit (*this method is pretty dangerous !!*)
 
+  (**[update_skill p lst] appends the new skill list [lst] to the existing
+     skills repertoire of player [p] *)
   val update_skill: t -> skill list -> unit
+
+  (** [level_up_expereince p] is 
+    the experience required to level up player [p]*)
+  val level_up_expereince: t -> int
 
   (**[advance_level p] advances player [p] to the next level and updates
      player [p]'s experience as well. If [p] does not have enough experience
@@ -102,23 +109,23 @@ module type P = sig
      if the player [p] does not have the skill named [n]. *)
   val get_skill_by_skill_name: t -> string -> skill
 
-  (**[extract_skill_strength_single_skill s] is the strength amount of the 
-     skill [s]. *)
-  val extract_skill_strength_single_skill: skill -> int
-
-  (**[extract_skill_description_single_skill s] is the description of the 
-     skill [s]  *)
-  val extract_skill_description_single_skill: skill -> string
-
   (**[skills_list p] is [p.skills], the skills that the player [p] posesses. *)
   val available_skills_list: t-> skill list
 
   (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill -> string
 
+  (**[skill_strength s] is the strength of the skill [s]. *)
   val skill_strength: skill -> int
 
+  (**[skill_description s] is the description of the skill [s]. *)
   val skill_description: skill -> string
+
+  (**[choose_skill s] will update the cd of skill [s]*)
+  val choose_skill: skill -> unit
+
+  (**[get_all_skill_format s] is a list of (skill name, skill cd)*)
+  val get_all_skill_format : t -> (string * int) list
 end
 
 module Player : P = struct
@@ -126,6 +133,7 @@ module Player : P = struct
   type skill = {
     name: string;
     description: string;
+    old_cd: int;
     mutable strength: int;
     mutable cd: int;
   }
@@ -148,13 +156,14 @@ module Player : P = struct
     strength = strength;
     name = name;
     cd = cd;
+    old_cd = cd;
   }
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 
-      ?level:(level=1) ?experience:(experience=0) () = 
+    ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
     {
-      location = (1,1);
+      location = loc;
       health = health;
       level = level;
       experience = experience;
@@ -165,6 +174,7 @@ module Player : P = struct
                         Player uses fists to challenge the evils!";
           strength = strength;
           cd = 0;
+          old_cd = 0;
         }];
     }
 
@@ -176,7 +186,7 @@ module Player : P = struct
 
   let experience p = p.experience
 
-  let level p= p.level
+  let level p = p.level
 
   let col p = fst p.location
 
@@ -223,8 +233,10 @@ module Player : P = struct
          if temp <= 0 then skill.strength <- 0
          else skill.strength <- temp) p.skills)
 
+  let level_up_expereince p = 30 + 30 * p.level
+
   let advance_level p = 
-    let experience_qual = 30 + 30 * p.level in 
+    let experience_qual = level_up_expereince p in 
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;
@@ -238,10 +250,6 @@ module Player : P = struct
     p.experience <- p.experience + e;
     advance_level p
 
-  let extract_skill_strength_single_skill (skill:skill) = skill.strength
-
-  let extract_skill_description_single_skill skill = skill.description
-
   let get_skill_by_skill_name t name = 
     match List.filter (fun x -> x.name = name ) t.skills with
     | [] -> raise (Unknownskill 
@@ -250,7 +258,7 @@ module Player : P = struct
 
   let available_skills_list t =
     List.iter (fun skill -> let new_cd = skill.cd - 1 in
-      if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
+                if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     List.filter (fun skill -> skill.cd = 0) t.skills
 
   (*let choose_skill_name *)
@@ -261,17 +269,26 @@ module Player : P = struct
 
   let skill_description skill = skill.description
 
+  (**[assert_skill_name_NOT_in_list p n] returns [true] if there are no 
+     skills in the skill list of player [p] with name [n], and [false]
+     otherwise.  *)
   let assert_skill_name_NOT_in_list t name =
     (List.filter (fun s -> s.name = name) t.skills) = []
-  
+
   let update_skill t skill_lst = 
     let new_skill_list = 
-      t.skills @ (List.filter 
-        (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
+      t.skills @ 
+      (List.filter 
+         (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
     t.skills <- new_skill_list
 
   let switch_loc t loc = t.location <- loc
 
+  let choose_skill s = 
+    s.cd <- s.old_cd
+
+  let get_all_skill_format s =  
+    List.map (fun skill -> (skill.name, skill.cd)) s.skills
 end
 
 type skill = Player.skill (* export to other modules*)
