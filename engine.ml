@@ -72,7 +72,7 @@ let branch_map_store = ref []
 (**[update_branch_map_store n l] updates [branch_map_store] by 
    appending [(n,l)] to the front of the list referenced 
    by [branch_map_store].  *)
-let update_branch_map_store name loc =
+let update_branch_map_store (loc, name) =
   branch_map_store := (loc, name) :: !branch_map_store
 
 (**[count ()] returns [c], the # of times this function has been called. 
@@ -399,11 +399,10 @@ let map_param_array_builder jsons : ((int * int) * map_param) list =
       (*updating branched loc*)
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in 
-      let _ = 
         (* i don't think the later check is necessary *)
-        if link <> "" && name = "main" 
-        then update_branch_map_store link (col, row) 
-        else () in
+      let _ = if link <> ""
+      then update_branch_map_store ((col, row), link)
+      else () in
       ((col,row), (Maps.MapParam.single_map_element_constructor ~name ~link)))
 
 (**[build_one_map s] returns the constructed map from the json file name [s].
