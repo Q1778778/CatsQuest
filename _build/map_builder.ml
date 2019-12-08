@@ -12,13 +12,16 @@ let snow=ref None
 
 let grass=ref None
 
+let portal=ref None
+
 let text_init()=
   field:=Some (Graphics.make_image Color_convert.dirt_120);
   beach:=Some (Graphics.make_image Color_convert.sand_120);
   mountain:=Some (Graphics.make_image Color_convert.stone_120);
   lake:=Some (Graphics.make_image Color_convert.water_120);
   snow:=Some(Graphics.make_image Color_convert.snow_120);
-  grass:=Some (Graphics.make_image Color_convert.grass_120)
+  grass:=Some (Graphics.make_image Color_convert.grass_120);
+  portal:=Some(Graphics.make_image Color_convert.portal)
 
 (**[map_size_cal t] scales the size of the map model object [t] 
    to the size of the GUI screen and returns the dimensions of the 

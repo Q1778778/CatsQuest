@@ -193,12 +193,14 @@ let parse_dims s =
 (*                        models builder                         *)
 
 let gainable_skill_constructor jsons_list = 
-  List.map (fun skill -> 
-      let description = skill |> member "description" |> to_string in
-      let strength = skill |> member "strength" |> to_int in
-      let name = skill |> member "name" |> to_string in
-      let cd = skill |> member "cd" |> to_int in
-      Player.skill_constructor name description strength cd) jsons_list
+  if jsons_list = [] then []
+  else
+    List.map (fun skill -> 
+        let description = skill |> member "description" |> to_string in
+        let strength = skill |> member "strength" |> to_int in
+        let name = skill |> member "name" |> to_string in
+        let cd = skill |> member "cd" |> to_int in
+        Player.skill_constructor name description strength cd) jsons_list
 
 
 (**[browse_dir_enemy h lst] is a list of enemy json files 
@@ -306,8 +308,10 @@ let food_array_builder cols rows jsons: food_item array =
       let strength = j |> member "strength" |> to_int in
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
+      let gainables = j |> member "gainables" |> to_list 
+                      |> gainable_skill_constructor in
       Food (Foods.Food.constructor ~col ~row ~health 
-              ~description ~name ~id ~strength))
+              ~description ~name ~id ~strength ~gainables))
     ((unique_location_list cols rows (List.length jsons))) 
   |> Array.of_list
 
@@ -349,8 +353,10 @@ let weapon_array_builder cols rows jsons: weapon_item array =
       let name = j |> member "name" |> to_string in
       let description = j |> member "description" |> to_string in
       let strength = j |> member "strength"|> to_int in
+      let gainables = j |> member "gainables" |> to_list 
+                      |> gainable_skill_constructor in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
-                ~description ~name ~id))
+                ~description ~name ~id ~gainables))
     (unique_location_list cols rows (List.length jsons))
   |> Array.of_list
 
@@ -862,4 +868,4 @@ let list_of_entrance_loc_to_branch_map s =
   if get_current_map_name s <> "main"
   then []
   else
-    s.branched_map_info |>List.split|> fst
+    s.branched_map_info |> List.split|> fst

@@ -12,7 +12,7 @@ module type W = sig
     id:int -> 
     description:string -> 
     strength: int->
-    gainables: Player.skill ->
+    gainables: Player.skill list->
     weapon
 
   (**[get_name w] is the name of the weapon [w]  *)
@@ -53,7 +53,7 @@ module Weapon : W = struct
   let get_name w = w.name
 
   let get_description w = w.description
-  
+
   let get_strength w = w.strength
 
   let get_loc w = w.weapon_loc

@@ -33,19 +33,17 @@ type clist=
     mutable item_selected: (string*int*string) option;
     mutable item_ground: bool;
     mutable message_display: string;
+    mutable skills: string list;
+    mutable player_level: int
   }
-
-type state={
-  mutable skill: string list;
-}
 
 exception Not_such_enemy of string
 
 let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
              difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;
-             item_selected=None;item_ground=false;message_display="placeholder"}
+             item_selected=None;item_ground=false;message_display="placeholder";
+             skills=[];player_level=1}
 
-let cstate={skill=["stab"]}
 
 let lblue=Graphics.rgb 82 219 255
 
@@ -103,7 +101,7 @@ let experience_bar ()=
   whitebox_draw 130 20 150 190 5;
   Graphics.moveto 115 6;
   Graphics.draw_string "Experience";
-  let upper_bound=(get_player_level()*100)in
+  let upper_bound=(30+get_player_level()*30)in
   Graphics.set_color green;
   Graphics.fill_rect 130 20 20 (170*(get_player_expeience())/upper_bound);
   ()
@@ -177,6 +175,11 @@ let draw_inventory ()=
     |_->() else ();
   cplace.fbutton<- fb
 
+
+let down_row_info int string=
+  Graphics.moveto (545-int*10) 175;
+  Graphics.draw_string string
+
 let info_bar()=
   whitebox_draw 540 10 900 190 3;
   Graphics.moveto 545 175;
@@ -212,10 +215,10 @@ let normal_four_botton c=
   c.fbutton<-(first::second::third::[fourth])
 
 let combat_four_botton c =
-  let fskill=(List.nth_opt (cstate.skill) 0) in
-  let sskill=(List.nth_opt (cstate.skill) 1) in
-  let tskill=(List.nth_opt (cstate.skill) 2) in
-  let forskill=(List.nth_opt (cstate.skill) 3) in
+  let fskill=(List.nth_opt (cplace.skills) 0) in
+  let sskill=(List.nth_opt (cplace.skills) 1) in
+  let tskill=(List.nth_opt (cplace.skills) 2) in
+  let forskill=(List.nth_opt (cplace.skills) 3) in
   if Option.is_some forskill then
     (let first=create_button (Option.get fskill)
          lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
@@ -341,7 +344,7 @@ let skill_helper name=
   Graphics.clear_graph(); 
   if enemy_mon cplace.enemy_to_combat then
     (skill_info_helper();
-     Thread.delay 0.6;
+     Thread.delay 0.3;
      let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
      enemy_skill the_enemy;
      draw_a_image Color_convert.player_in_combat 10 205;
@@ -353,13 +356,18 @@ let item_check s i=
     let food=Array.to_list (Engine.game_state).food_inventory in 
     match List.nth food i with 
     |Engine.Eaten ->()
-    |Engine.Food f->cplace.item_selected <-Some ("food",i,Foods.Food.get_name f)
+    |Engine.Food f->
+      cplace.item_selected <-Some ("food",i,Foods.Food.get_name f);
+      cplace.message_display<-Foods.Food.get_description f;
+      cplace.irefresh<-true
   else
     let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
     match List.nth weapon i with 
     |Engine.Empty->()
     |Engine.Weapon w->
-      cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w)
+      cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w);
+      cplace.message_display<-Weapons.Weapon.get_description w;
+      cplace.irefresh<-true
 
 let draw_inventory_item_helper name=
   match name with 
@@ -509,11 +517,14 @@ let clear_screen ()=
 let skill_mon ()=
   match Engine.game_state.player with
   |Player s->
-    cstate.skill<-List.map (fun x->Player.skill_name x) 
+    cplace.skills<-List.map (fun x->Player.skill_name x) 
         (Player.available_skills_list (Engine.get_player Engine.game_state))
   |Died->()
 
-
+let level_mon int=
+  if int<>cplace.player_level then
+    (dialog ("you defead the enemy and you are upgraded to level"^ (string_of_int int)^".") Color_convert.cute_cat
+       "cute cat";cplace.player_level<-int; let _=Graphics.wait_next_event[Button_down]in ()) else ()
 
 let rec combat id=
   skill_info_helper();
@@ -522,7 +533,12 @@ let rec combat id=
   Graphics.clear_graph();
   if enemy_mon id then
     (combat id) else 
+    let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
+    let name=Enemy.get_name the_enemy in
+    let expeience=Enemy.get_experience the_enemy in
     (cplace.enemy_to_combat<-"none";
+     cplace.message_display<-
+       ("you have defeated "^name^" and got "^(string_of_int expeience)^" points of expeience.");
      Engine.delete_one_enemy_from_state Engine.game_state)
 
 let combat_mon()=if cplace.enemy_to_combat<>"none" then 
@@ -530,6 +546,7 @@ let combat_mon()=if cplace.enemy_to_combat<>"none" then
               |>Enemy.get_name) in
     (Graphics.clear_graph();
      cplace.message_display<-"You entered combat with "^name;
+     cplace.player_level<-get_player_level ();
      combat cplace.enemy_to_combat )
   else ()
 
@@ -570,6 +587,7 @@ let rec main () =
        tsensor cplace;
        enemy_loc_mon();
        combat_mon();
+       level_mon (get_player_level());
        clear_screen();
        main ()) with Graphics.Graphic_failure s->()
 

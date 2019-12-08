@@ -13,10 +13,13 @@ module type F = sig
     name:string -> 
     id:int -> 
     strength:int -> 
+    gainables: Player.skill list ->
     food
 
   (**[get_name f] is the name of the food [f]  *)
   val get_name : food -> string
+
+  val get_description : food -> string
 
   (**[get_strength f] is the strength of the food [f]  *)
   val get_strength : food -> int
@@ -28,6 +31,8 @@ module type F = sig
   val get_loc : food -> int * int
 
   val set_loc : food -> int * int -> unit
+
+  val get_gainables: food -> Player.skill list
 end
 
 
@@ -36,22 +41,26 @@ module Food : F = struct
     name : string;
     description : string;
     id : int;
-    mutable location : int * int;
     health : int;
     strength : int;
+    gainables: Player.skill list;
+    mutable location : int * int;
   }
 
   let constructor 
-      ~row ~col ~health ~description ~name ~id ~strength = {
+      ~row ~col ~health ~description ~name ~id ~strength ~gainables = {
     name = name;
     id = id;
     strength = strength;
     health = health;
     location = (col,row);
     description = description;
+    gainables: Player.skill list;
   }
 
   let get_name f = f.name
+
+  let get_description f = f.description
 
   let get_strength f = f.strength
 
@@ -60,5 +69,7 @@ module Food : F = struct
   let get_loc f = f.location
 
   let set_loc f loc = f.location <- loc
+
+  let get_gainables f = f.gainables
 end
 

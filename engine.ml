@@ -307,11 +307,11 @@ let food_array_builder cols rows jsons: food_item array =
       let health = j |> member "health" |> to_int in
       let strength = j |> member "strength" |> to_int in
       let name = j |> member "name" |> to_string in
-      let description = j |> member "description" |> to_string 
+      let description = j |> member "description" |> to_string in
       let gainables = j |> member "gainables" |> to_list 
-                        |> gainable_skill_constructor in
+                      |> gainable_skill_constructor in
       Food (Foods.Food.constructor ~col ~row ~health 
-            ~description ~name ~id ~strength ~gainables))
+              ~description ~name ~id ~strength ~gainables))
     ((unique_location_list cols rows (List.length jsons))) 
   |> Array.of_list
 
@@ -354,7 +354,7 @@ let weapon_array_builder cols rows jsons: weapon_item array =
       let description = j |> member "description" |> to_string in
       let strength = j |> member "strength"|> to_int in
       let gainables = j |> member "gainables" |> to_list 
-                        |> gainable_skill_constructor in
+                      |> gainable_skill_constructor in
       Weapon (Weapons.Weapon.constructor ~strength ~col ~row 
                 ~description ~name ~id ~gainables))
     (unique_location_list cols rows (List.length jsons))
