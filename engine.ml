@@ -186,7 +186,7 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row ~number =
   let loc_list = loc_array |> Array.to_list in
-  if (List.length loc_list) + number > (col * row) - 4 then
+  if  (List.length loc_list) + length > (col * row) - 4 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row number 
   else
@@ -315,7 +315,7 @@ let main_engine_enemy
     ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
   Array.map2
     (fun number (col, row) -> 
-      main_engine_ememy_for_single_map ~loc_array ~number ~col ~row)
+       main_engine_ememy_for_single_map loc_array number col row)
     final_number_array map_col_row_array
 
 

@@ -85,12 +85,22 @@ let dialog text npc name=
   if String.length text<120 then
     (Graphics.moveto 200 260;
      Graphics.draw_string text)
+  else if String.length text<240 then
+    (let text1=String.sub text 0 120 in 
+     let text2=String.sub text 120 (String.length text-120) in 
+     Graphics.moveto 200 260;
+     Graphics.draw_string text1;
+     Graphics.moveto 200 245;
+     Graphics.draw_string text2)
   else (let text1=String.sub text 0 120 in 
-        let text2=String.sub text 120 (String.length text-120) in 
+        let text2=String.sub text 120 120 in 
+        let text3=String.sub text 240  (String.length text-240) in
         Graphics.moveto 200 260;
         Graphics.draw_string text1;
-        Graphics.moveto 200 248;
-        Graphics.draw_string text2);
+        Graphics.moveto 200 245;
+        Graphics.draw_string text2;
+        Graphics.moveto 200 230;
+        Graphics.draw_string text3);
   Graphics.moveto 920 120;
   Graphics.draw_string "Click to continue #";
   cplace.dialog<-Dialog_sense name
@@ -202,7 +212,7 @@ let down_row_info int string=
 
 let info_bar()=
   whitebox_draw 540 10 900 190 3;
-  Graphics.moveto 545 175;
+  Graphics.moveto 545 120;
   Graphics.draw_string cplace.message_display
 
 
@@ -357,7 +367,6 @@ let skill_info_helper ()=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
-
   info_bar();
   combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in

@@ -92,8 +92,8 @@ let count =
    [s] mod 0.1. 0.1 <= [s] <= 1.0*)
 let probabilty s = 
   (* 0 <= x <= 10 *)
-  let x = Int.to_float (Random.int 11) in
-  x < s *. 10.0
+  let x = Int.to_float (Random.int 10) in
+  x >= s *. 10.0
 
 (**[random_choice lst] is a random object chosen from list [lst]
    Requires:
@@ -166,13 +166,16 @@ let sorted_list loc_list col row length =
     if count = 0 then finished
     else let r_loc = (col', row') in
       let check = List.mem r_loc loc_list in
-      if check && col' = 1 then
+      if check && col' = 1 && row' > 1 then
         inner_looper col (row' - 1) finished count
-      else if check then (* col' != 1 *)
+      else if check && col' <> 1 then (* col' != 1 *)
         inner_looper (col'-1) (row') finished count
-      else if col' = 1 
+      else if col' = 1 && row' > 1
       then 
         inner_looper col (row'-1) ((col', row')::finished) (count - 1)
+      else if col'= 1 && row' = 1 && count = 1
+      then 
+        failwith "impossible length"
       else 
         inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
   inner_looper col row [] length
@@ -183,12 +186,12 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row length =
   let loc_list = loc_array |> Array.to_list in
-  if col < length / 2 || row < length / 2 then
+  if  (List.length loc_list) + length > (col * row) - 4 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row length 
   else
     let rec constructor finished count =
-      if count = 0 then finished
+      if count = 0 then finished |> List.rev
       else let r_loc = (1 + Random.int col, 1 + Random.int row) in
         if List.mem r_loc finished || List.mem r_loc loc_list
         then constructor finished count (* try again *)
@@ -213,7 +216,7 @@ let filter_one_element_out_from_array array pos =
     then store.(0) <- array.(i)::store.(0)
     else ()
   done;
-  store.(0) |> Array.of_list
+  store.(0) |> List.rev |> Array.of_list
 
 
 (*                        models builder                         *)
@@ -312,7 +315,7 @@ let main_engine_enemy
     ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
   Array.map2
     (fun number (col, row) -> 
-       main_engine_ememy_for_single_map loc_array col row number)
+       main_engine_ememy_for_single_map loc_array number col row)
     final_number_array map_col_row_array
 
 
@@ -503,7 +506,7 @@ let main_map_size_array map_array : int array =
 (**[main_map_col_row maps] is the list of size dimensions of all the maps in 
    [maps] *)
 let main_map_col_row map_array = 
-  Array.map (fun map -> size map) map_array
+  Array.map (fun map -> map.size) map_array
 
 (*                       initiate the game                           *)
 
@@ -512,7 +515,7 @@ let main_map_col_row map_array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 15  in
+  let number = 10  in
   let map_size_array = main_map_size_array map_array in
   let map_col_row_array = main_map_col_row map_array in
   let final_number_array = 
@@ -941,8 +944,9 @@ let transfer_player_to_main_map s =
   then 
     let map_name = get_current_map_name s in
     let map_pos = get_map_index_by_name s map_name in
+    let col',row' = s.player_old_loc in
     s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) s.player_old_loc;
+    Player.switch_loc (get_player s) (col'+1, row'+1);
     s.all_enemies_in_current_map <- s.all_enemies.(0);
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
@@ -1085,6 +1089,6 @@ let system_instr s =
 (**[check_wins s] returns whether the player at state [s] is in the 
    winning state.  *)
 let check_wins s =  
-  Array.for_all (fun single_enemy_map ->
-      Array.for_all (fun enemy -> enemy = Deleted) single_enemy_map) 
-    s.all_enemies
+  List.length s.all_maps = 1 
+  || (Array.for_all (fun e -> e = Deleted) s.all_enemies_in_current_map 
+      && s.current_map_in_all_maps = 0) 
