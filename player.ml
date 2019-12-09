@@ -240,7 +240,7 @@ module Player : P = struct
     if p.experience >= experience_qual 
     then
       (p.level <- p.level + 1;
-       increase_health p 20;
+       increase_health p 35;
        p.experience <- p.experience mod experience_qual;
        increase_strength p 20)
     else 

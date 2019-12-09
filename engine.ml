@@ -512,7 +512,7 @@ let main_map_col_row map_array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 15  in
+  let number = 1  in
   let map_size_array = main_map_size_array map_array in
   let map_col_row_array = main_map_col_row map_array in
   let final_number_array = 
