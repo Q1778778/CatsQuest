@@ -678,13 +678,11 @@ let delete_one_enemy_from_state s =
    inventory. 
    Raises: [SuccessExit] if the food from the player's location was 
    successfully eaten. *)
-let take_one_food s =
+let take_one_food s index safe =
   let update_food_inventory f t =
     for j = 0 to (Array.length s.food_inventory) - 1 do
       match s.food_inventory.(j) with
-      | Eaten -> 
-        s.food_inventory.(j) <- Food f; 
-        raise SuccessExit
+      | Eaten -> s.food_inventory.(j) <- Food f; raise SuccessExit
       | _ -> ()
     done in
   let player = s |> get_player in
@@ -693,6 +691,7 @@ let take_one_food s =
     match s.all_foods_in_current_map.(i) with
     | Food f when Food.get_loc f = loc ->
       s.all_foods_in_current_map.(i) <- Eaten;
+      index := i; safe := (Food f);
       update_food_inventory f player
     | _ -> ()
   done
@@ -701,8 +700,11 @@ let take_one_food s =
    location at state [s],  if any, to the first empty slot in player's food 
    inventory. *)
 let take_one_food_in_current_location s = 
+  let index = ref 0 in
+  let safe = ref (s.all_foods_in_current_map.(0)) in
   try
-    take_one_food s
+    take_one_food s index safe;
+    s.all_foods_in_current_map.(!index) <- (!safe);
   with SuccessExit ->
     ()
 
@@ -763,33 +765,37 @@ let eat_one_food_in_inventory s pos =
    change).
    Raises: [SuccessExit] if the weapon is successfully equipped in the 
    player's inventory.  *)
-let equip_one_weapon s =
+let equip_one_weapon s index safe =
   let update_weapon_inventory w t =
-    for j = 0 to (Array.length s.weapon_inventory) - 1 do
-      match s.weapon_inventory.(j) with
-      | Empty -> 
-        s.weapon_inventory.(j) <- Weapon w;
-        Player.increase_strength t (Weapon.get_strength w);
-        Player.update_skill t (Weapon.get_gainables w);
-        raise SuccessExit
-      | _ -> ()
-    done in
+    (for j = 0 to (Array.length s.weapon_inventory) - 1 do
+       match s.weapon_inventory.(j) with
+       | Empty -> 
+         s.weapon_inventory.(j) <- Weapon w;
+         Player.increase_strength t (Weapon.get_strength w);
+         Player.update_skill t (Weapon.get_gainables w);
+         raise SuccessExit
+       | _ -> ()
+     done) in
   let player = s |> get_player in
   let loc = player |> Player.location in
-  for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
-    match s.all_weapons_in_current_map.(i) with
-    | Weapon w when Weapon.get_loc w = loc ->
-      s.all_weapons_in_current_map.(i) <- Empty;
-      update_weapon_inventory w player
-    | _ -> ()
-  done
+  (for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
+     match s.all_weapons_in_current_map.(i) with
+     | Weapon w when Weapon.get_loc w = loc ->
+       index := i; safe := (Weapon w);
+       s.all_weapons_in_current_map.(i) <- Empty;
+       update_weapon_inventory w player;
+     | _ -> ()
+   done)
 
 (**[equip_weapon_in_current_loc s] will update the weapon inventory of 
    game state [s] if there is any empty slot and weapon in player's current 
    location will be equipped in that slot.  *)
 let equip_weapon_in_current_loc s = 
+  let index = ref 0 in
+  let safe = ref (s.all_weapons_in_current_map.(0)) in
   try
-    equip_one_weapon s
+    equip_one_weapon s index safe;
+    s.all_weapons_in_current_map.(!index) <- !safe
   with SuccessExit ->
     ()
 
@@ -926,25 +932,20 @@ let transfer_player_to_branch_map s =
 (**[check_branch_map_status s] returns whether the player at state [s] has 
    finished his current branched map. *)
 let check_branch_map_status s = 
-  get_current_map_name s <> "main" 
-  && Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
+  Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
 (**[transfer_player_to_main_map s] transfers the player at state [s] to the 
    main map and changes to the corresponding configurations in the map. *)
 let transfer_player_to_main_map s =
-  if check_branch_map_status s
-  then 
-    let map_name = get_current_map_name s in
-    let map_pos = get_map_index_by_name s map_name in
-    s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) s.player_old_loc;
-    s.all_enemies_in_current_map <- s.all_enemies.(0);
-    s.all_foods_in_current_map <- s.all_foods.(0);
-    s.all_weapons_in_current_map <- s.all_weapons.(0);
-    s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos map_name;
-  else
-    ()
+  let map_name = get_current_map_name s in
+  let map_pos = get_map_index_by_name s map_name in
+  s.current_map <- List.hd s.all_maps;
+  Player.switch_loc (get_player s) s.player_old_loc;
+  s.all_enemies_in_current_map <- s.all_enemies.(0);
+  s.all_foods_in_current_map <- s.all_foods.(0);
+  s.all_weapons_in_current_map <- s.all_weapons.(0);
+  s.current_map_in_all_maps <- 0;
+  delete_map_pos s map_pos map_name
 
 (**[renew_one_player s] renews the main engine player at state [s]. *)
 let renew_one_player s =

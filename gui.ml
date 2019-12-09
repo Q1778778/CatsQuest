@@ -2,6 +2,7 @@ open Graphics
 open Enemy
 open Player
 
+
 type stage=
   |Combat
   |Normal
@@ -11,7 +12,6 @@ type box=
   | Action_circle of (int*int*int)*string
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
-  | Enemy of (string*int*int*int)
   | Bnone
 
 type trigger=
@@ -308,8 +308,10 @@ let rec get_one_enemy id lst=
 let skill_damage name=
   let s= Engine.get_player(Engine.game_state) in
   let skill= name|> Player.get_skill_by_skill_name s in 
-  Player.choose_skill skill;
-  Player.skill_strength skill
+  let skill_bool=List.mem skill (Player.available_skills_list s) in 
+  if skill_bool then 
+    (Player.choose_skill skill;
+     Player.skill_strength skill) else 0
 
 let enemy_skill_image name=
   match name with 
@@ -469,10 +471,18 @@ let rec parse  c=
 and  order_helper c t=
   (if c="dialog" then parse (Guide t)  else if 
      c="weapon" then (match ground_probe () with
-      |"Weapon"-> Engine.equip_weapon_in_current_loc Engine.game_state;
-        cplace.message_display<-"you have picked up a weapon";cplace.irefresh<-true
-      |"Food"->Engine.take_one_food_in_current_location Engine.game_state;
-        cplace.message_display<-"you have picked up a food";cplace.irefresh<-true
+      |"Weapon"-> let current_inven=Engine.game_state.weapon_inventory in 
+        Engine.equip_weapon_in_current_loc Engine.game_state;
+        (if Engine.game_state.weapon_inventory<>current_inven then 
+           cplace.message_display<-"you have picked up a weapon" else 
+           cplace.message_display<-"you inventory is full");
+        cplace.irefresh<-true
+      |"Food"->let current_inven=Engine.game_state.food_inventory in 
+        Engine.take_one_food_in_current_location Engine.game_state;
+        cplace.message_display<-"you have picked up a food";
+        (if Engine.game_state.food_inventory<>current_inven then 
+           cplace.message_display<-"you have picked up a weapon" else 
+           cplace.message_display<-"you inventory is full");
       |_->()) else if
      c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
                    match t with 
@@ -507,7 +517,6 @@ let tsensor(c:clist)=
        |Dialog_sense s->parse  (Next_con s)
        |Bnone->() 
        |Action_box _->()
-       |Enemy _->()
        |Action_circle _->()in
      let _=sense (c.dialog) sta in ())
 
