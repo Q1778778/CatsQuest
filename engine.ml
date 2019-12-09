@@ -186,7 +186,7 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row length =
   let loc_list = loc_array |> Array.to_list in
-  if col < length / 2 || row < length / 2
+  if col < length / 2 - 1 || row < length / 2 - 1
     || (List.length loc_list) + length > (col * row) - 4 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row length 
@@ -1090,5 +1090,6 @@ let system_instr s =
 (**[check_wins s] returns whether the player at state [s] is in the 
    winning state.  *)
 let check_wins s =  
-  List.length s.all_maps = 1 ||
-  Array.for_all (fun e -> e = Deleted) s.all_enemies_in_current_map.(0)
+  List.length s.all_maps = 1 
+  || (Array.for_all (fun e -> e = Deleted) s.all_enemies_in_current_map 
+      && s.current_map_in_all_maps = 0) 
