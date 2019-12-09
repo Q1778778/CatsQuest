@@ -46,6 +46,24 @@ let delete_all_enemies_in_current_map s =
     s.all_enemies_in_current_map.(i) <- Deleted
   done
 
+(**[array_loc e arr] is the index of [e] in array [arr]
+
+Raises:
+  Failure if [e] is not in [arr]*)
+let array_loc element arr = 
+  let inner_searcher store = 
+    for i = 0 to Array.length arr' - 1 do
+      if arr.(i) = element 
+      then store := i; raise SuccessExit 
+      else ()
+    done in
+  try
+    store = ref 0;
+    inner_searcher ();
+    raise (Failure "not in this array")
+  with SuccessExit ->
+    !store
+
 (**[switch_to_different_map s pos] switches to the map indexed at 
    [pos]. *)
 let switch_to_different_map s pos = 
@@ -293,6 +311,19 @@ let new_e_sec_level = new_e_sec_e |> Enemy.get_level
 let new_e_sec_health = new_e_sec_e |> Enemy.get_hp
 let new_e_sec_pos = new_e_sec_e |> Enemy.get_pos
 
+let branch_1_loc = new_e |> list_of_entrance_loc_to_branch_map |> List.hd
+let _ = Player.switch_loc (get_player new_e) branch_1_loc
+
+let new_e_branch_1 = Engine.transfer_player_to_branch_map new_e
+
+let new_e_index = new_e.current_map_in_all_maps (* != 0 *)
+let new_e_name = new_e.current_map.name 
+let new_e_food = array_loc new_e.all_foods_in_current_map new_e.all_foods
+let new_e_enemy = array_loc new_e.all_enemies_in_current_map 
+  new_e.all_enemies
+let new_e_weapon = array_loc new_e.all_weapons_in_current_map
+  new_e.all_weapons
+
 
 
 (**[make_test n i o] constructs a test [n] to check whether [i] is equal 
@@ -402,7 +433,20 @@ let engine_state_tests = [
   make_test "enemy's pos shouldn't be changed after strengthening"
   new_e_fir_pos new_e_sec_pos;
 
+  make_test "sucessfully transfer to branch map"
+  (new_e_index <> 0) true;
 
+    make_test "sucessfully transfer to branch map"
+  (new_e_name <> "main") true;
+
+    make_test "sucessfully transfer to branch map"
+  (new_e_weapon <> 0) true;
+
+      make_test "sucessfully transfer to branch map"
+  (new_e_food) new_e_weapon;
+
+      make_test "sucessfully transfer to branch map"
+ new_e_weapon new_e_enemy;
 ]
 
 (** All the test suites  *)
