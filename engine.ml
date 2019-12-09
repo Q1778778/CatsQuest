@@ -199,8 +199,8 @@ let unique_location_list ~loc_array ~col ~row length =
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"] *)
 let parse_dims s = 
-  let rows = List.nth (String.split_on_char ',' s) 0 in 
-  let cols = List.nth (String.split_on_char ',' s) 1 in 
+  let rows = List.nth (String.split_on_char ',' s) 1 in 
+  let cols = List.nth (String.split_on_char ',' s) 0 in 
   cols |> int_of_string, rows |> int_of_string
 
 (**[filter_one_element_out_from_array arr pos] returns the array [arr] 
@@ -598,11 +598,11 @@ let check_enemy_in_current_loc s =
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map
 
-(**[find_one_map_by_name lst name] is the map with its name as [name] from
-   a list of map [lst]
+(**[find_one_map_by_name s name] is the map with its name as [name] from
+   all maps in [s]
    Requires: map with name [map_name] must be inside [lst] *)
-let find_one_map_by_name map_array map_name =
-  List.find (fun map -> map.name = map_name) (map_array)
+let find_one_map_by_name s map_name =
+  List.find (fun map -> map.name = map_name) s.all_maps
 
 (**[get_current_map_name s] is the name of the current map in game state [s] *)
 let get_current_map_name s = s.current_map.name
@@ -794,7 +794,7 @@ let equip_weapon_in_current_loc s =
   let index = ref 0 in
   let safe = ref (s.all_weapons_in_current_map.(0)) in
   try
-    equip_one_weapon s store index safe;
+    equip_one_weapon s index safe;
     s.all_weapons_in_current_map.(!index) <- !safe
   with SuccessExit ->
     ()
@@ -918,7 +918,7 @@ let transfer_player_to_branch_map s =
   let status, name =  check_current_linked_map s in
   if status = false then ()
   else 
-    let map = find_one_map_by_name s.all_maps name in
+    let map = find_one_map_by_name s name in
     let map_index = get_map_index_by_name s map.name in
     s.player_old_loc <- s |> get_player |> Player.location;
     s.current_map <- map;
