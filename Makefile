@@ -1,3 +1,6 @@
+OCAMLBUILD=ocamlbuild -use-ocamlfind
+PKGS=oUnit,graphics,threads,Str,yojson,ANSITerminal,threads.posix
+MLS=$(MODULES:=.ml)
 build:
 	ocamlbuild -use-ocamlfind color_convert.byte player.byte enemy.byte foods.byte weapons.byte maps.byte  engine.byte map_builder.byte -tag thread gui.byte 
 
@@ -9,3 +12,9 @@ play:
 
 test: 
 	ocamlbuild -use-ocamlfind -tag 'debug' test.byte && ./test.byte
+
+docs: build
+	mkdir -p doc
+	ocamlfind ocamldoc -I _build -package $(PKGS) \
+		-html  -d doc \
+		-m A engine.ml player.ml
