@@ -218,7 +218,7 @@ module Player : P = struct
     else t.health <- t.health + hp
 
   let increase_strength t st =
-    let incr = st / (List.length t.skills) in
+    let incr = st / 4 in
     List.iter (fun s -> (s.strength <- s.strength + incr);) t.skills
 
   let reduce_health p h = 
