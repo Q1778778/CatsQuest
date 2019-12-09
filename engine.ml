@@ -92,8 +92,8 @@ let count =
    [s] mod 0.1. 0.1 <= [s] <= 1.0*)
 let probabilty s = 
   (* 0 <= x <= 10 *)
-  let x = Int.to_float (Random.int 11) in
-  x < s *. 10.0
+  let x = Int.to_float (Random.int 10) in
+  x >= s *. 10.0
 
 (**[random_choice lst] is a random object chosen from list [lst]
    Requires:
@@ -166,13 +166,16 @@ let sorted_list loc_list col row length =
     if count = 0 then finished
     else let r_loc = (col', row') in
       let check = List.mem r_loc loc_list in
-      if check && col' = 1 then
+      if check && col' = 1 && row' > 1 then
         inner_looper col (row' - 1) finished count
-      else if check then (* col' != 1 *)
+      else if check && col' <> 1 then (* col' != 1 *)
         inner_looper (col'-1) (row') finished count
-      else if col' = 1 
+      else if col' = 1 && row' > 1
       then 
         inner_looper col (row'-1) ((col', row')::finished) (count - 1)
+      else if col'= 1 && row' = 1 && count = 1
+      then 
+        failwith "impossible length"
       else 
         inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
   inner_looper col row [] length
@@ -183,12 +186,13 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row length =
   let loc_list = loc_array |> Array.to_list in
-  if col < length / 2 || row < length / 2 then
+  if col < length / 2 || row < length / 2
+    || (List.length loc_list) + length > (col * row) - 4 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row length 
   else
     let rec constructor finished count =
-      if count = 0 then finished
+      if count = 0 then finished |> List.rev
       else let r_loc = (1 + Random.int col, 1 + Random.int row) in
         if List.mem r_loc finished || List.mem r_loc loc_list
         then constructor finished count (* try again *)
@@ -503,7 +507,7 @@ let main_map_size_array map_array : int array =
 (**[main_map_col_row maps] is the list of size dimensions of all the maps in 
    [maps] *)
 let main_map_col_row map_array = 
-  Array.map (fun map -> size map) map_array
+  Array.map (fun map -> map.size) map_array
 
 (*                       initiate the game                           *)
 
@@ -512,7 +516,7 @@ let main_map_col_row map_array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 1  in
+  let number = 10  in
   let map_size_array = main_map_size_array map_array in
   let map_col_row_array = main_map_col_row map_array in
   let final_number_array = 
