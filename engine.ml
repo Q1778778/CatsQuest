@@ -93,7 +93,7 @@ let count =
 let probabilty s = 
   (* 0 <= x <= 10 *)
   let x = Int.to_float (Random.int 10) in
-  x >= s *. 10.0
+  x <= s *. 10.0
 
 (**[random_choice lst] is a random object chosen from list [lst]
    Requires:
@@ -121,7 +121,7 @@ let choose_skill_random s =
       else inner_chooser d finished in
   let skills = s |> 
                Enemy.get_all_skills_name_prob_and_strength_to_assoc_list in
-  let first_name, _, first_strength = List.hd skills in
+  let first_name, _ , first_strength = List.hd skills in
   inner_chooser skills (first_name,first_strength)
 
 (**[contains s s1] is [true] if [s] contains substring [s1], [false] 
@@ -660,7 +660,14 @@ let move_player_down s =
   | Died -> ()
   | Player t -> Player.move_down t s.current_map
 
-
+let strengthen_whole_map s =
+  let strengthen_one_enemy_array e_arr = 
+    for i = 0 to Array.length e_arr - 1 do
+      match e_arr.(i) with
+      | Deleted -> ()
+      | Enemy e -> Enemy.strengthen e;
+    done in
+  Array.iter (fun arr -> strengthen_one_enemy_array arr;) s.all_enemies
 
 (*                       change game state                        *)
 
