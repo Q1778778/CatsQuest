@@ -85,12 +85,22 @@ let dialog text npc name=
   if String.length text<120 then
     (Graphics.moveto 200 260;
      Graphics.draw_string text)
+  else if String.length text<240 then
+    (let text1=String.sub text 0 120 in 
+     let text2=String.sub text 120 (String.length text-120) in 
+     Graphics.moveto 200 260;
+     Graphics.draw_string text1;
+     Graphics.moveto 200 248;
+     Graphics.draw_string text2)
   else (let text1=String.sub text 0 120 in 
-        let text2=String.sub text 120 (String.length text-120) in 
+        let text2=String.sub text 120 120 in 
+        let text3=String.sub text 240  (String.length text-240) in
         Graphics.moveto 200 260;
         Graphics.draw_string text1;
         Graphics.moveto 200 248;
-        Graphics.draw_string text2);
+        Graphics.draw_string text2;
+        Graphics.moveto 200 236;
+        Graphics.draw_string text3);
   Graphics.moveto 920 120;
   Graphics.draw_string "Click to continue #";
   cplace.dialog<-Dialog_sense name
