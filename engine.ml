@@ -213,7 +213,7 @@ let filter_one_element_out_from_array array pos =
     then store.(0) <- array.(i)::store.(0)
     else ()
   done;
-  store.(0) |> Array.of_list
+  store.(0) |> List.rev |> Array.of_list
 
 
 (*                        models builder                         *)
@@ -941,8 +941,9 @@ let transfer_player_to_main_map s =
   then 
     let map_name = get_current_map_name s in
     let map_pos = get_map_index_by_name s map_name in
+    let col',row' = s.player_old_loc in
     s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) s.player_old_loc;
+    Player.switch_loc (get_player s) (col'+1, row'+1);
     s.all_enemies_in_current_map <- s.all_enemies.(0);
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
