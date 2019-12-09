@@ -36,5 +36,5 @@ ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -packag
 # Target: gui.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, thread, traverse }
 ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o gui.cmo gui.ml # cached
 # Target: gui.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:gui.byte, link, ocaml, program, quiet, thread, traverse }
-ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics color_convert.cmo maps.cmo player.cmo enemy.cmo foods.cmo weapons.cmo engine.cmo map_builder.cmo gui.cmo -o gui.byte
+ocamlfind ocamlc -linkpkg -thread -package oUnit -package yojson -package ANSITerminal -package graphics color_convert.cmo maps.cmo player.cmo enemy.cmo foods.cmo weapons.cmo engine.cmo map_builder.cmo gui.cmo -o gui.byte # cached
 # Compilation successful.

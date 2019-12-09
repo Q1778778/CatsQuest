@@ -84,7 +84,7 @@ module type P = sig
   val update_skill: t -> skill list -> unit
 
   (** [level_up_expereince p] is 
-    the experience required to level up player [p]*)
+      the experience required to level up player [p]*)
   val level_up_expereince: t -> int
 
   (**[advance_level p] advances player [p] to the next level and updates
@@ -161,7 +161,7 @@ module Player : P = struct
 
   let constructor 
       ?strength:(strength=10) ?health:(health=100) 
-    ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
+      ?level:(level=1) ?experience:(experience=0) ?loc: (loc = (1,1)) () = 
     {
       location = loc;
       health = health;

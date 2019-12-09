@@ -215,41 +215,31 @@ let normal_four_botton c=
   c.fbutton<-(first::second::third::[fourth])
 
 let combat_four_botton int =
-  let fskill=(List.nth_opt (cplace.skills) 0) in
-  let sskill=(List.nth_opt (cplace.skills) 1) in
-  let tskill=(List.nth_opt (cplace.skills) 2) in
-  let forskill=(List.nth_opt (cplace.skills) 3) in
+  let fskill=(List.nth (cplace.skills) 0) in
   if int=4 then
-    (let forth=create_button (Option.get forskill) 
-         lblue black 1060 10 130 85 ("skill",(Option.get forskill))in
+    (let forskill=(List.nth (cplace.skills) 3) in
+     let forth=create_button  forskill 
+         lblue black 1060 10 130 85 ("skill", forskill)in
      cplace.fbutton<-([forth])) else 
     (let _=create_button "None" 
          grey black 1060 10 130 85 ("skill","None") in ());
   if int>=3 then 
-    (let third=create_button (Option.get tskill) 
-         lblue black 920 10 130 85("skill",(Option.get tskill)) in
+    (let tskill=(List.nth (cplace.skills) 2) in
+     let third=create_button tskill
+         lblue black 920 10 130 85("skill", tskill) in
      cplace.fbutton<-(third::cplace.fbutton)) else
     (let _=create_button "None" 
          grey black 920 10 130 85 ("skill","None") in ());
-  if int>=2 then
-    (let first=create_button (Option.get fskill)
-         lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let second=create_button (Option.get sskill)
-         lblue black 1060 105 130 85 ("skill",(Option.get fskill))in
-     let _=create_button "None"
-         grey black 920 10 130 85("skill","None") in
-     let _=create_button "None" 
-         grey black 1060 10 130 85 ("skill","None")in
-     cplace.fbutton<-(first::[second])) else
-    (let first=create_button (Option.get fskill)
-         lblue black 920 105 130 85 ("skill",(Option.get fskill)) in
-     let _=create_button "None"
-         grey black 1060 105 130 85 ("skill","None")in
-     let _=create_button "None"
-         grey black 920 10 130 85("skill","None") in
-     let _=create_button "None" 
-         grey black 1060 10 130 85 ("skill","None")in
-     cplace.fbutton<-([first]))
+  if int>=2 then (
+    let sskill=(List.nth (cplace.skills) 1) in
+    let second=create_button sskill
+        lblue black 1060 105 130 85 ("skill",sskill)in
+    cplace.fbutton<-(second::cplace.fbutton)) else
+    (let _=create_button "None"
+         grey black 1060 105 130 85 ("skill","None") in ());
+  (let first=create_button fskill
+       lblue black 920 105 130 85 ("skill",fskill) in
+   cplace.fbutton<-(first::cplace.fbutton))
 
 let combat_botton_helper ()=
   let lst=cplace.skills in 
@@ -278,8 +268,9 @@ let rec get_one_enemy id lst=
 
 let skill_damage name=
   let s= Engine.get_player(Engine.game_state) in
-  name|> Player.get_skill_by_skill_name s
-  |> Player.extract_skill_strength_single_skill
+  let skill= name|> Player.get_skill_by_skill_name s in 
+  Player.choose_skill skill;
+  Player.skill_strength skill
 
 let enemy_skill_image name=
   match name with 
@@ -323,9 +314,9 @@ let skill_info_helper ()=
   info_bar();
   combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
-  let image_of_e=find_enemy_image_data (Enemy.get_name the_enemy)
+  let image_of_enemy=find_enemy_image_data (Enemy.get_name the_enemy)
       Color_convert.enemy_data in 
-  draw_a_image image_of_e 900 550;
+  draw_a_image image_of_enemy 900 550;
   enemy_health_bar the_enemy;
   draw_a_image Color_convert.player_in_combat 10 205
 
@@ -333,9 +324,10 @@ let skill_helper name=
   Graphics.clear_graph(); 
   Graphics.moveto 850 500;
   Graphics.set_color red;
-  Graphics.draw_string ("-"^string_of_int(skill_damage name));
+  let skill_damage_int=skill_damage name in 
+  Graphics.draw_string ("-"^string_of_int skill_damage_int);
   Enemy.reduce_hp (get_one_enemy cplace.enemy_to_combat (enemy_list ()))
-    (skill_damage name);
+    skill_damage_int;
   skill_info_helper();
   skill_image name;
   Thread.delay 1.5;
@@ -493,7 +485,10 @@ let rec fensor (c:clist) i=
           (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
          =true then (if i=Normal then 
                        parse (Order(c,t)) else 
-                       parse  (Attack t)) else ())
+                       (match c with 
+                        |"skill"->
+                          parse  (Attack t)
+                        |_->())) else ())
     |Action_box ((x,y,w,h),(st,i))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
                                        (y<s.mouse_y)&&((y+h)>s.mouse_y)&&
                                        s.button) then

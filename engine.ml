@@ -963,8 +963,9 @@ let list_of_entrance_loc_to_branch_map s =
 (*            System Instruction             *)
 
 let main_map_instr p = (* player *)
-  let loc = Player.location t in
-  if (List.filter (fun (ent, _) -> ent = loc) s.branched_map_info) <> []
+  let loc = Player.location p in
+  if (List.filter (fun (ent, _) -> ent = loc) game_state.branched_map_info)
+     <> []
   then "You are now exploring a branched map. 
      You will return to the main map once you defeat all enemies in this branch"
        ^ "map. Good Luck!" 
@@ -1011,7 +1012,7 @@ let food_instr_helper s store =
      | Food f -> store := 
          ("Food " 
           ^ (Food.get_name f) ^ "is in location" 
-          ^ (e |> Food.get_loc |> string_of_loc)
+          ^ (f |> Food.get_loc |> string_of_loc)
           ^ "\nMove there and take it!"); 
        raise SuccessExit
      | _ -> ()
@@ -1031,8 +1032,8 @@ let weapon_instr_helper s store =
      match s.all_weapons_in_current_map.(i) with
      | Weapon w -> store := 
          ("Food " 
-          ^ (Weapon.get_name f) ^ "is in location" 
-          ^ (e |> Weapon.get_loc |> string_of_loc)
+          ^ (Weapon.get_name w) ^ "is in location" 
+          ^ (w |> Weapon.get_loc |> string_of_loc)
           ^ "\nMove there and equip it!"); 
        raise SuccessExit
      | _ -> ()
