@@ -241,12 +241,16 @@ let draw_cd ()=
   if max <=0 then () else let length=List.length cplace.skills in 
     if length >=3 then
       let message="Available in "^string_of_int max^" round." in 
-      string_cal message black 1060 0 130 85 else
+      string_cal message black 1060 0 130 85;
+      cplace.fbutton<-((List.hd cplace.fbutton)::(List.nth cplace.fbutton 1)::
+                       [List.nth cplace.fbutton 2])else
       let min_lst=List.fold_left (fun a b->min a b) 5 lst in 
       let message="Available in "^string_of_int min_lst^" round." in 
       if length=1 then
-        string_cal message black 1060 95 130 85 else
-        string_cal message black 9200 0 130 85
+        (string_cal message black 1060 95 130 85;
+         cplace.fbutton<-([List.hd cplace.fbutton])) else
+        string_cal message black 9200 0 130 85;
+      cplace.fbutton<-(List.hd cplace.fbutton)::[List.nth cplace.fbutton 1]
 
 
 let combat_four_botton int =
@@ -277,6 +281,7 @@ let combat_four_botton int =
    cplace.fbutton<-(first::cplace.fbutton))
 
 let combat_botton_helper ()=
+  cplace.fbutton<-[];
   let lst=cplace.skills in 
   combat_four_botton (List.length lst)
 
@@ -321,7 +326,7 @@ let enemy_skill t=
   player_reduce_health damage;
   health_bar();
   enemy_skill_image name;
-  cplace.message_display<-("The enmey used "^name^" and you lose "
+  cplace.message_display<-("The enemy used "^name^" and you lose "
                            ^string_of_int damage^" points of health");
   Graphics.set_color black;
   Graphics.moveto 100 715;
@@ -539,8 +544,7 @@ let rec fensor (c:clist) i=
           parse (Item (st,i))) else ()
     |Action_circle ((x,y,r),t)->()
     |Dialog_sense s->()
-    |Bnone->fensor c i
-    |Enemy _->()in
+    |_->fensor c i in
   if sta.button then (let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
                       ()) else 
     ksensor sta
@@ -574,7 +578,7 @@ let skill_mon ()=
 
 let level_mon int=
   if int<>cplace.player_level then
-    (dialog ("you defead the enemy and you are upgraded to level"^ (string_of_int int)^".") Color_convert.cute_cat
+    (dialog ("you defeated the enemy and you are upgraded to level"^ (string_of_int int)^".") Color_convert.cute_cat
        "cute cat";cplace.player_level<-int; let _=Graphics.wait_next_event[Button_down]in ()) else ()
 
 let rec combat id=
@@ -653,10 +657,10 @@ let rec main () =
 
 let rec beginning () =
   Graphics.moveto 500 650;
-  Graphics.draw_string "Welcome to the game";
+  Graphics.draw_string "Welcome to the unnamed game";
   Graphics.moveto 500 620;
-  Graphics.draw_string "please select difficulty to begin:";
-  cplace.fbutton<-[create_button "easy" 
+  Graphics.draw_string "please click to begin:";
+  cplace.fbutton<-[create_button "Start" 
                      green black 500 550 200 50 ("diff","easy")];
   fensor cplace Normal;
   if cplace.difficulty<>"empty" then 
