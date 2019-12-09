@@ -49,6 +49,7 @@ module type EnemySig = sig
   (**[get_level e] returns the current level that the enemy [e] is on. *)
   val get_level: t -> int
 
+  (**[get_gainable_skill t] is the gainable player skills list *)
   val get_gainable_skill: t -> Player.skill list
 
   (* Dynamic fields.                *)
@@ -66,7 +67,7 @@ module type EnemySig = sig
   val get_pos: t -> int * int  
 
   (**[get_max_hp e] returns the maximum hp of the enemy [e] *)
-  val get_max_hp: t-> int
+  val get_max_hp: t -> int
 
   (**[single_skill_constructor n s p] constructs a new skill with the name 
      [n], strength [s] and skill probability [p]. *)
@@ -91,6 +92,20 @@ module type EnemySig = sig
     skills: skills list ->
     gainables: Player.skill list ->
     t
+
+  (**[increase_strength t s] will increase strength [s] to every skill
+     this enemy [t] has*)
+  val increase_strength: t -> int -> unit
+
+  (**[increase_health t hp] will increase health [hp] this enemy has*)
+  val increase_health : t -> int -> unit
+
+  (**[increase_level t] will increase one level of enemy [t]*)
+  val increase_level : t -> unit
+
+  (**[strengthen t] will increase the health, strength, and level of this
+     enemy*)
+  val strengthen : t -> unit
 end
 
 module Enemy: EnemySig = struct
@@ -98,8 +113,8 @@ module Enemy: EnemySig = struct
 
   type skills = {
     skill_name: string;
-    skill_strength: int;
     skill_probability: float;
+    mutable skill_strength: int;
   }
 
   (*i set these fields as mutable because there is a chance that we will modify
@@ -112,11 +127,11 @@ module Enemy: EnemySig = struct
     max_hp: int;
     gainables: Player.skill list;
     exp: int;
-    level: int;
+    skills: skills list;
     (*dynamic fields *)
+    mutable level: int;
     mutable pos: int * int;
     mutable hp: int;
-    mutable skills: skills list;
   }
 
   (* getters are defined here *)
@@ -137,7 +152,7 @@ module Enemy: EnemySig = struct
   let get_max_hp s=s.max_hp
 
   let get_gainable_skill s = s.gainables
-  
+
   (* setters are defined here *)
   let reduce_hp s d =
     let tmp_hp = s.hp - d in
@@ -179,4 +194,19 @@ module Enemy: EnemySig = struct
       skills = skills;
       gainables = gainables;
     }
+
+  let increase_health t hp = 
+    t.hp <- t.hp + hp
+
+  let increase_strength t s =
+    List.iter 
+      (fun skill -> skill.skill_strength <- skill.skill_strength + s) t.skills
+
+  let increase_level t =
+    t.level <- t.level + 1
+
+  let strengthen t = 
+    increase_health t 10;
+    increase_strength t 5;
+    increase_level t;
 end

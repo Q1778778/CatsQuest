@@ -96,7 +96,7 @@ let get_first_alive_enemy_at_index s pos =
     for i = 0 to Array.length enemies_array - 1 do
       match enemies_array.(i) with
       | Enemy e -> store := Enemy e;
-                raise SuccessExit
+        raise SuccessExit
       | _ -> ()
     done in
   try
@@ -114,7 +114,7 @@ let get_first_available_food_at_index s pos =
     for i = 0 to Array.length food_array - 1 do
       match food_array.(i) with
       | Food f -> 
-       store := Food f;
+        store := Food f;
         raise SuccessExit
       | _ -> ()
     done in
@@ -282,7 +282,7 @@ let w_new_loc = Weapon.get_loc one_w
 let new_e = init ()
 let new_e_fir_e = get_first_alive_enemy_at_index new_e 0
 
-let _ = strength_whole_m
+
 
 (**[make_test n i o] constructs a test [n] to check whether [i] is equal 
    to [o]. *)

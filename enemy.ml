@@ -92,9 +92,9 @@ module type EnemySig = sig
     skills: skills list ->
     gainables: Player.skill list ->
     t
-  
+
   (**[increase_strength t s] will increase strength [s] to every skill
-    this enemy [t] has*)
+     this enemy [t] has*)
   val increase_strength: t -> int -> unit
 
   (**[increase_health t hp] will increase health [hp] this enemy has*)
@@ -104,7 +104,7 @@ module type EnemySig = sig
   val increase_level : t -> unit
 
   (**[strengthen t] will increase the health, strength, and level of this
-  enemy*)
+     enemy*)
   val strengthen : t -> unit
 end
 
@@ -152,7 +152,7 @@ module Enemy: EnemySig = struct
   let get_max_hp s=s.max_hp
 
   let get_gainable_skill s = s.gainables
-  
+
   (* setters are defined here *)
   let reduce_hp s d =
     let tmp_hp = s.hp - d in
@@ -197,14 +197,14 @@ module Enemy: EnemySig = struct
 
   let increase_health t hp = 
     t.hp <- t.hp + hp
-  
+
   let increase_strength t s =
-    Array.iter 
-      (fun skill -> skill.skill_strength <- skill_strength + s) t.skills
-  
+    List.iter 
+      (fun skill -> skill.skill_strength <- skill.skill_strength + s) t.skills
+
   let increase_level t =
     t.level <- t.level + 1
-  
+
   let strengthen t = 
     increase_health t 10;
     increase_strength t 5;
