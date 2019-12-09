@@ -104,22 +104,22 @@
     },
     {
       "name": "snow",
-      "loc": "5,1",
+      "loc": "1,5",
       "link": ""
     },
     {
       "name": "lake",
-      "loc": "5,2",
+      "loc": "2,5",
       "link": ""
     },
     {
       "name": "lake",
-      "loc": "5,3",
+      "loc": "3,5",
       "link": ""
     },
     {
       "name": "lake",
-      "loc": "5,4",
+      "loc": "4,5",
       "link": ""
     },
     {
