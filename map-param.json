@@ -10,7 +10,7 @@
     {
       "name": "field",
       "loc": "2,1",
-      "link": "branched2"
+      "link": ""
     },
     {
       "name": "field",
@@ -85,7 +85,7 @@
     {
       "name": "snow",
       "loc": "7,2",
-      "link": ""
+      "link": "branched2"
     },
     {
       "name": "snow",

@@ -681,7 +681,8 @@ let delete_one_enemy_from_state s =
     | Enemy t when Enemy.get_pos t = loc ->
       Player.increase_experience player (Enemy.get_experience t);
       Player.update_skill player (Enemy.get_gainable_skill t);
-      s.all_enemies_in_current_map.(i) <- Deleted
+      s.all_enemies_in_current_map.(i) <- Deleted;
+      strengthen_whole_map s;
     | _ -> ()
   done
 
