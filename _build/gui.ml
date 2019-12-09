@@ -90,16 +90,16 @@ let dialog text npc name=
      let text2=String.sub text 120 (String.length text-120) in 
      Graphics.moveto 200 260;
      Graphics.draw_string text1;
-     Graphics.moveto 200 248;
+     Graphics.moveto 200 245;
      Graphics.draw_string text2)
   else (let text1=String.sub text 0 120 in 
         let text2=String.sub text 120 120 in 
         let text3=String.sub text 240  (String.length text-240) in
         Graphics.moveto 200 260;
         Graphics.draw_string text1;
-        Graphics.moveto 200 248;
+        Graphics.moveto 200 245;
         Graphics.draw_string text2;
-        Graphics.moveto 200 236;
+        Graphics.moveto 200 230;
         Graphics.draw_string text3);
   Graphics.moveto 920 120;
   Graphics.draw_string "Click to continue #";
@@ -686,9 +686,10 @@ let rec main () =
 
 let rec beginning () =
   Graphics.moveto 500 650;
-  Graphics.draw_string "Welcome to the unnamed game";
+  Graphics.draw_string "Welcome to Cat Quest";
   Graphics.moveto 500 620;
   Graphics.draw_string "please click to begin:";
+  draw_a_image Color_convert.logo 450 200;
   cplace.fbutton<-[create_button "Start" 
                      green black 500 550 200 50 ("diff","easy")];
   fensor cplace Normal;

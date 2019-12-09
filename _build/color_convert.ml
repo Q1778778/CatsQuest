@@ -178,6 +178,8 @@ let trial=image_convert "trial.json" "trial"
 
 let lighting=image_convert "lighting.json" "lighting"
 
+let logo=image_convert "logo.json" "logo"
+
 (**[enemy_data] is the list that contains a single [eimage] with the minion 
    image.  *)
 let enemy_data=[{name_data="minion";image_data=the_minion};

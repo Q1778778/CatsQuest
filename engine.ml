@@ -143,7 +143,7 @@ let contains s1 s2 =
    location array [arr] *)
 let random_int_array_for_enemies_and_items ~map_size_array ~number =
   let round f = truncate (f +. 0.5) in
-  let raw_prob = size_array |> Array.to_list in
+  let raw_prob = map_size_array |> Array.to_list in
   let rec total_sum num = function
     | [] -> num
     | h::d -> total_sum (num + h) d in
@@ -186,7 +186,7 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row ~number =
   let loc_list = loc_array |> Array.to_list in
-  if  (List.length loc_list) + length > (col * row) - 4 then
+  if  (List.length loc_list) + number > (col * row) - 4 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row number 
   else
@@ -335,7 +335,7 @@ let main_engine_player (): player =
         let experience = 0 in
         Player.constructor ~health ~level ~strength ~experience ()
       else read_map handler in
-  fun () -> Player (Unix.opendir "." |> read_map)
+  Player (Unix.opendir "." |> read_map)
 
 
 (**[food_array_builder loc_array col row j_arr] constructs a new food array 
@@ -389,7 +389,7 @@ let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
    represented by the json array [j_arr] with the dimensions [cols] by [rows], 
    without the locations in [locs]. *)
 let weapon_array_builder ~loc_array ~col ~row jsons: weapon_item array =
-        let number = List.length jsons in
+  let number = List.length jsons in
   jsons 
   |> List.map2 
     (fun (col, row) j -> let id = count () in

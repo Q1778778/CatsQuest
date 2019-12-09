@@ -686,9 +686,10 @@ let rec main () =
 
 let rec beginning () =
   Graphics.moveto 500 650;
-  Graphics.draw_string "Welcome to the unnamed game";
+  Graphics.draw_string "Welcome to Cat Quest";
   Graphics.moveto 500 620;
   Graphics.draw_string "please click to begin:";
+  draw_a_image Color_convert.logo 450 200;
   cplace.fbutton<-[create_button "Start" 
                      green black 500 550 200 50 ("diff","easy")];
   fensor cplace Normal;
