@@ -88,7 +88,7 @@ let get_one_enemy_pos s =
   s.all_enemies_in_current_map.(0) |> get_enemy |> Enemy.get_pos
 
 (**[get_first_alive_enemy_at_index s pos] returns the first alive enemy of
-   all the enemies indexed at [pos] at state [s]. 
+   all the enemies indexed map [pos] at state [s]. 
    Raises: [Failure "all enemies are dead"] if all enemies are dead.  *)
 let get_first_alive_enemy_at_index s pos =
   let store = ref s.all_enemies_in_current_map.(0) in
@@ -106,7 +106,7 @@ let get_first_alive_enemy_at_index s pos =
     !store |> get_enemy
 
 (**[get_first_available_food_at_index s pos] returns the first available food 
-   of all the foods indexed at [pos] at state [s].
+   of all the foods indexed map [pos] at state [s].
    Raises: [Failure "no foods"] if no food is available.  *)
 let get_first_available_food_at_index s pos =
   let store = ref s.all_foods_in_current_map.(0) in
@@ -125,7 +125,7 @@ let get_first_available_food_at_index s pos =
     !store |> get_food
 
 (**[get_first_available_weapon_at_index s pos] returns the first available 
-   weapon of all the weapons indexed at [pos] at state [s]. 
+   weapon of all the weapons indexed map [pos] at state [s]. 
    Raises: [Failure "no weapons"] if no food is available.  *)
 let get_first_available_weapon_at_index s pos =
   let store = ref s.all_weapons_in_current_map.(0) in
@@ -281,8 +281,19 @@ let w_new_loc = Weapon.get_loc one_w
 (** Engine update tests *)
 let new_e = init ()
 let new_e_fir_e = get_first_alive_enemy_at_index new_e 0
+let new_e_fir_level = new_e_fir_e |> Enemy.get_level
+let new_e_fir_health = new_e_fir_e |> Enemy.get_hp
+let new_e_fir_pos = new_e_fir_e |> Enemy.get_pos
 
-let _ = strength_whole_m
+let _ = strengthen_whole_map new_e
+
+let new_e_sec_e = get_first_alive_enemy_at_index new_e 0
+
+let new_e_sec_level = new_e_sec_e |> Enemy.get_level
+let new_e_sec_health = new_e_sec_e |> Enemy.get_hp
+let new_e_sec_pos = new_e_sec_e |> Enemy.get_pos
+
+
 
 (**[make_test n i o] constructs a test [n] to check whether [i] is equal 
    to [o]. *)
@@ -299,36 +310,57 @@ let make_exc_test n f e =
 (** Test suite for player states  *)
 let player_state_tests = [
   make_test "init" init_pos (1,1);
+
   make_test "R" state1_loc (2,1);
+
   make_test "RL" state2_loc (1,1);
+
   make_test "RLL = RL" state3_loc (1,1);
+
   make_test "RLLD = RL" state4_loc (1,1);
+
   make_test "RLU" state5_loc (1,2);
+
   make_test "RLUU" state6_loc (1,3);
+
   make_test "RLUUD" state7_loc (1,2);
+
   make_test "advance level failed" state11_experience state11'_experience;
+
   make_test "advance level failed" state11_level state11'_level;
+
   make_test "increase exp" state11_experience 
     (init_experience + 10);
+
   make_test "increase exp to advance 1" state12_experience 
     (init_experience + 10);
+
   make_test "increase exp to advance 2" state12_level (init_level+1);
+
   make_test "upper right bound" state15_loc 
     (map_cols state, map_rows state);
+
   make_test "health before advanced level" state11'_health init_health;
+
   make_test "health after advanced level" state12_health (init_health+20);
+
   make_test "reduce health by 12" state_f3_health (init_health+8);
+
   make_test "increase all health" state_f2_health (get_max_health state);
+
   make_test "reduce all health" state_f_health 0;
 ]
 
 (** Test suite for enemy states  *)
 let enemy_state_tests = [
   make_test "reduce enemy hp" (init_2_hp - init_1_hp) 10;
+
   make_test "always ensure the skills output of enemies are valid"
     (skill_list_2) true;
+
   make_test "always ensure the skills output of enemies are valid"
     (skill_list_1) true;
+
   make_test "enemy level is a static field and it shouldn't be changed"
     (init_1_level = init_2_level) true;
 ]
@@ -337,8 +369,10 @@ let enemy_state_tests = [
 let food_state_tests = [
   make_test "food's gainable strength should never be changed when we move food"
     (init_1f_strength = init_2f_strength) true;
+
   make_test "food's gainable health should never be changed when we move food"
     (init_1f_health = init_2f_health) true;
+
   make_test "change food's location" f_new_loc (2,3);
 ]
 
@@ -346,14 +380,30 @@ let food_state_tests = [
 let weapon_state_tests = [
   make_test "weapon's name should be consistent throughout moving"
     (init_1w_name = init_2w_name) true;
+
   make_test "weapon's strength should be consistent throughout moving"
     (init_1w_strength = init_2w_strength) true;
+
   make_test "weapon's new location should be correct after moving"
     w_new_loc (2, 3);
 ]
 
 (** Test suite for branched map states  *)
 let branched_map_tests = []
+
+(** Test suites for engine states *)
+let engine_state_tests = [
+  make_test "successfully strengthen enemy's health after play"
+  new_e_sec_health (new_e_fir_health+10);
+  
+  make_test "successfully strengthen enemy's level after play"
+  new_e_sec_level (new_e_fir_level+1);
+
+  make_test "enemy's pos shouldn't be changed after strengthening"
+  new_e_fir_pos new_e_sec_pos;
+
+
+]
 
 (** All the test suites  *)
 let suite =
@@ -364,6 +414,7 @@ let suite =
     food_state_tests;
     weapon_state_tests;
     branched_map_tests;
+    engine_state_tests;
   ]
 
 (** Run all the test suites  *)
