@@ -34,7 +34,7 @@ type clist=
     mutable item_ground: bool;
     mutable message_display: string;
     mutable skills: string list;
-    mutable player_level: int
+    mutable player_level: int;
   }
 
 type cd_skill={
@@ -69,6 +69,10 @@ let whitebox_draw a b c d width=
   Graphics.lineto a d;
   Graphics.lineto a b
 
+(** [dialog text npc name] draws a dialog box, showing [text] on screen with 
+    picture [npc] shown at upper-left corner with [name]
+    Requires: [text] and [name] are string,
+    [npc] is a color matrix*)
 let dialog text npc name=
   Graphics.set_color white;
   Graphics.fill_rect 150 100 900 200;
@@ -134,7 +138,7 @@ let health_bar ()=
   Graphics.set_color black;
   Graphics.moveto 180 735;
   Graphics.draw_string ((string_of_int h)^"/"^string_of_int m);
-  Graphics.moveto 40 733;
+  Graphics.moveto 120 735;
   Graphics.draw_string"Health:"
 
 let enemy_health_bar enemy=
@@ -241,17 +245,12 @@ let draw_cd ()=
   if max <=0 then () else let length=List.length cplace.skills in 
     if length >=3 then
       let message="Available in "^string_of_int max^" round." in 
-      string_cal message black 1060 0 130 85;
-      cplace.fbutton<-((List.hd cplace.fbutton)::(List.nth cplace.fbutton 1)::
-                       [List.nth cplace.fbutton 2])else
+      string_cal message black 1060 0 130 85 else
       let min_lst=List.fold_left (fun a b->min a b) 5 lst in 
       let message="Available in "^string_of_int min_lst^" round." in 
       if length=1 then
-        (string_cal message black 1060 95 130 85;
-         cplace.fbutton<-([List.hd cplace.fbutton])) else
-        string_cal message black 9200 0 130 85;
-      cplace.fbutton<-(List.hd cplace.fbutton)::[List.nth cplace.fbutton 1]
-
+        (string_cal message black 1060 95 130 85) else
+        string_cal message black 9200 0 130 85
 
 let combat_four_botton int =
   let fskill=(List.nth (cplace.skills) 0) in
@@ -356,6 +355,7 @@ let skill_info_helper ()=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
+
   info_bar();
   combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
