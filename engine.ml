@@ -767,7 +767,7 @@ let eat_one_food_in_inventory s pos =
    player's inventory.  *)
 let equip_one_weapon s index safe =
   let update_weapon_inventory w t =
-    (for j = 0 to (Array.length s.weapon_inventory) - 1 do
+    for j = 0 to (Array.length s.weapon_inventory) - 1 do
       match s.weapon_inventory.(j) with
       | Empty -> 
         s.weapon_inventory.(j) <- Weapon w;
@@ -775,17 +775,17 @@ let equip_one_weapon s index safe =
         Player.update_skill t (Weapon.get_gainables w);
         raise SuccessExit
       | _ -> ()
-    done) in
+    done in
   let player = s |> get_player in
   let loc = player |> Player.location in
-  (for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
+  for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapon.get_loc w = loc ->
       index := i; safe := (Weapon w);
       s.all_weapons_in_current_map.(i) <- Empty;
       update_weapon_inventory w player;
     | _ -> ()
-  done)
+  done
 
 (**[equip_weapon_in_current_loc s] will update the weapon inventory of 
    game state [s] if there is any empty slot and weapon in player's current 
