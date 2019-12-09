@@ -34,7 +34,7 @@ let map_size_cal (t:Maps.t)=
   |3,3->((375,200),150)
   |5,10->((0,200),120)
   |5,7->((180,200),120)
-  |_->failwith"wrong size of map"
+  |_->failwith("wrong size of map"^string_of_int col^string_of_int row)
 
 (**[picture_getter s] returns the image RGB matrix given by the 
    picture name [s]. 

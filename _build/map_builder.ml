@@ -32,9 +32,9 @@ let map_size_cal (t:Maps.t)=
   match col,row with
   |5,5->((300,200),120)
   |3,3->((375,200),150)
-  |5,10->((0,200),120)
+  |10,5->((0,200),120)
   |5,7->((180,200),120)
-  |_->failwith"wrong size of map"
+  |_->failwith("wrong size of map"^string_of_int col^string_of_int row)
 
 (**[picture_getter s] returns the image RGB matrix given by the 
    picture name [s]. 
@@ -59,7 +59,7 @@ let map_text_build ()=
   let rec draw_pic (data:((int * int) * Maps.MapParam.map_param) list) 
       rs cs inter=
     match data with 
-    |((r,c),p)::t-> (let pic=picture_getter p.name p in 
+    |((c,r),p)::t-> (let pic=picture_getter p.name p in 
                      Graphics.draw_image pic (rs+(c-1)*inter) 
                        (cs+(r-1)*inter);
                      draw_pic t rs cs inter )
@@ -87,7 +87,7 @@ let draw_items ()=
   let draw_witem w=
     match w with 
     |Engine.Weapon w->
-      let (r,c)= Weapons.Weapon.get_loc w in
+      let (c,r)= Weapons.Weapon.get_loc w in
       Graphics.set_color Graphics.yellow;
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
         (cr+(r-1)*interval+(interval/2)) (interval/8);
@@ -100,7 +100,7 @@ let draw_items ()=
     |Engine.Empty->() in 
   let draw_fitem =function
     |Engine.Food f->
-      let (r,c)= Foods.Food.get_loc f in
+      let (c,r)= Foods.Food.get_loc f in
       Graphics.set_color Graphics.green;
       Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
         (cr+(r-1)*interval+(interval/2)) (interval/8);
@@ -112,7 +112,7 @@ let draw_items ()=
       Graphics.draw_string name
     |Engine.Eaten->() in
   let draw_enemy =function
-    |Engine.Enemy e-> (let (r,c)=Enemy.Enemy.get_pos e in 
+    |Engine.Enemy e-> (let (c,r)=Enemy.Enemy.get_pos e in 
                        Graphics.set_color purple_red;
                        Graphics.fill_circle (rr+(c-1)*interval+interval/2) 
                          (cr+(r-1)*interval+(interval/2)) (interval/4);
