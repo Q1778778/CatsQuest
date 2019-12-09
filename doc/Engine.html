@@ -1,0 +1,898 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Player.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Engine" rel="Chapter" href="Engine.html">
+<link title="Player" rel="Chapter" href="Player.html"><title>Engine</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Player.html" title="Player">Next</a>
+</div>
+<h1>Module <a href="type_Engine.html">Engine</a></h1>
+
+<pre><span id="MODULEEngine"><span class="keyword">module</span> Engine</span>: <code class="code">sig</code> <a href="Engine.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><code><span id="TYPEenemy"><span class="keyword">type</span> <code class="type"></code>enemy</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTenemy.Enemy"><span class="constructor">Enemy</span></span> <span class="keyword">of</span> <code class="type">Enemy.Enemy.t</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTenemy.Deleted"><span class="constructor">Deleted</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing an enemy in the game engine </p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPEplayer"><span class="keyword">type</span> <code class="type"></code>player</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTplayer.Player"><span class="constructor">Player</span></span> <span class="keyword">of</span> <code class="type"><a href="Player.Player.html#TYPEt">Player.Player.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTplayer.Died"><span class="constructor">Died</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing a player in the game engine </p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPEfood_item"><span class="keyword">type</span> <code class="type"></code>food_item</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfood_item.Food"><span class="constructor">Food</span></span> <span class="keyword">of</span> <code class="type">Foods.Food.food</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfood_item.Eaten"><span class="constructor">Eaten</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing a food item in the game engine </p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPEweapon_item"><span class="keyword">type</span> <code class="type"></code>weapon_item</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTweapon_item.Weapon"><span class="constructor">Weapon</span></span> <span class="keyword">of</span> <code class="type">Weapons.Weapon.weapon</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTweapon_item.Empty"><span class="constructor">Empty</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing a weapon item in the game engine</p>
+</div>
+</div>
+
+
+<pre><span id="TYPEmap_param"><span class="keyword">type</span> <code class="type"></code>map_param</span> = <code class="type">Maps.MapParam.map_param</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing a map param in the game engine </p>
+</div>
+</div>
+
+
+<pre><span id="TYPEcurrent_map"><span class="keyword">type</span> <code class="type"></code>current_map</span> = <code class="type">Maps.t</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing the current map state </p>
+</div>
+</div>
+
+
+<pre><span id="EXCEPTIONSuccessExit"><span class="keyword">exception</span> SuccessExit</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p> The exception type of a successful food ate or weapon equipped.
+   Used to notify that an operation is successful. </p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONPlayerDied"><span class="keyword">exception</span> PlayerDied</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>The exception type of a player who is dead</p>
+</div>
+</div>
+
+<pre><code><span id="TYPEstate"><span class="keyword">type</span> <code class="type"></code>state</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.player">player</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEplayer">player</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.food_inventory">food_inventory</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEfood_item">food_item</a> array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.weapon_inventory">weapon_inventory</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.player_old_loc">player_old_loc</span>&nbsp;: <code class="type">int * int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.current_map_in_all_maps">current_map_in_all_maps</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.branched_map_info">branched_map_info</span>&nbsp;: <code class="type">((int * int) * string) list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.current_map">current_map</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEcurrent_map">current_map</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_enemies_in_current_map">all_enemies_in_current_map</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEenemy">enemy</a> array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_foods_in_current_map">all_foods_in_current_map</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEfood_item">food_item</a> array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_weapons_in_current_map">all_weapons_in_current_map</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_maps">all_maps</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEcurrent_map">current_map</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_foods">all_foods</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEfood_item">food_item</a> array array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_weapons">all_weapons</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTstate.all_enemies">all_enemies</span>&nbsp;: <code class="type"><a href="Engine.html#TYPEenemy">enemy</a> array array</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p> The abstract type of values representing the current game state </p>
+</div>
+</div>
+
+
+<pre><span id="VALbranch_map_store"><span class="keyword">val</span> branch_map_store</span> : <code class="type">((int * int) * string) list Stdlib.ref</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">branch_map_store</code> keeps track of the list of item names and their 
+   corresponding locations.</p>
+</div>
+</div>
+
+<pre><span id="VALupdate_branch_map_store"><span class="keyword">val</span> update_branch_map_store</span> : <code class="type">(int * int) * string -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">update_branch_map_store (l,n)</code> updates <code class="code">branch_map_store</code> by 
+   appending <code class="code">(l,n)</code> to the front of the list referenced 
+   by <code class="code">branch_map_store</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALcount"><span class="keyword">val</span> count</span> : <code class="type">unit -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">count ()</code> returns <code class="code">c</code>, the # of times this function has been called. 
+   Each time this function gets called, <code class="code">c</code> gets incremented. </p>
+</div>
+</div>
+
+<pre><span id="VALprobabilty"><span class="keyword">val</span> probabilty</span> : <code class="type">float -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">probabilty s</code> produces a bool based on probabilty <code class="code">s</code>
+   Requires:
+   <code class="code">s</code> mod 0.1. 0.1 &lt;= <code class="code">s</code> &lt;= 1.0</p>
+</div>
+</div>
+
+<pre><span id="VALrandom_choice"><span class="keyword">val</span> random_choice</span> : <code class="type">'a list -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">random_choice lst</code> is a random object chosen from list <code class="code">lst</code>
+   Requires:
+   <code class="code">lst</code> cannot be empty</p>
+</div>
+</div>
+
+<pre><span id="VALrandom_list_with_fixed_length"><span class="keyword">val</span> random_list_with_fixed_length</span> : <code class="type">'a list -> int -> 'a list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">random_list_with_fixed_length lst len</code> is a randomly chosen list
+   with length <code class="code">len</code> and its elements from <code class="code">lst</code></p>
+</div>
+</div>
+
+<pre><span id="VALchoose_skill_random"><span class="keyword">val</span> choose_skill_random</span> : <code class="type">Enemy.Enemy.t -> string * int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">choose_skill_random t</code> is a (skill name, skill strength) for enemy <code class="code">t</code>, 
+   chosen randomly from all of enemy <code class="code">t</code>'s skills</p>
+</div>
+</div>
+
+<pre><span id="VALcontains"><span class="keyword">val</span> contains</span> : <code class="type">string -> string -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">contains s s1</code> is <code class="code">true</code> if <code class="code">s</code> contains substring <code class="code">s1</code>, <code class="code">false</code> 
+   otherwise</p>
+</div>
+</div>
+
+<pre><span id="VALrandom_int_array_for_enemies_and_items"><span class="keyword">val</span> random_int_array_for_enemies_and_items</span> : <code class="type">int array -> int -> int array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">random_int_array_for_enemies_and_items arr num</code> returns a 
+   probability-driven random int array with the number <code class="code">num</code> and the 
+   location array <code class="code">arr</code></p>
+</div>
+</div>
+
+<pre><span id="VALsorted_list"><span class="keyword">val</span> sorted_list</span> : <code class="type">(int * int) list -> int -> int -> int -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">sorted_list locs col row n</code> is <code class="code">List.rev [(col, row), (col-1, row), ... , 
+   (1, row), (col, row-1), (col-1, row-1), ...]</code> containing <code class="code">n</code> elements,
+   where none of the coordinates in <code class="code">locs</code> get appended. 
+   Requires: 0 &lt;= <code class="code">n</code> &lt;= <code class="code">col * row</code></p>
+</div>
+</div>
+
+<pre><span id="VALunique_location_list"><span class="keyword">val</span> unique_location_list</span> : <code class="type">loc_array:(int * int) array -> col:int -> row:int -> int -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">unique_location_list locs col row n</code> returns <code class="code">sorted_list col row n</code> if 
+   <code class="code">col &lt; n/2</code> or <code class="code">row &lt; n/2</code>, otherwise it returns a randomly constructed
+   set-like list of <code class="code">(col, row)</code> coordinates with length <code class="code">n</code>. Note that 
+   none of the elements in <code class="code">locs</code> will be appended to the returned list.</p>
+</div>
+</div>
+
+<pre><span id="VALparse_dims"><span class="keyword">val</span> parse_dims</span> : <code class="type">string -> int * int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">parse_dims s</code> parses <code class="code">s</code> and returns <code class="code">(col, row)</code>. 
+   Requires: <code class="code">s</code> is in the form <code class="code">"# cols, # rows"</code></p>
+</div>
+</div>
+
+<pre><span id="VALfilter_one_element_out_from_array"><span class="keyword">val</span> filter_one_element_out_from_array</span> : <code class="type">'a array -> int -> 'a array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">filter_one_element_out_from_array arr pos</code> returns the array <code class="code">arr</code> 
+   without the element at index <code class="code">pos</code>. 
+   Requires: <code class="code">0 &lt;= pos &lt; Array.length arr</code></p>
+</div>
+</div>
+
+<pre><span id="VALgainable_skill_constructor"><span class="keyword">val</span> gainable_skill_constructor</span> : <code class="type">Yojson.Basic.t list -> <a href="Player.Player.html#TYPEskill">Player.Player.skill</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">gainable_skill_constructor jsons</code> returns the list of gainable skills 
+   parsed from the json list <code class="code">jsons</code></p>
+</div>
+</div>
+
+<pre><span id="VALbrowse_dir_enemy"><span class="keyword">val</span> browse_dir_enemy</span> : <code class="type">Unix.dir_handle -> string list -> string list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">browse_dir_enemy h lst</code> is a list of enemy json files 
+   extracted from the directory handler <code class="code">h</code> and file list <code class="code">lst</code>. 
+   Requires: the files in the directory handler <code class="code">h</code> must be in valid enemy 
+   name format - <code class="code">"enemy-*.json"</code>, in which <code class="code">"*"</code> represents different 
+   enemy names</p>
+</div>
+</div>
+
+<pre><span id="VALenemy_skill_constructor"><span class="keyword">val</span> enemy_skill_constructor</span> : <code class="type">Yojson.Basic.t list -> Enemy.Enemy.skills list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">enemy_skill_constructor skills</code> returns the parsed list of enemy skills
+   in the json list <code class="code">skills</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALsingle_enemy_builder"><span class="keyword">val</span> single_enemy_builder</span> : <code class="type">Yojson.Basic.t -> col:int -> row:int -> <a href="Engine.html#TYPEenemy">enemy</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">single_enemy_builder j col row</code> constructs a new enemy represented 
+   by the json <code class="code">j</code> at location <code class="code">(col, row)</code></p>
+</div>
+</div>
+
+<pre><span id="VALbrowse_one_enemy_json"><span class="keyword">val</span> browse_one_enemy_json</span> : <code class="type">string -> col:int -> row:int -> <a href="Engine.html#TYPEenemy">enemy</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">browse_one_enemy_json j col row</code> calls 
+    <code class="code">single_enemy_builder j col row</code> if <code class="code">j</code> is a valid enemy json
+    representation. 
+    Raises: <code class="code">Failure "something wrong with browse_dir_enemy. Check it"</code> if 
+    <code class="code">j</code> is not a valid enemy json representation.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_ememy_for_single_map"><span class="keyword">val</span> main_engine_ememy_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       number:int -> col:int -> row:int -> <a href="Engine.html#TYPEenemy">enemy</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_ememy_for_single_map locs num col row</code> returns an array 
+   of enemies parsed from reading the json files in this main directory that 
+   start with <code class="code">"enemy-"</code>. 
+   Raises: <code class="code">Failure "NONE of 'enemy' json exists"</code> if none of the json 
+   file names are contain <code class="code">"enemy"</code></p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_enemy"><span class="keyword">val</span> main_engine_enemy</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:int array -> <a href="Engine.html#TYPEenemy">enemy</a> array array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_enemy map_locs loc_arr num_arr</code> reads all enemy json files in 
+   current directory with the corresponding locations in <code class="code">loc_arr</code> and 
+   numbers in <code class="code">num_arr</code>, and returns a mapped 2d array with this information</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_player"><span class="keyword">val</span> main_engine_player</span> : <code class="type">unit -> <a href="Engine.html#TYPEplayer">player</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_player ()</code> is the main execution method for the 
+   constructing the main player, which gets returned at the end of this
+   function call.</p>
+</div>
+</div>
+
+<pre><span id="VALfood_array_builder"><span class="keyword">val</span> food_array_builder</span> : <code class="type">(int * int) array -><br>       int -> int -> Yojson.Basic.t list -> <a href="Engine.html#TYPEfood_item">food_item</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">food_array_builder locs cols rows j_arr</code> constructs a new food array 
+   represented by the json array <code class="code">j_arr</code> with the dimensions <code class="code">cols</code> by <code class="code">rows</code>,
+   without the locations in <code class="code">locs</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_food_for_single_map"><span class="keyword">val</span> main_engine_food_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       number:'a -> col:int -> row:int -> <a href="Engine.html#TYPEfood_item">food_item</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_food_for_single_map locs num cols rows</code> reads the file 
+   <code class="code">"foods.json"</code> from the current directory, and returns the food array parsed 
+   from that file, with dimensions <code class="code">cols</code> by <code class="code">rows</code> and <code class="code">num</code> elements, 
+   without the locations in <code class="code">locs</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_food"><span class="keyword">val</span> main_engine_food</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:'a array -> <a href="Engine.html#TYPEfood_item">food_item</a> array array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_food dims locs nums</code> calls <code class="code">main_engine_food_for_single_map</code> 
+   for each map dimension in <code class="code">dims</code>, location in <code class="code">locs</code>, and final number in 
+   <code class="code">nums</code>, and returns the mapped 2d food array with this information.</p>
+</div>
+</div>
+
+<pre><span id="VALweapon_array_builder"><span class="keyword">val</span> weapon_array_builder</span> : <code class="type">(int * int) array -><br>       int -> int -> Yojson.Basic.t list -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">weapon_array_builder locs cols rows j_arr</code> constructs a new weapon array 
+   represented by the json array <code class="code">j_arr</code> with the dimensions <code class="code">cols</code> by <code class="code">rows</code>, 
+   without the locations in <code class="code">locs</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_weapon_for_single_map"><span class="keyword">val</span> main_engine_weapon_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       col:int -> row:int -> number:'a -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_weapon_for_single_map locs cols rows num</code> reads the file 
+   <code class="code">"weapons.json"</code> in the current directory and returns the parsed weapon 
+   item array with dimensions <code class="code">cols</code> by <code class="code">rows</code> and <code class="code">num</code> elements, without
+   the locations in <code class="code">locs</code>. 
+   Raises: <code class="code">Failure "weapons.json is not in current directory"</code> if the 
+   the current directory does not contain the file <code class="code">"weapons.json"</code></p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_weapon"><span class="keyword">val</span> main_engine_weapon</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:'a array -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_weapon map_dims locs nums</code> calls 
+   <code class="code">main_engine_weapon_for_single_map</code> for each dimension in <code class="code">map_dims</code>, 
+   each location in <code class="code">locs</code> and each final number in <code class="code">nums</code>, and returns the 
+   mapped 2d weapon array with this information.</p>
+</div>
+</div>
+
+<pre><span id="VALmap_param_array_builder"><span class="keyword">val</span> map_param_array_builder</span> : <code class="type">Yojson.Basic.t list -> bool -> ((int * int) * <a href="Engine.html#TYPEmap_param">map_param</a>) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">map_param_array_builder j_arr flag</code> constructs a new map param array 
+   represented by the json array <code class="code">j_arr</code>. If <code class="code">flag</code> is <code class="code">true</code>, then the 
+   locations will be appended to the parsed map link.</p>
+</div>
+</div>
+
+<pre><span id="VALbuild_one_map"><span class="keyword">val</span> build_one_map</span> : <code class="type">string -> Maps.t * (int * int)</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">build_one_map s</code> returns the constructed map from the json file name <code class="code">s</code>.
+   Requires: <code class="code">s</code> must be in the form <code class="code">"map-param*.json"</code> where <code class="code">"*"</code> denotes
+   any string.</p>
+</div>
+</div>
+
+<pre><span id="VALreformat_output_map"><span class="keyword">val</span> reformat_output_map</span> : <code class="type">(<a href="Engine.html#TYPEcurrent_map">current_map</a> * (int * int)) list -><br>       <a href="Engine.html#TYPEcurrent_map">current_map</a> array * (int * int) array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">reformat_output_map comb_list</code> is the array representation of 
+   <code class="code">comb_list</code>. 
+   Raises: <code class="code">Failure "no main map in this directory"</code> if the main map does not 
+   exist in this directory.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_engine_map_param"><span class="keyword">val</span> main_engine_map_param</span> : <code class="type">unit -> <a href="Engine.html#TYPEcurrent_map">current_map</a> array * (int * int) array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_engine_map_param ()</code> reads all files in the current directory 
+   with the format <code class="code">"map-param*.json"</code> where <code class="code">"*"</code> can be any string, 
+   and returns the parsed map representation. 
+   Raises: <code class="code">Failure "no map-param.json is in current directory"</code> if there
+   is no file with the format <code class="code">"map-param*.json"</code></p>
+</div>
+</div>
+
+<pre><span id="VALmain_map_size_array"><span class="keyword">val</span> main_map_size_array</span> : <code class="type">Maps.t array -> int array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_map_size_array maps</code> is the list of total sizes 
+   (product of dimensions) of all the maps in <code class="code">maps</code></p>
+</div>
+</div>
+
+<pre><span id="VALmain_map_col_row"><span class="keyword">val</span> main_map_col_row</span> : <code class="type">Maps.t array -> (int * int) array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_map_col_row maps</code> is the list of size dimensions of all the maps in 
+   <code class="code">maps</code></p>
+</div>
+</div>
+
+<pre><span id="VALhelper_init"><span class="keyword">val</span> helper_init</span> : <code class="type">unit -><br>       <a href="Engine.html#TYPEcurrent_map">current_map</a> array * (int * int) array * int * int array *<br>       (int * int) array * int array * <a href="Engine.html#TYPEenemy">enemy</a> array array *<br>       <a href="Engine.html#TYPEfood_item">food_item</a> array array * <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">helper_init ()</code> is a helper function for <code class="code">init ()</code> that gets the 
+   necessary information for the initial state.</p>
+</div>
+</div>
+
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type">unit -> <a href="Engine.html#TYPEstate">state</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">init ()</code> is the init state of the entire game. 
+      Invariant: the first map of all maps must be main map !!!</p>
+</div>
+</div>
+
+<pre><span id="VALgame_state"><span class="keyword">val</span> game_state</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">game_state</code> is the initial game state</p>
+</div>
+</div>
+
+<pre><span id="VALchange_player"><span class="keyword">val</span> change_player</span> : <code class="type"><a href="Engine.html#TYPEplayer">player</a> -> <a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">change_player p s</code> changes the player in game state <code class="code">s</code> to <code class="code">p</code></p>
+</div>
+</div>
+
+<pre><span id="VALget_player"><span class="keyword">val</span> get_player</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> <a href="Player.Player.html#TYPEt">Player.Player.t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_player s</code> returns the player if the player in game state <code class="code">s</code>
+   is alive. 
+   Raises: <code class="code">PlayerDied</code> if the player has already died.</p>
+</div>
+</div>
+
+<pre><span id="VALget_enemies"><span class="keyword">val</span> get_enemies</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> <a href="Engine.html#TYPEenemy">enemy</a> array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_enemies s</code> is all the enemies in game state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALcheck_enemy"><span class="keyword">val</span> check_enemy</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string array -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_enemy s store</code> checks whether there is an enemy at the player
+   location at states <code class="code">s</code>, and if so, appends the enemy in <code class="code">store</code> and 
+   raises <code class="code">SuccessExit</code>. Otherwise, no change is made.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck_enemy_in_current_loc"><span class="keyword">val</span> check_enemy_in_current_loc</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> bool * string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_enemy_in_current_loc s</code> is <code class="code">(true, str)</code> if there exists an 
+   enemy at the current location of the player at state <code class="code">s</code>, and 
+   <code class="code">(false, "")</code> otherwise.</p>
+</div>
+</div>
+
+<pre><span id="VALget_map"><span class="keyword">val</span> get_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> <a href="Engine.html#TYPEcurrent_map">current_map</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_map s</code> is the current map in game state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALfind_one_map_by_name"><span class="keyword">val</span> find_one_map_by_name</span> : <code class="type">Maps.t list -> string -> Maps.t</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">find_one_map_by_name lst name</code> is the map with its name as <code class="code">name</code> from
+   a list of map <code class="code">lst</code>
+   Requires: map with name <code class="code">map_name</code> must be inside <code class="code">lst</code></p>
+</div>
+</div>
+
+<pre><span id="VALget_current_map_name"><span class="keyword">val</span> get_current_map_name</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_current_map_name s</code> is the name of the current map in game state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALget_current_map_size"><span class="keyword">val</span> get_current_map_size</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int * int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_current_map_size s</code> is the size of the current map in game state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALreduce_player_health"><span class="keyword">val</span> reduce_player_health</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">reduce_player_health s hp</code> reduces the health of player at state <code class="code">s</code> by 
+   <code class="code">hp</code>. If calling this function makes the player's health 0 or negative,
+   then the player dies.</p>
+</div>
+</div>
+
+<pre><span id="VALmove_player_left"><span class="keyword">val</span> move_player_left</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">move_player_left s</code> change the current pos (col', row') of player 
+    in state <code class="code">s</code> to (col'-1, row') within the map boundaries.</p>
+</div>
+</div>
+
+<pre><span id="VALmove_player_right"><span class="keyword">val</span> move_player_right</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">move_player_right s</code> change the current pos (col', row') of player 
+    in state <code class="code">s</code> to (col'+1, row') within the map boundaries.</p>
+</div>
+</div>
+
+<pre><span id="VALmove_player_up"><span class="keyword">val</span> move_player_up</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">move_player_up s</code> change the current pos (col', row') of player 
+    in state <code class="code">s</code> to (col', row'+1) within the map boundaries.</p>
+</div>
+</div>
+
+<pre><span id="VALmove_player_down"><span class="keyword">val</span> move_player_down</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">move_player_down s</code> change the current pos (col', row') of player 
+    in state <code class="code">s</code> to (col', row'-1) within the map boundaries.</p>
+</div>
+</div>
+
+<pre><span id="VALdelete_one_enemy_from_state"><span class="keyword">val</span> delete_one_enemy_from_state</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">delete_one_enemy_from_state s</code> deletes the enemy with player's current
+   location at state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALtake_one_food"><span class="keyword">val</span> take_one_food</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">take_one_food s</code> takes food from the player's current location at state
+   <code class="code">s</code>, if any, and adds it to the first empty slot in the player's food 
+   inventory. 
+   Raises: <code class="code">SuccessExit</code> if the food from the player's location was 
+   successfully eaten.</p>
+</div>
+</div>
+
+<pre><span id="VALtake_one_food_in_current_location"><span class="keyword">val</span> take_one_food_in_current_location</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">take_one_food_in_current_location s</code> takes food on player's current 
+   location at state <code class="code">s</code>,  if any, to the first empty slot in player's food 
+   inventory.</p>
+</div>
+</div>
+
+<pre><span id="VALdrop_one_food"><span class="keyword">val</span> drop_one_food</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">drop_one_food s pos</code> drops the food at index <code class="code">pos</code> of the player's 
+   food inventory to the player's current location at state <code class="code">s</code>. 
+   Raises: <code class="code">SuccessExit</code> if the food at index <code class="code">pos</code> is successfully dropped.</p>
+</div>
+</div>
+
+<pre><span id="VALdrop_one_food_to_current_location"><span class="keyword">val</span> drop_one_food_to_current_location</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">drop_one_food_to_current_location s pos</code> drops the food at index <code class="code">pos</code> 
+   of the player's food inventory to the player's current location at state 
+   <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALeat_one_food_in_inventory"><span class="keyword">val</span> eat_one_food_in_inventory</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">eat_one_food_in_inventory s pos</code> eats the food from the player's current
+   location, if any, with the player increasing health and strength and the 
+   food at index <code class="code">pos</code> removed from the player's inventory at state <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALequip_one_weapon"><span class="keyword">val</span> equip_one_weapon</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">equip_one_weapon s</code> will check player's inventory and equip player with
+   weapon of player's current location if possible. If the weapon inventory is
+   already full, the weapon will not be equipped (the game state wouldn't 
+   change).
+   Raises: <code class="code">SuccessExit</code> if the weapon is successfully equipped in the 
+   player's inventory.</p>
+</div>
+</div>
+
+<pre><span id="VALequip_weapon_in_current_loc"><span class="keyword">val</span> equip_weapon_in_current_loc</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">equip_weapon_in_current_loc s</code> will update the weapon inventory of 
+   game state <code class="code">s</code> if there is any empty slot and weapon in player's current 
+   location will be equipped in that slot.</p>
+</div>
+</div>
+
+<pre><span id="VALdrop_one_weapon"><span class="keyword">val</span> drop_one_weapon</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">drop_one_weapon s pos</code> drops the weapon at index <code class="code">pos</code> of the player's 
+   weapon inventory to the player's current location at state <code class="code">s</code>. 
+   Example: if the weapon inventory is <code class="code">|Null; Null; dagger|</code>
+   <code class="code">drop_one_weapon s 2</code> drops <code class="code">dagger</code>, and the weapon inventory 
+   becomes <code class="code">|Null; Null; Empty|</code>.
+   Raises: <code class="code">SuccessExit</code> if the weapon at index <code class="code">pos</code> is successfully removed
+   from the weapon inventory.</p>
+</div>
+</div>
+
+<pre><span id="VALdrop_one_weapon_to_current_location"><span class="keyword">val</span> drop_one_weapon_to_current_location</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">drop_one_weapon_to_current_location s pos</code> drops the weapon at index 
+   <code class="code">pos</code> of the player's weapon inventory to the player's current location 
+   at state <code class="code">s</code>. 
+   Example: if the weapon inventory is <code class="code">|Null; Null; dagger|</code>
+   <code class="code">drop_one_weapon_to_current_location s 2</code> drops <code class="code">dagger</code>, and the 
+   weapon inventory becomes <code class="code">|Null; Null; Empty|</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck_food_on_loc_and_return_name_list"><span class="keyword">val</span> check_food_on_loc_and_return_name_list</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int * int -> string list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_food_on_loc_and_return_name_list s loc</code> returns a list of food names
+   (possibly empty) are at the location <code class="code">loc</code> 
+   in the current map in state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALcheck_weapon_on_loc_and_return_name_list"><span class="keyword">val</span> check_weapon_on_loc_and_return_name_list</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int * int -> string list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_weapon_on_loc_and_return_name_list s loc</code> returns a list of 
+   weapon names (possibly empty) that are at the location <code class="code">loc</code> 
+   in the current map in state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALcheck_item_on_player_ground"><span class="keyword">val</span> check_item_on_player_ground</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string list * string list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_item_on_player_ground s</code> is a tuple of 
+   (food_name list,  weapon_name list) at player's current position
+   at state <code class="code">s</code> 
+   Requires: Player MUST BE Alive</p>
+</div>
+</div>
+
+<pre><span id="VALdelete_map_pos"><span class="keyword">val</span> delete_map_pos</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> string -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">delete_map_pos s pos name</code> deletes the items of the item arrays 
+   at index <code class="code">pos</code> in state <code class="code">s</code>, along with the map named <code class="code">name</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck_current_linked_map"><span class="keyword">val</span> check_current_linked_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> bool * string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_current_linked_map s</code> returns <code class="code">(false, "")</code> if the current map in 
+   state <code class="code">s</code> is not <code class="code">"main"</code> or if the player at state <code class="code">s</code> is not found in the 
+   branced map info. Otherwise, <code class="code">(true, info)</code> is returned where <code class="code">info</code> is 
+   the information in the branched map</p>
+</div>
+</div>
+
+<pre><span id="VALget_map_index_by_name"><span class="keyword">val</span> get_map_index_by_name</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_map_index_by_name s name</code> returns the index of the map in game state
+   <code class="code">s</code> with the corresponding name <code class="code">name</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALtransfer_player_to_branch_map"><span class="keyword">val</span> transfer_player_to_branch_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">transfer_player_to_branch_map s</code> transfers the player at state <code class="code">s</code> to the
+   branch map.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck_branch_map_status"><span class="keyword">val</span> check_branch_map_status</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_branch_map_status s</code> returns whether the player at state <code class="code">s</code> has 
+   finished his current branched map.</p>
+</div>
+</div>
+
+<pre><span id="VALtransfer_player_to_main_map"><span class="keyword">val</span> transfer_player_to_main_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">transfer_player_to_main_map s</code> transfers the player at state <code class="code">s</code> to the 
+   main map and changes to the corresponding configurations in the map.</p>
+</div>
+</div>
+
+<pre><span id="VALrenew_one_player"><span class="keyword">val</span> renew_one_player</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">renew_one_player s</code> renews the main engine player at state <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALlist_of_entrance_loc_to_branch_map"><span class="keyword">val</span> list_of_entrance_loc_to_branch_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">list_of_entrance_loc_to_branch_map s</code> is the list of entrance locations
+   to the branch map named <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALsys_json"><span class="keyword">val</span> sys_json</span> : <code class="type">Yojson.Basic.t</code></pre>
+<pre><span id="VALmain_map_instr"><span class="keyword">val</span> main_map_instr</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_map_instr</code> is the instruction in which the player has entered the 
+   main map.</p>
+</div>
+</div>
+
+<pre><span id="VALbranch_map_instr"><span class="keyword">val</span> branch_map_instr</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">branch_map_instr</code> is the instruction in which the player has entered
+   a branched map.</p>
+</div>
+</div>
+
+<pre><span id="VALstring_of_loc"><span class="keyword">val</span> string_of_loc</span> : <code class="type">int * int -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">string_of_loc (col,row)</code> is <code class="code">" (col, row) "</code></p>
+</div>
+</div>
+
+<pre><span id="VALenemy_instr_helper"><span class="keyword">val</span> enemy_instr_helper</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string Stdlib.ref -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">enemy_instr_helper s store</code> loads the instruction regarding enemies at 
+   state <code class="code">s</code>. <code class="code">store</code> keeps track of what the instruction is. 
+   Raises: <code class="code">Failure "All enemies are dead in this map. Congratulations! "</code> 
+   if there all enemies in the map at state <code class="code">s</code> have been killed. 
+   Raises: <code class="code">SuccessExit</code> if the enemy instruction has been loaded successfully</p>
+</div>
+</div>
+
+<pre><span id="VALenemy_instr"><span class="keyword">val</span> enemy_instr</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">enemy_instr s</code> is the instruction regarding enemies at state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALfood_instr_helper"><span class="keyword">val</span> food_instr_helper</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string Stdlib.ref -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">food_instr_helper s store</code> loads the instruction regarding foods at 
+   state <code class="code">s</code>. <code class="code">store</code> keeps track of what the instruction is. 
+   Raises: <code class="code">Failure "There are no food in this map now"</code> if there is no 
+   such food in the map at state <code class="code">s</code>. 
+   Raises: <code class="code">SuccessExit</code> if the food instruction has been loaded successfully</p>
+</div>
+</div>
+
+<pre><span id="VALfood_instr"><span class="keyword">val</span> food_instr</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">food_instr s</code> is the instruction regarding foods at state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALweapon_instr_helper"><span class="keyword">val</span> weapon_instr_helper</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string Stdlib.ref -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">weapon_instr_helper s store</code> loads the instruction regarding weapons at 
+   state <code class="code">s</code>. <code class="code">store</code> keeps track of what the instruction is. 
+   Raises: <code class="code">Failure "There are no weapon in this map now"</code> if there is no 
+   such weapon in the map at state <code class="code">s</code>. 
+   Raises: <code class="code">SuccessExit</code> if the weapon instruction has been loaded successfully</p>
+</div>
+</div>
+
+<pre><span id="VALweapon_instr"><span class="keyword">val</span> weapon_instr</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">weapon_instr s</code> is the instruction regarding weapons at state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALsystem_instr"><span class="keyword">val</span> system_instr</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">system_instr s</code> is the instruction to the player at state <code class="code">s</code></p>
+</div>
+</div>
+
+<pre><span id="VALcheck_wins"><span class="keyword">val</span> check_wins</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_wins s</code> returns whether the player at state <code class="code">s</code> is in the 
+   winning state.</p>
+</div>
+</div>
+</body></html>

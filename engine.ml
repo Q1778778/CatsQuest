@@ -997,7 +997,7 @@ let enemy_instr_helper s store =
     match s.all_enemies_in_current_map.(i) with
     | Enemy e -> store := 
         "Enemy " 
-        ^ (Enemy.get_name e) ^ "is in location" 
+        ^ (Enemy.get_name e) ^ " is in location" 
         ^ (e |> Enemy.get_pos |> string_of_loc)
         ^ "\nTry to defeat it!"; 
       raise SuccessExit
@@ -1025,7 +1025,7 @@ let food_instr_helper s store =
     match s.all_foods_in_current_map.(i) with
     | Food f -> store := 
         "Food " 
-        ^ (Food.get_name f) ^ "is in location" 
+        ^ (Food.get_name f) ^ " is in location" 
         ^ (f |> Food.get_loc |> string_of_loc)
         ^ "\nMove there and take it!"; 
       raise SuccessExit
@@ -1053,7 +1053,7 @@ let weapon_instr_helper s store =
     match s.all_weapons_in_current_map.(i) with
     | Weapon w -> store := 
         ("Food " 
-         ^ (Weapon.get_name w) ^ "is in location" 
+         ^ (Weapon.get_name w) ^ " is in location" 
          ^ (w |> Weapon.get_loc |> string_of_loc)
          ^ "\nMove there and equip it!"); 
       raise SuccessExit
