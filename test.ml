@@ -91,31 +91,30 @@ let get_one_enemy_pos s =
    all the enemies indexed at [pos] at state [s]. 
    Raises: [Failure "all enemies are dead"] if all enemies are dead.  *)
 let get_first_alive_enemy_at_index s pos =
-  let store = [||] in
+  let store = ref s.all_enemies_in_current_map.(0) in
   let rec inner_searcher enemies_array = 
     for i = 0 to Array.length enemies_array - 1 do
       match enemies_array.(i) with
-      | Enemy e -> 
-        let _ = Array.append [|e|] store in  
-        raise SuccessExit
+      | Enemy e -> store := Enemy e;
+                raise SuccessExit
       | _ -> ()
     done in
   try
     inner_searcher s.all_enemies.(pos);
     failwith "all enemies are dead"
   with SuccessExit ->
-    store.(0)
+    !store |> get_enemy
 
 (**[get_first_available_food_at_index s pos] returns the first available food 
    of all the foods indexed at [pos] at state [s].
    Raises: [Failure "no foods"] if no food is available.  *)
 let get_first_available_food_at_index s pos =
-  let store = [||] in
+  let store = ref s.all_foods_in_current_map.(0) in
   let rec inner_searcher food_array = 
     for i = 0 to Array.length food_array - 1 do
       match food_array.(i) with
       | Food f -> 
-        let _ = Array.append [|f|] store in 
+       store := Food f;
         raise SuccessExit
       | _ -> ()
     done in
@@ -123,18 +122,18 @@ let get_first_available_food_at_index s pos =
     inner_searcher s.all_foods.(pos);
     failwith "no foods"
   with SuccessExit ->
-    store.(0)
+    !store |> get_food
 
 (**[get_first_available_weapon_at_index s pos] returns the first available 
    weapon of all the weapons indexed at [pos] at state [s]. 
    Raises: [Failure "no weapons"] if no food is available.  *)
 let get_first_available_weapon_at_index s pos =
-  let store = [||] in
+  let store = ref s.all_weapons_in_current_map.(0) in
   let rec inner_searcher weapon_array = 
     for i = 0 to Array.length weapon_array - 1 do
       match weapon_array.(i) with
       | Weapon w -> 
-        let _ = Array.append [|w|] store in 
+        store := Weapon w;
         raise SuccessExit
       | _ -> ()
     done in
@@ -142,7 +141,7 @@ let get_first_available_weapon_at_index s pos =
     inner_searcher s.all_weapons.(pos);
     failwith "no weapons"
   with SuccessExit ->
-    store.(0)
+    !store |> get_weapon
 
 
 
@@ -277,6 +276,13 @@ let init_2w_strength = Weapon.get_strength one_w
 let w_new_loc = Weapon.get_loc one_w
 
 (** Branched map state update tests *)
+
+
+(** Engine update tests *)
+let new_e = init ()
+let new_e_fir_e = get_first_alive_enemy_at_index new_e 0
+
+let _ = strength_whole_m
 
 (**[make_test n i o] constructs a test [n] to check whether [i] is equal 
    to [o]. *)
