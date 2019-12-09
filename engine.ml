@@ -947,7 +947,7 @@ let transfer_player_to_main_map s =
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos map_name;
+    delete_map_pos s map_pos map_name
   else
     ()
 

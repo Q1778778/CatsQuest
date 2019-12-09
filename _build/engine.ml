@@ -598,11 +598,11 @@ let check_enemy_in_current_loc s =
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map
 
-(**[find_one_map_by_name lst name] is the map with its name as [name] from
-   a list of map [lst]
+(**[find_one_map_by_name s name] is the map with its name as [name] from
+   all maps in [s]
    Requires: map with name [map_name] must be inside [lst] *)
-let find_one_map_by_name map_array map_name =
-  List.find (fun map -> map.name = map_name) (map_array)
+let find_one_map_by_name s map_name =
+  List.find (fun map -> map.name = map_name) s.all_maps
 
 (**[get_current_map_name s] is the name of the current map in game state [s] *)
 let get_current_map_name s = s.current_map.name
@@ -678,13 +678,11 @@ let delete_one_enemy_from_state s =
    inventory. 
    Raises: [SuccessExit] if the food from the player's location was 
    successfully eaten. *)
-let take_one_food s =
+let take_one_food s index safe =
   let update_food_inventory f t =
     for j = 0 to (Array.length s.food_inventory) - 1 do
       match s.food_inventory.(j) with
-      | Eaten -> 
-        s.food_inventory.(j) <- Food f; 
-        raise SuccessExit
+      | Eaten -> s.food_inventory.(j) <- Food f; raise SuccessExit
       | _ -> ()
     done in
   let player = s |> get_player in
@@ -693,6 +691,7 @@ let take_one_food s =
     match s.all_foods_in_current_map.(i) with
     | Food f when Food.get_loc f = loc ->
       s.all_foods_in_current_map.(i) <- Eaten;
+      index := i; safe := (Food f);
       update_food_inventory f player
     | _ -> ()
   done
@@ -701,8 +700,11 @@ let take_one_food s =
    location at state [s],  if any, to the first empty slot in player's food 
    inventory. *)
 let take_one_food_in_current_location s = 
+  let index = ref 0 in
+  let safe = ref (s.all_foods_in_current_map.(0)) in
   try
-    take_one_food s
+    take_one_food s index safe;
+    s.all_foods_in_current_map.(!index) <- (!safe);
   with SuccessExit ->
     ()
 
@@ -763,7 +765,7 @@ let eat_one_food_in_inventory s pos =
    change).
    Raises: [SuccessExit] if the weapon is successfully equipped in the 
    player's inventory.  *)
-let equip_one_weapon s =
+let equip_one_weapon s index safe =
   let update_weapon_inventory w t =
     for j = 0 to (Array.length s.weapon_inventory) - 1 do
       match s.weapon_inventory.(j) with
@@ -779,8 +781,9 @@ let equip_one_weapon s =
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
     | Weapon w when Weapon.get_loc w = loc ->
+      index := i; safe := (Weapon w);
       s.all_weapons_in_current_map.(i) <- Empty;
-      update_weapon_inventory w player
+      update_weapon_inventory w player;
     | _ -> ()
   done
 
@@ -788,8 +791,11 @@ let equip_one_weapon s =
    game state [s] if there is any empty slot and weapon in player's current 
    location will be equipped in that slot.  *)
 let equip_weapon_in_current_loc s = 
+  let index = ref 0 in
+  let safe = ref (s.all_weapons_in_current_map.(0)) in
   try
-    equip_one_weapon s
+    equip_one_weapon s index safe;
+    s.all_weapons_in_current_map.(!index) <- !safe
   with SuccessExit ->
     ()
 
@@ -912,7 +918,7 @@ let transfer_player_to_branch_map s =
   let status, name =  check_current_linked_map s in
   if status = false then ()
   else 
-    let map = find_one_map_by_name s.all_maps name in
+    let map = find_one_map_by_name s name in
     let map_index = get_map_index_by_name s map.name in
     s.player_old_loc <- s |> get_player |> Player.location;
     s.current_map <- map;
@@ -926,8 +932,7 @@ let transfer_player_to_branch_map s =
 (**[check_branch_map_status s] returns whether the player at state [s] has 
    finished his current branched map. *)
 let check_branch_map_status s = 
-  get_current_map_name s <> "main" 
-  && Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
+  Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
 (**[transfer_player_to_main_map s] transfers the player at state [s] to the 
    main map and changes to the corresponding configurations in the map. *)
@@ -942,7 +947,7 @@ let transfer_player_to_main_map s =
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos map_name;
+    delete_map_pos s map_pos map_name
   else
     ()
 
