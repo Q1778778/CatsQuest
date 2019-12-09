@@ -452,6 +452,15 @@ let ground_probe()= let player= Engine.game_state.player in
      |h::t,_->"Food")
   |Engine.Died->"None"
 
+let food_full_mon ()=
+  let lst= Array.to_list Engine.game_state.food_inventory in 
+  let lst_filter=List.filter (fun x->x=Engine.Eaten) lst in 
+  List.length lst_filter=0
+
+let weapon_full_mon ()=
+  let lst= Array.to_list Engine.game_state.weapon_inventory in 
+  let lst_filter=List.filter (fun x->x=Engine.Empty) lst in 
+  List.length lst_filter=0
 
 
 let rec parse  c=
@@ -468,21 +477,22 @@ let rec parse  c=
   |Order (c,t)->order_helper c t
   |Tnone->()
 
+
 and  order_helper c t=
   (if c="dialog" then parse (Guide t)  else if 
      c="weapon" then (match ground_probe () with
-      |"Weapon"-> let current_inven=Engine.game_state.weapon_inventory in 
+      |"Weapon"-> 
+        (if not (weapon_full_mon()) then 
+           cplace.message_display<-"you have picked up a weapon" else 
+           cplace.message_display<-"you inventory is full");
         Engine.equip_weapon_in_current_loc Engine.game_state;
-        (if Engine.game_state.weapon_inventory<>current_inven then 
-           cplace.message_display<-"you have picked up a weapon" else 
-           cplace.message_display<-"you inventory is full");
         cplace.irefresh<-true
-      |"Food"->let current_inven=Engine.game_state.food_inventory in 
-        Engine.take_one_food_in_current_location Engine.game_state;
-        cplace.message_display<-"you have picked up a food";
-        (if Engine.game_state.food_inventory<>current_inven then 
-           cplace.message_display<-"you have picked up a weapon" else 
+      |"Food"->
+        (if not (food_full_mon()) then 
+           cplace.message_display<-"you have picked up a food" else 
            cplace.message_display<-"you inventory is full");
+        Engine.take_one_food_in_current_location Engine.game_state;
+        cplace.irefresh<-true
       |_->()) else if
      c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
                    match t with 
