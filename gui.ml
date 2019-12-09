@@ -666,6 +666,7 @@ let rec main () =
        info_bar();
        item_draw ();
        draw_inventory();
+       win_mon();
        fensor cplace Normal;
        tsensor cplace;
        enemy_loc_mon();
