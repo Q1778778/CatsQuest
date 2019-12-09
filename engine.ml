@@ -199,8 +199,8 @@ let unique_location_list ~loc_array ~col ~row length =
 (**[parse_dims s] parses [s] and returns [(col, row)]. 
    Requires: [s] is in the form ["# cols, # rows"] *)
 let parse_dims s = 
-  let rows = List.nth (String.split_on_char ',' s) 1 in 
-  let cols = List.nth (String.split_on_char ',' s) 0 in 
+  let rows = List.nth (String.split_on_char ',' s) 0 in 
+  let cols = List.nth (String.split_on_char ',' s) 1 in 
   cols |> int_of_string, rows |> int_of_string
 
 (**[filter_one_element_out_from_array arr pos] returns the array [arr] 
