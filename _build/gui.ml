@@ -202,7 +202,7 @@ let down_row_info int string=
 
 let info_bar()=
   whitebox_draw 540 10 900 190 3;
-  Graphics.moveto 545 175;
+  Graphics.moveto 545 120;
   Graphics.draw_string cplace.message_display
 
 
@@ -357,7 +357,6 @@ let skill_info_helper ()=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
-
   info_bar();
   combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
@@ -488,11 +487,11 @@ and  order_helper c t=
         Engine.equip_weapon_in_current_loc Engine.game_state;
         cplace.irefresh<-true
       |"Food"->
-
         (if not (food_full_mon()) then 
            cplace.message_display<-"you have picked up a food" else 
            cplace.message_display<-"you inventory is full");
         Engine.take_one_food_in_current_location Engine.game_state;
+        cplace.irefresh<-true
       |_->()) else if
      c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
                    match t with 
@@ -666,6 +665,7 @@ let rec main () =
        info_bar();
        item_draw ();
        draw_inventory();
+       win_mon();
        fensor cplace Normal;
        tsensor cplace;
        enemy_loc_mon();

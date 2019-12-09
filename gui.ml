@@ -202,7 +202,7 @@ let down_row_info int string=
 
 let info_bar()=
   whitebox_draw 540 10 900 190 3;
-  Graphics.moveto 545 175;
+  Graphics.moveto 545 120;
   Graphics.draw_string cplace.message_display
 
 
@@ -357,7 +357,6 @@ let skill_info_helper ()=
   status_bar ();
   normal_four_botton cplace;
   health_bar ();
-
   info_bar();
   combat_botton_helper ();
   let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
