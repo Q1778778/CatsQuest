@@ -172,6 +172,12 @@ let portal=image_convert "portal.json" "portal"
 
 let hit=image_convert "hit.json" "hit"
 
+let fire=image_convert "fire.json" "fire"
+
+let trial=image_convert "trial.json" "trial"
+
+let lighting=image_convert "lighting.json" "lighting"
+
 (**[enemy_data] is the list that contains a single [eimage] with the minion 
    image.  *)
 let enemy_data=[{name_data="minion";image_data=the_minion};

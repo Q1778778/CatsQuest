@@ -20,16 +20,16 @@ type player =
 
 (** The abstract type of values representing a food item in the game engine *)
 type food_item = 
-  | Food of Foods.Food.food
+  | Food of Food.food
   | Eaten (*once a weapon or food has been taken, this weapon becomes null *)
 
-(** The abstract type of values representing a weapon item in the game engine *)
+(** The abstract type of values representing a weapon item in the game engine*)
 type weapon_item =
-  | Weapon of  Weapons.Weapon.weapon
+  | Weapon of  Weapon.weapon
   | Empty
 
 (** The abstract type of values representing a map param in the game engine *)
-type map_param = Maps.MapParam.map_param
+type map_param = MapParam.map_param
 
 (** The abstract type of values representing the current map state *)
 type current_map = Maps.t
@@ -99,13 +99,13 @@ let probabilty s =
    Requires:
    [lst] cannot be empty*)
 let random_choice list = 
-  List.nth list (Random.int (List.length list))
+  list |> List.length |> Random.int |> List.nth list
 
 (**[random_list_with_fixed_length lst len] is a randomly chosen list
    with length [len] and its elements from [lst]*)
 let random_list_with_fixed_length list len =
   List.map (fun _ -> random_choice list) 
-    ((Array.make len 0) |> Array.to_list)
+    (Array.make len 0 |> Array.to_list)
 
 (**[choose_skill_random t] is a (skill name, skill strength) for enemy [t], 
    chosen randomly from all of enemy [t]'s skills *)
@@ -183,7 +183,7 @@ let sorted_list loc_list col row length =
    none of the elements in [locs] will be appended to the returned list. *)
 let unique_location_list ~loc_array ~col ~row length =
   let loc_list = loc_array |> Array.to_list in
-  if (col < (length / 2)) || (row < (length / 2)) then
+  if col < length / 2 || row < length / 2 then
     (* small map. A sorted list is better for minimizing time complexity*)
     sorted_list loc_list col row length 
   else
@@ -244,8 +244,8 @@ let rec browse_dir_enemy (handler: Unix.dir_handle) (lst: string list) =
   | h -> 
     let pos = String.length h in 
     if pos > 11
-    && (String.sub h 0 6 = "enemy-") 
-    && (String.sub h (pos-5) 5) = ".json" 
+    && String.sub h 0 6 = "enemy-" 
+    && String.sub h (pos-5) 5 = ".json" 
     then browse_dir_enemy handler (h::lst) 
     else browse_dir_enemy handler lst
 
@@ -299,7 +299,7 @@ let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row =
     let expected_enemy_models =
       random_list_with_fixed_length all_enemy_models number in
     List.map2  (fun x (col, row)-> browse_one_enemy_json x ~col ~row)
-      (expected_enemy_models)
+      expected_enemy_models
       (unique_location_list loc_array col row number) |> Array.of_list
   with Unix.Unix_error (Unix.ENOENT, _ ,_ ) ->
     raise (Failure "NONE of 'enemy' json exists")
@@ -332,7 +332,7 @@ let main_engine_player: unit -> player =
         let experience = 0 in
         Player.constructor ~health ~level ~strength ~experience ()
       else read_map handler in
-  fun () -> Player (read_map (Unix.opendir "."))
+  fun () -> Player (Unix.opendir "." |> read_map)
 
 
 (**[food_array_builder locs cols rows j_arr] constructs a new food array 
@@ -363,14 +363,14 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
       failwith "foods.json is not in current directory"
     | json ->  let pos = String.length json in 
       if String.length json >= 10
-      && (String.sub json (pos-5) 5) = ".json" 
+      && String.sub json (pos-5) 5 = ".json" 
       && contains json "foods"
       then json 
            |> Yojson.Basic.from_file 
            |> to_list 
            |> food_array_builder loc_array col row
       else read_food handler in
-  (read_food (Unix.opendir "."))
+  read_food (Unix.opendir ".")
 
 (**[main_engine_food dims locs nums] calls [main_engine_food_for_single_map] 
    for each map dimension in [dims], location in [locs], and final number in 
@@ -435,19 +435,18 @@ let main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array =
    represented by the json array [j_arr]. If [flag] is [true], then the 
    locations will be appended to the parsed map link. *)
 let map_param_array_builder jsons flag : ((int * int) * map_param) list = 
-  jsons |> List.map ( fun j ->
+  jsons |> List.map (fun j ->
       let name = j |> member "name" |> to_string in 
       let loc = j |> member "loc" |> to_string in
       let link = j |> member "link" |> to_string in 
       (*updating branched loc*)
       let col = parse_dims loc |> fst in 
       let row = parse_dims loc |> snd in
-      let _ = 
-        if flag && link <> "" 
+      let _ = if flag && link <> "" 
         then update_branch_map_store ((col, row), link)
         else () in
       (* i don't think the later check is necessary *)
-      ((col,row), Maps.MapParam.single_map_element_constructor ~name ~link))
+      (col,row), MapParam.single_map_element_constructor ~name ~link)
 
 (**[build_one_map s] returns the constructed map from the json file name [s].
    Requires: [s] must be in the form ["map-param*.json"] where ["*"] denotes
@@ -458,7 +457,7 @@ let build_one_map s =
   let size = json |> member "size" |> to_string |> parse_dims in 
   let picture_lists = json |> member "picture" |> to_list in
   let all_map_param = map_param_array_builder picture_lists (name = "main") in
-  (Maps.map_constructor ~size ~name ~all_map_param), size
+  map_constructor ~size ~name ~all_map_param, size
 
 (**[reformat_output_map comb_list] is the array representation of 
    [comb_list]. 
@@ -499,12 +498,12 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 (**[main_map_size_array maps] is the list of total sizes 
    (product of dimensions) of all the maps in [maps] *)
 let main_map_size_array map_array : int array = 
-  Array.map (fun map -> let x, y = Maps.size map in x * y) map_array
+  Array.map (fun map -> let x, y = size map in x * y) map_array
 
 (**[main_map_col_row maps] is the list of size dimensions of all the maps in 
    [maps] *)
 let main_map_col_row map_array = 
-  Array.map (fun map -> Maps.size map) map_array
+  Array.map (fun map -> size map) map_array
 
 (*                       initiate the game                           *)
 
@@ -692,7 +691,7 @@ let take_one_food s =
   let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
-    | Food f when Foods.Food.get_loc f = loc ->
+    | Food f when Food.get_loc f = loc ->
       s.all_foods_in_current_map.(i) <- Eaten;
       update_food_inventory f player
     | _ -> ()
@@ -712,7 +711,7 @@ let take_one_food_in_current_location s =
    Raises: [SuccessExit] if the food at index [pos] is successfully dropped. *)
 let drop_one_food s pos = 
   let search_food_array s f loc = 
-    Foods.Food.set_loc f loc;
+    Food.set_loc f loc;
     let food = Food f in
     for j = 0 to (Array.length s.all_foods_in_current_map) - 1 do
       match s.all_foods_in_current_map.(j) with
@@ -744,8 +743,8 @@ let drop_one_food_to_current_location s pos =
    food at index [pos] removed from the player's inventory at state [s].  *)
 let eat_one_food_in_inventory s pos = 
   let eat_food food t = 
-    let health = Foods.Food.get_health food
-    and strength = Foods.Food.get_strength food in
+    let health = Food.get_health food
+    and strength = Food.get_strength food in
     Player.increase_health t health;
     Player.increase_strength t strength;
     Player.update_skill t (Food.get_gainables food) in
@@ -770,7 +769,7 @@ let equip_one_weapon s =
       match s.weapon_inventory.(j) with
       | Empty -> 
         s.weapon_inventory.(j) <- Weapon w;
-        Player.increase_strength t (Weapons.Weapon.get_strength w);
+        Player.increase_strength t (Weapon.get_strength w);
         Player.update_skill t (Weapon.get_gainables w);
         raise SuccessExit
       | _ -> ()
@@ -779,7 +778,7 @@ let equip_one_weapon s =
   let loc = player |> Player.location in
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
-    | Weapon w when Weapons.Weapon.get_loc w = loc ->
+    | Weapon w when Weapon.get_loc w = loc ->
       s.all_weapons_in_current_map.(i) <- Empty;
       update_weapon_inventory w player
     | _ -> ()
@@ -803,7 +802,7 @@ let equip_weapon_in_current_loc s =
    from the weapon inventory. *)
 let drop_one_weapon s pos = 
   let search_weapon_array s w loc = 
-    Weapons.Weapon.set_loc w loc;
+    Weapon.set_loc w loc;
     let weapon = Weapon w in
     for j = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
       match s.all_weapons_in_current_map.(j) with
@@ -817,7 +816,7 @@ let drop_one_weapon s pos =
   match s.weapon_inventory.(pos) with
   | Weapon w -> 
     let player = s |> get_player in
-    Player.reduce_strength player (Weapons.Weapon.get_strength w);
+    Player.reduce_strength player (Weapon.get_strength w);
     s.weapon_inventory.(pos) <- Empty;
     search_weapon_array s w (player |> Player.location);
   | _ -> ()
@@ -842,8 +841,8 @@ let check_food_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
   for i = 0 to (Array.length s.all_foods_in_current_map) - 1 do
     match s.all_foods_in_current_map.(i) with
-    | Food f when Foods.Food.get_loc f = loc ->
-      store.(0) <- (Foods.Food.get_name f)::store.(0)
+    | Food f when Food.get_loc f = loc ->
+      store.(0) <- (Food.get_name f)::store.(0)
     | _ -> ()
   done;
   store.(0)
@@ -855,8 +854,8 @@ let check_weapon_on_loc_and_return_name_list s loc =
   let store = [|[]|] in
   for i = 0 to (Array.length s.all_weapons_in_current_map) - 1 do
     match s.all_weapons_in_current_map.(i) with
-    | Weapon w when Weapons.Weapon.get_loc w = loc ->
-      store.(0) <- (Weapons.Weapon.get_name w)::store.(0)
+    | Weapon w when Weapon.get_loc w = loc ->
+      store.(0) <- (Weapon.get_name w)::store.(0)
     | _ -> ()
   done;
   store.(0)
@@ -962,42 +961,46 @@ let list_of_entrance_loc_to_branch_map s =
 
 (*            System Instruction             *)
 
-let main_map_instr p = (* player *)
-  let loc = Player.location p in
-  if (List.filter (fun (ent, _) -> ent = loc) game_state.branched_map_info)
-     <> []
-  then "You are now exploring a branched map. 
-     You will return to the main map once you defeat all enemies in this branch"
-       ^ "map. Good Luck!" 
-  else "Enemies are attacking villages and defeating them!
-     You will find weapons and foods are quite helpful and pick up then on your"
-       ^ "adventure"
+let sys_json=Yojson.Basic.from_file "instr.json"
 
+(**[main_map_instr] is the instruction in which the player has entered the 
+   main map. *)
+let main_map_instr s = (* player *)
+  let loc = Player.location (get_player s) in
+  if (List.filter (fun (ent, _) -> ent = loc) s.branched_map_info) <> []
+  then sys_json|>member "main_map_instr_to_branch" |>to_string
+  else sys_json|>member "main_map_else" |>to_string
+
+(**[branch_map_instr] is the instruction in which the player has entered
+   a branched map.   *)
 let branch_map_instr = 
-  "You are now in a branch map. Picking up weapons and foods as soon as"
-  ^ "possible. You will return to the main map immediately once you have"
-  ^ "defeated all enemies here."
+  sys_json|>member "branch_map_instr" |>to_string
 
-let died_instr = 
-  "You have died, but don't worry. You can still gain an extra life by"
-  ^ "pressing that button. Good luck on your next adventure"
 
+(**[string_of_loc (col,row)] is [" (col, row) "] *)
 let string_of_loc (col, row) = 
   Printf.sprintf " (%d, %d) " col row
 
+(**[enemy_instr_helper s store] loads the instruction regarding enemies at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "All enemies are dead in this map. Congratulations! "] 
+   if there all enemies in the map at state [s] have been killed. 
+   Raises: [SuccessExit] if the enemy instruction has been loaded successfully
+*)
 let enemy_instr_helper s store =
-  (for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
-     match s.all_enemies_in_current_map.(i) with
-     | Enemy e -> store := 
-         ("Enemy " 
-          ^ (Enemy.get_name e) ^ "is in location" 
-          ^ (e |> Enemy.get_pos |> string_of_loc)
-          ^ "\nTry to defeat it!"); 
-       raise SuccessExit
-     | _ -> ()
-   done);
+  for i = 0 to Array.length s.all_enemies_in_current_map - 1 do
+    match s.all_enemies_in_current_map.(i) with
+    | Enemy e -> store := 
+        "Enemy " 
+        ^ (Enemy.get_name e) ^ "is in location" 
+        ^ (e |> Enemy.get_pos |> string_of_loc)
+        ^ "\nTry to defeat it!"; 
+      raise SuccessExit
+    | _ -> ()
+  done;
   raise (Failure "All enemies are dead in this map. Congratulations! ")
 
+(**[enemy_instr s] is the instruction regarding enemies at state [s] *)
 let enemy_instr s =
   let store = ref "" in
   try
@@ -1006,19 +1009,26 @@ let enemy_instr s =
   | SuccessExit -> !store
   | Failure s -> s
 
+(**[food_instr_helper s store] loads the instruction regarding foods at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "There are no food in this map now"] if there is no 
+   such food in the map at state [s]. 
+   Raises: [SuccessExit] if the food instruction has been loaded successfully
+*)
 let food_instr_helper s store =
-  (for i = 0 to Array.length s.all_foods_in_current_map - 1 do
-     match s.all_foods_in_current_map.(i) with
-     | Food f -> store := 
-         ("Food " 
-          ^ (Food.get_name f) ^ "is in location" 
-          ^ (f |> Food.get_loc |> string_of_loc)
-          ^ "\nMove there and take it!"); 
-       raise SuccessExit
-     | _ -> ()
-   done);
+  for i = 0 to Array.length s.all_foods_in_current_map - 1 do
+    match s.all_foods_in_current_map.(i) with
+    | Food f -> store := 
+        "Food " 
+        ^ (Food.get_name f) ^ "is in location" 
+        ^ (f |> Food.get_loc |> string_of_loc)
+        ^ "\nMove there and take it!"; 
+      raise SuccessExit
+    | _ -> ()
+  done;
   raise (Failure "There are no food in this map now/")
 
+(**[food_instr s] is the instruction regarding foods at state [s] *)
 let food_instr s =
   let store = ref "" in
   try
@@ -1027,19 +1037,26 @@ let food_instr s =
   | SuccessExit -> !store
   | Failure s -> s
 
+(**[weapon_instr_helper s store] loads the instruction regarding weapons at 
+   state [s]. [store] keeps track of what the instruction is. 
+   Raises: [Failure "There are no weapon in this map now"] if there is no 
+   such weapon in the map at state [s]. 
+   Raises: [SuccessExit] if the weapon instruction has been loaded successfully
+*)
 let weapon_instr_helper s store =
-  (for i = 0 to Array.length s.all_weapons_in_current_map - 1 do
-     match s.all_weapons_in_current_map.(i) with
-     | Weapon w -> store := 
-         ("Food " 
-          ^ (Weapon.get_name w) ^ "is in location" 
-          ^ (w |> Weapon.get_loc |> string_of_loc)
-          ^ "\nMove there and equip it!"); 
-       raise SuccessExit
-     | _ -> ()
-   done);
-  raise (Failure "There are no food in this map now/")
+  for i = 0 to Array.length s.all_weapons_in_current_map - 1 do
+    match s.all_weapons_in_current_map.(i) with
+    | Weapon w -> store := 
+        ("Food " 
+         ^ (Weapon.get_name w) ^ "is in location" 
+         ^ (w |> Weapon.get_loc |> string_of_loc)
+         ^ "\nMove there and equip it!"); 
+      raise SuccessExit
+    | _ -> ()
+  done;
+  raise (Failure "There are no weapon in this map now/")
 
+(**[weapon_instr s] is the instruction regarding weapons at state [s] *)
 let weapon_instr s =
   let store = ref "" in
   try
@@ -1048,17 +1065,20 @@ let weapon_instr s =
   | SuccessExit -> !store
   | Failure s -> s
 
+(**[system_instr s] is the instruction to the player at state [s] *)
 let system_instr s =
   let basic_instr = 
     match get_current_map_name s, s.player with
-    | "main", Player t -> main_map_instr t
+    | "main", Player _ -> main_map_instr s
     | name, Player t -> branch_map_instr
-    | _, Died -> died_instr in
+    | _, Died -> "" in
   let enemy_ins = enemy_instr s in
   let food_ins = food_instr s in
   let weapon_ins = weapon_instr s in
   basic_instr ^ "\n" ^ enemy_ins ^ "\n" ^ food_ins ^ "\n" ^ weapon_ins
 
+(**[check_wins s] returns whether the player at state [s] is in the 
+   winning state.  *)
 let check_wins s =  
   Array.for_all (fun single_enemy_map ->
       Array.for_all (fun enemy -> enemy = Deleted) single_enemy_map) 
