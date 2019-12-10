@@ -2,20 +2,20 @@ open Graphics
 open Enemy
 open Player
 
-(** The abstract type of values representing stage of GUI game *)
+(** The abstract type of values representing stage of GUI game *)
 type stage = 
   |Combat
   |Normal
 
-(** The abstract type of values representing interactive events *)
+(** The abstract type of values representing interactive events *)
 type box = 
   | Action_button of (int*int*int*int)*(string*string)
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
   | Bnone
 
-(** The abstract type of values representing triggers of each interactive 
-   events *)
+(** The abstract type of values representing triggers of each interactive 
+    events *)
 type trigger = 
     Guide of string
   |Command of string
@@ -25,7 +25,7 @@ type trigger =
   |Order of string*string
   |Tnone
 
-(** The abstract type of values representing items on the ground *)
+(** The abstract type of values representing items on the ground *)
 type item_ground=
   |None
   |Weapon
@@ -707,11 +707,10 @@ let action_button_helper status stage (x,y,w,h) (c,t) =
   if x < status.mouse_x && (x + w) > status.mouse_x &&
      y < status.mouse_y && (y + h) > status.mouse_y && status.button
   then (if stage = Normal then 
-          parse (Order(c,t)) else 
-          (match c with 
-           |"skill" -> 
-             parse  (Attack t)
-           |_ -> ())) else ()
+          parse (Order(c,t)) else if c="skill" then
+          parse  (Attack t) else
+          ()) else 
+    ()
 
 (** [fensor stage] detects the interactive events from keyboard and mouse
     and perform action according to the events and [stage]
