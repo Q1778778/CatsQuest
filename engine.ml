@@ -955,7 +955,7 @@ let delete_map_pos (s: state) (pos: int) (name: string) : unit =
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
-    List.filter (fun (_, map_name) -> name <> map) s.branched_map_info;
+    List.filter (fun (_, map_name) -> name <> map_name) s.branched_map_info;
   s.all_maps <- List.filter (fun map -> map.name <> name) s.all_maps
 
 

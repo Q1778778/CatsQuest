@@ -140,10 +140,10 @@ let contains s1 s2 =
   counter 0
 
 
-(**[random_int_array_for_enemies arr num] returns a 
+(**[random_int_array_for_enemies_and_items arr num] returns a 
    probability-driven random int array with the number [num] and the 
    location array [arr] *)
-let random_int_array_for_enemies map_size_array number =
+let random_int_array_for_enemies_and_items map_size_array number =
   let round f = truncate (f +. 0.5) in
   let raw_prob = map_size_array |> Array.to_list in
   let rec total_sum num = function
@@ -159,24 +159,6 @@ let random_int_array_for_enemies map_size_array number =
   number - total_sum 0 tl :: tl
   |> Array.of_list
 
-(**[random_int_array_for_items arr num] returns a 
-   probability-driven random int array with the number [num] and the 
-   location array [arr] *)
-let random_int_array_for_items map_size_array items =
-  let round f = truncate (f +. 0.5) in
-  let raw_prob = map_size_array |> Array.to_list in
-  let rec total_sum num = function
-    | [] -> num
-    | h::d -> total_sum (num + h) d in
-  let sum = total_sum 0 raw_prob in
-  let float_sum = float_of_int sum in
-  let float_num = float_of_int items in
-  let temp_random_number = (*the probability oper here is pretty messy *)
-    List.map (fun s -> 
-        (float_of_int s) /. float_sum *. float_num |> round) raw_prob in 
-  let tl = List.tl temp_random_number in
-  items - total_sum 0 tl :: tl
-  |> Array.of_list
 
 (**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , 
    (1, row), (col, row-1), (col-1, row-1), ...]] containing [n] elements,
@@ -246,10 +228,7 @@ let filter_one_element_out_from_array array pos =
    [s] with the corresponding name [name]. *)
 let get_map_index_by_name s name = 
   let rec search acc = function 
-    | [] -> print_int (Array.length s.all_enemies);
-      print_int (Array.length s.all_foods);
-      print_int (List.length s.all_maps);
-      failwith "invalid map name"
+    | [] ->failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search (acc+1) d in 
   search 0 s.all_maps
@@ -577,18 +556,18 @@ let helper_init () =
   (*this number can be either artificially set or stored in json.*)
   let map_size_array = main_map_size_array ~map_array in
   let map_col_row_array = main_map_col_row ~map_array in
-  let final_number_array_e = 
+  let final_number_array = 
     random_int_array_for_enemies_and_items map_size_array 15 in
   let all_enemies = 
-    main_engine_enemy ~map_col_row_array ~loc_array final_number_array_e in
-  let final_number_array_w = 
+    main_engine_enemy ~map_col_row_array ~loc_array final_number_array in
+  let final_number_array_1 = 
     random_int_array_for_enemies_and_items map_size_array 10 in
   let all_weapons = 
-    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_w in
-  let final_number_array_f = 
+    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_1 in
+  let final_number_array_2 = 
     random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
-    main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
+    main_engine_food ~map_col_row_array ~loc_array final_number_array_2 in
   map_array, all_enemies, all_foods, all_weapons
 
 (** [init ()] is the init state of the entire game. 
@@ -968,26 +947,16 @@ let check_item_on_player_ground s =
     check_weapon_on_loc_and_return_name_list s loc
   )
 
-let filter_out_index_list list pos = 
-  let rec adder count finished remains = 
-    match remains with
-    | [] -> finished |> List.rev
-    | h::d -> if count = 0 
-      then (finished |> List.rev) @ d
-      else adder (count - 1) (h::finished) d in 
-  adder pos [] list
 
-
-(**[delete_map_pos s pos] deletes the items of the item arrays 
-   at index [pos] in state [s]. *)
-let delete_map_pos s pos = 
-  let map = List.nth s.branched_map_info pos in
+(**[delete_map_pos s pos name] deletes the items of the item arrays 
+   at index [pos] in state [s] with map name as [name]. *)
+let delete_map_pos (s: state) (pos: int) (name: string) : unit = 
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
-    List.filter (fun (_, map_name) -> map_name <> map.name) s.branched_map_info;
-  s.all_maps <- filter_out_index_list s.all_maps pos
+    List.filter (fun (_, map_name) -> name <> map_name) s.branched_map_info;
+  s.all_maps <- List.filter (fun map -> map.name <> name) s.all_maps
 
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
@@ -1025,6 +994,7 @@ let transfer_player_to_branch_map s =
 (**[check_branch_map_status s] returns whether the player at state [s] has 
    finished his current branched map. *)
 let check_branch_map_status s = 
+  s.current_map.name <> "main" &&
   Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
 
@@ -1033,15 +1003,15 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
+    let map_name = s.current_map.name in
     let map_pos = get_map_index_by_name s map_name in
-    let col',row' = s.player_old_loc in
     s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) (col'+1, row'+1);
+    Player.switch_loc (get_player s) s.player_old_loc;
     s.all_enemies_in_current_map <- s.all_enemies.(0);
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos
+    delete_map_pos s map_pos map_name
   else
     ()
 
