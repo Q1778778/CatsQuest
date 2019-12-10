@@ -947,26 +947,28 @@ let check_item_on_player_ground s =
     check_weapon_on_loc_and_return_name_list s loc
   )
 
-let filter_out_index_list list pos = 
-  let rec adder count finished remains = 
-    match remains with
-    | [] -> finished |> List.rev
-    | h::d -> if count = 0 
-      then (finished |> List.rev) @ d
-      else adder (count - 1) (h::finished) d in 
-  adder pos [] list
 
-
+<<<<<<< HEAD
 (**[delete_map_pos s pos] deletes the items of the item arrays 
    at index [pos] in state [s]. *)
 let delete_map_pos s pos = 
   let map = (List.nth s.branched_map_info pos) |> snd in
+=======
+(**[delete_map_pos s pos name] deletes the items of the item arrays 
+   at index [pos] in state [s] with map name as [name]. *)
+let delete_map_pos (s: state) (pos: int) (name: string) : unit = 
+>>>>>>> c3fdf65757d3e1b5642dc832d1f163b40ecc0c2d
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
+<<<<<<< HEAD
     List.filter (fun (_, map_name) -> map_name <> map) s.branched_map_info;
   s.all_maps <- filter_out_index_list s.all_maps pos
+=======
+    List.filter (fun (_, map_name) -> name <> map) s.branched_map_info;
+  s.all_maps <- List.filter (fun map -> map.name <> name) s.all_maps
+>>>>>>> c3fdf65757d3e1b5642dc832d1f163b40ecc0c2d
 
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
@@ -1021,7 +1023,11 @@ let transfer_player_to_main_map s =
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
+<<<<<<< HEAD
     delete_map_pos s map_pos
+=======
+    delete_map_pos s map_pos map_name
+>>>>>>> c3fdf65757d3e1b5642dc832d1f163b40ecc0c2d
   else
     ()
 
