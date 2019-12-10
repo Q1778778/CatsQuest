@@ -17,4 +17,4 @@ docs: build
 	mkdir -p doc
 	ocamlfind ocamldoc -I _build -package $(PKGS) \
 		-html  -d doc \
-		-m A engine.ml player.ml
+		-m A engine.ml player.ml foods.ml weapons.ml maps.ml enemy.ml color_convert.ml map_builder.ml gui.ml

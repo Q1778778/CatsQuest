@@ -2,17 +2,20 @@ open Graphics
 open Enemy
 open Player
 
-
+(** The abstract type of values representing stage of GUI game *)
 type stage = 
   |Combat
   |Normal
 
+(** The abstract type of values representing interactive events *)
 type box = 
   | Action_button of (int*int*int*int)*(string*string)
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
   | Bnone
 
+(** The abstract type of values representing triggers of each interactive 
+   events *)
 type trigger = 
     Guide of string
   |Command of string
@@ -22,11 +25,13 @@ type trigger =
   |Order of string*string
   |Tnone
 
+(** The abstract type of values representing items on the ground *)
 type item_ground=
   |None
   |Weapon
   |Food 
 
+(** [clist] represents GUI's information resources*)
 type clist = 
   { mutable fbutton : box list;
     mutable dialog: box;
@@ -41,7 +46,7 @@ type clist =
     mutable player_level: int;
   }
 
-(** [cd_skill] represents player's gainable skills*)
+(** [cd_skill] represents player's gainable skills cool down time*)
 type cd_skill = {
   mutable fire: int;
   mutable trial: int;
@@ -51,7 +56,8 @@ type cd_skill = {
 (**[Not_such_enemy] is raised when there is an invalid enemy name*)
 exception Not_such_enemy of string
 
-(**[cplace] represents the initial display window when game starts*)
+(**[cplace] represents the initial display information when game starts,
+   and updates of information will be stored here*)
 let cplace= {fbutton=[];
              dialog=Bnone;
              irefresh=false;
@@ -70,8 +76,10 @@ let cd_store={
   trial= -1;
   punishment= -1}
 
+(** [lblue] is color light blue*)
 let lblue = Graphics.rgb 82 219 255
 
+(** [grey] is color grey*)
 let grey = Graphics.rgb 192 192 192
 
 (** [whitebox_draw a b c d width] draws a whitebox with lowerleft point at [a,b]

@@ -12,7 +12,14 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Index of module types" rel=Appendix href="index_module_types.html">
 <link title="Engine" rel="Chapter" href="Engine.html">
-<link title="Player" rel="Chapter" href="Player.html"><title>Player.Player</title>
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Foods" rel="Chapter" href="Foods.html">
+<link title="Weapons" rel="Chapter" href="Weapons.html">
+<link title="Maps" rel="Chapter" href="Maps.html">
+<link title="Enemy" rel="Chapter" href="Enemy.html">
+<link title="Color_convert" rel="Chapter" href="Color_convert.html">
+<link title="Map_builder" rel="Chapter" href="Map_builder.html">
+<link title="Gui" rel="Chapter" href="Gui.html"><title>Player.Player</title>
 </head>
 <body>
 <div class="navbar">&nbsp;<a class="up" href="Player.html" title="Player">Up</a>
@@ -123,17 +130,17 @@
 <pre><span id="VALlevel"><span class="keyword">val</span> level</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALcol"><span class="keyword">val</span> col</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALrow"><span class="keyword">val</span> row</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALmove"><span class="keyword">val</span> move</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> Maps.t -> int -> int -> unit</code></pre><div class="info ">
+<pre><span id="VALmove"><span class="keyword">val</span> move</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Maps.html#TYPEt">Maps.t</a> -> int -> int -> unit</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">move p m c r</code> changes the player state for which the player <code class="code">p</code> 
       moves in map <code class="code">m</code>;</p>
 </div>
 </div>
 
-<pre><span id="VALmove_left"><span class="keyword">val</span> move_left</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> Maps.t -> unit</code></pre>
-<pre><span id="VALmove_right"><span class="keyword">val</span> move_right</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> Maps.t -> unit</code></pre>
-<pre><span id="VALmove_up"><span class="keyword">val</span> move_up</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> Maps.t -> unit</code></pre>
-<pre><span id="VALmove_down"><span class="keyword">val</span> move_down</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> Maps.t -> unit</code></pre>
+<pre><span id="VALmove_left"><span class="keyword">val</span> move_left</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Maps.html#TYPEt">Maps.t</a> -> unit</code></pre>
+<pre><span id="VALmove_right"><span class="keyword">val</span> move_right</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Maps.html#TYPEt">Maps.t</a> -> unit</code></pre>
+<pre><span id="VALmove_up"><span class="keyword">val</span> move_up</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Maps.html#TYPEt">Maps.t</a> -> unit</code></pre>
+<pre><span id="VALmove_down"><span class="keyword">val</span> move_down</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Maps.html#TYPEt">Maps.t</a> -> unit</code></pre>
 <pre><span id="VALincrease_health"><span class="keyword">val</span> increase_health</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int -> unit</code></pre>
 <pre><span id="VALincrease_strength"><span class="keyword">val</span> increase_strength</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int -> unit</code></pre>
 <pre><span id="VALreduce_health"><span class="keyword">val</span> reduce_health</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int -> unit</code></pre>

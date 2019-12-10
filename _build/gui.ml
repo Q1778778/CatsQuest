@@ -2,17 +2,20 @@ open Graphics
 open Enemy
 open Player
 
-
+(** The abstract type of values representing stage of GUI game *)
 type stage = 
   |Combat
   |Normal
 
+(** The abstract type of values representing interactive events *)
 type box = 
   | Action_button of (int*int*int*int)*(string*string)
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
   | Bnone
 
+(** The abstract type of values representing triggers of each interactive 
+   events *)
 type trigger = 
     Guide of string
   |Command of string
@@ -22,11 +25,13 @@ type trigger =
   |Order of string*string
   |Tnone
 
+(** The abstract type of values representing items on the ground *)
 type item_ground=
   |None
   |Weapon
   |Food 
 
+(** [clist] represents GUI's information resources*)
 type clist = 
   { mutable fbutton : box list;
     mutable dialog: box;
@@ -41,7 +46,7 @@ type clist =
     mutable player_level: int;
   }
 
-(** [cd_skill] represents player's gainable skills*)
+(** [cd_skill] represents player's gainable skills cool down time*)
 type cd_skill = {
   mutable fire: int;
   mutable trial: int;
@@ -51,7 +56,8 @@ type cd_skill = {
 (**[Not_such_enemy] is raised when there is an invalid enemy name*)
 exception Not_such_enemy of string
 
-(**[cplace] represents the initial display window when game starts*)
+(**[cplace] represents the initial display information when game starts,
+   and updates of information will be stored here*)
 let cplace= {fbutton=[];
              dialog=Bnone;
              irefresh=false;
@@ -70,8 +76,10 @@ let cd_store={
   trial= -1;
   punishment= -1}
 
+(** [lblue] is color light blue*)
 let lblue = Graphics.rgb 82 219 255
 
+(** [grey] is color grey*)
 let grey = Graphics.rgb 192 192 192
 
 (** [whitebox_draw a b c d width] draws a whitebox with lowerleft point at [a,b]
@@ -688,38 +696,49 @@ let ksensor status =
   |'S' -> Engine.move_player_left Engine.game_state; cplace.irefresh <- true
   |_ -> ()
 
-let action_button_helper s i (x,y,w,h) (c,t) = 
-  if x < s.mouse_x && (x + w) > s.mouse_x &&
-     y < s.mouse_y && (y + h) > s.mouse_y && s.button
-  then (if i = Normal then 
+(** [action_button_helper status stage (x,y,w,h) (c,t)] checks is the mouse
+    pressed according to [status] in the range [x,y,x+w,h+y+h] and perform
+    the action according to [c,t]
+    Require: [status] is Graphics.dtatus
+    [stage] is a vaild stage
+    [x,y,w,h] are non-nagative ints
+    [c,t] are strings*)
+let action_button_helper status stage (x,y,w,h) (c,t) = 
+  if x < status.mouse_x && (x + w) > status.mouse_x &&
+     y < status.mouse_y && (y + h) > status.mouse_y && status.button
+  then (if stage = Normal then 
           parse (Order(c,t)) else 
           (match c with 
            |"skill" -> 
              parse  (Attack t)
            |_ -> ())) else ()
 
-let rec fensor (c:clist) i = 
+(** [fensor stage] detects the interactive events from keyboard and mouse
+    and perform action according to the events and [stage]
+    Require: [stage] is a vaild stage*)
+let rec fensor stage = 
   let status = Graphics.wait_next_event [Button_down;Key_pressed] in 
   let sense b (s:Graphics.status) = 
     match b with
     |Action_button ((x,y,w,h),(command,trigger)) -> 
-      action_button_helper s i (x,y,w,h) (command,trigger)
+      action_button_helper s stage (x,y,w,h) (command,trigger)
     |Action_box ((x,y,w,h),(string,int)) -> 
       if x < s.mouse_x && (x + w) > s.mouse_x &&
          y < s.mouse_y && (y + h) > s.mouse_y &&
          s.button then
         (parse (Item (string,int))) else ()
     |Dialog_sense s -> ()
-    |_ -> fensor c i in
+    |_ -> fensor stage in
   if status.button then 
-    (let _ = List.rev_map (fun butt -> sense butt status) c.fbutton in 
+    (let _ = List.rev_map (fun butt -> sense butt status) cplace.fbutton in 
      ()) else 
     ksensor status
 
-
+(** [clear_screen ()] clears the screen if irefresh is true *)
 let clear_screen () = 
   if cplace.irefresh = true then Graphics.clear_graph() else ()
 
+(** [cd_mon()] check the cool down time for each skill and update it in cplace*)
 let cd_mon () = 
   let cd_lst = Player.get_all_skill_format
       (Engine.get_player Engine.game_state) in 
@@ -735,7 +754,8 @@ let cd_mon () =
     |[] -> () in 
   update_cd_matcher cd_lst
 
-
+(** [skill_mon()] check the  
+    player skill and update it in cplace *)
 let skill_mon () = 
   match Engine.game_state.player with
   |Player s -> 
@@ -744,6 +764,8 @@ let skill_mon () =
     cd_mon()
   |Died -> ()
 
+(** [level_mon()] check the player level draws a dialog box
+    when player got upgraded*)
 let level_mon int = 
   if int<>cplace.player_level then
     (dialog ("you defeated the enemy and you are upgraded to level" ^ 
@@ -751,11 +773,14 @@ let level_mon int =
        "cute cat";cplace.player_level <- int;
      let _ = Graphics.wait_next_event[Button_down]in ()) else ()
 
+(** [combat id] is the main function for combat, it start a combat with
+    enemy with [id] and draw information on the screen
+    Requires: [id] is a vaild enemy id*)
 let rec combat id = 
   skill_mon();
   skill_info_helper();
   draw_cd();
-  fensor cplace Combat;
+  fensor Combat;
   game_over_mon();
   Graphics.clear_graph();
   if enemy_mon id then
@@ -769,6 +794,8 @@ let rec combat id =
         (string_of_int expeience) ^ " points of expeience.");
      Engine.delete_one_enemy_from_state Engine.game_state)
 
+(** [combat_mon()] checks the emeny in combat field in cplace and 
+    start a combat when the field is not "none"*)
 let combat_mon() = if cplace.enemy_to_combat<>"none" then 
     let name = (get_one_enemy cplace.enemy_to_combat (enemy_list())
                 |>Enemy.get_name) in
@@ -779,6 +806,8 @@ let combat_mon() = if cplace.enemy_to_combat<>"none" then
      combat cplace.enemy_to_combat )
   else ()
 
+(** [ground_mon()] checks the if a item is on the ground and updated it
+    in cplace. *)
 let ground_mon () = 
   let player =  Engine.game_state.player in 
   match player with 
@@ -790,17 +819,22 @@ let ground_mon () =
      |h::t,_ -> cplace.item_ground <- true)
   |Engine.Died -> ()
 
+(** [enemy_loc_mon()] checks the is emeny at the same loction as the player
+    and updated in cplace*)
 let enemy_loc_mon() = 
   let (bool,id) = Engine.check_enemy_in_current_loc Engine.game_state in 
   if bool then cplace.enemy_to_combat <- id else 
     ()
 
+(** [win_mon()] checks the winning condition fo the game and shut the game down
+    when the condition is satisfied*)
 let win_mon () = 
   if Engine.check_wins Engine.game_state then 
     (dialog "You win!" Color_convert.cute_cat "cute cat"; 
      let _ = Graphics.wait_next_event [Button_down] in 
      Graphics.close_graph()) else ()
 
+(** [refresh_draw()] draw important information during Normal stage*)
 let refresh_draw() =
   cplace.fbutton <- [];
   cplace.dialog <- Bnone;
@@ -817,10 +851,12 @@ let refresh_draw() =
   item_draw ();
   draw_inventory()
 
+(** [main()] is the main function during normal stage. It draws information
+    and checks for every condition and variable in the game*)
 let rec main ()  = 
   try (refresh_draw();
        win_mon();
-       fensor cplace Normal;
+       fensor Normal;
        tsensor ();
        enemy_loc_mon();
        combat_mon();
@@ -828,6 +864,7 @@ let rec main ()  =
        clear_screen();
        main ()) with Graphics.Graphic_failure s->()
 
+(** [beginning ()] draws logo and the beginning interface and start the game*)
 let rec beginning () =
   Graphics.moveto 500 650;
   Graphics.draw_string "Welcome to Cat Quest";
@@ -836,14 +873,16 @@ let rec beginning () =
   draw_a_image Color_convert.logo 450 200;
   cplace.fbutton <- [create_button "Start" 
                        green black 500 550 200 50 ("diff","easy")];
-  fensor cplace Normal;
+  fensor Normal;
   if cplace.difficulty<>"empty" then 
     (Graphics.clear_graph(); main () )else beginning ()
 
+(** [init()] opens the graph and initialize map image resourse*)
 let init () =
   Graphics.open_graph " 1200x800+100";
   Map_builder.text_init();
   beginning ()
 
+(** automaticly start the game *)
 let () = init ()
 
