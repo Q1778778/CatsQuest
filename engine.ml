@@ -556,7 +556,7 @@ let helper_init () =
   let final_number_array = 
     random_int_array_for_enemies_and_items ~map_size_array ~number in
   let final_number_array_2 = 
-    random_int_array_for_enemies_and_items ~map_size_array ~number:20 in
+    random_int_array_for_enemies_and_items ~map_size_array ~number:30 in
   let all_enemies = 
     main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array in
   let all_foods = 
