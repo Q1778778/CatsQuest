@@ -957,15 +957,14 @@ let filter_out_index_list list pos =
   adder pos [] list
 
 
-(**[delete_map_pos s pos] deletes the items of the item arrays 
-   at index [pos] in state [s]. *)
-let delete_map_pos s pos = 
-  let map = (List.nth s.branched_map_info pos) |> snd in
+(**[delete_map_pos s pos name] deletes the items of the item arrays 
+   at index [pos] in state [s] with map name as [name]. *)
+let delete_map_pos s pos name = 
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
-    List.filter (fun (_, map_name) -> map_name <> map) s.branched_map_info;
+    List.filter (fun (_, map_name) -> name <> map) s.branched_map_info;
   s.all_maps <- filter_out_index_list s.all_maps pos
 
 
@@ -1013,15 +1012,15 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
-    let map_pos = get_map_index_by_name s s.current_map.name in
-    let col',row' = s.player_old_loc in
+    let map_name = s.current_map.name in
+    let map_pos = get_map_index_by_name s map_name in
     s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) (col'+1, row'+1);
+    Player.switch_loc (get_player s) s.player_old_loc;
     s.all_enemies_in_current_map <- s.all_enemies.(0);
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos
+    delete_map_pos s map_name
   else
     ()
 
