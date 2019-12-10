@@ -455,10 +455,11 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
       if String.length json >= 12
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "weapons"
-      then let jsons_list |> Yojson.Basic.from_file 
-           |> to_list = in
-      let expected_w_models = random_list_with_fixed_length jsons_list number in
-        weapon_array_builder ~loc_array ~col ~row expected_w_models
+      then (let jsons_list = json |> Yojson.Basic.from_file 
+                             |> to_list in
+            let expected_w_models = 
+              random_list_with_fixed_length jsons_list number in
+            weapon_array_builder ~loc_array ~col ~row expected_w_models)
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
 
@@ -568,14 +569,12 @@ let helper_init () =
     random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
     main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
-  map_array,loc_array, number, map_size_array, map_col_row_array, 
-  final_number_array, all_enemies, all_foods, all_weapons
+  map_array, all_enemies, all_foods, all_weapons
 
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
 let init () : state =
-  let map_array,loc_array, number, map_size_array, map_col_row_array, 
-      final_number_array, all_enemies, all_foods, all_weapons = 
+  let map_array, all_enemies, all_foods, all_weapons = 
     helper_init () in 
   {
     player = main_engine_player ();
@@ -593,9 +592,6 @@ let init () : state =
     all_weapons = all_weapons;
     all_enemies = all_enemies;
   }
-
-
-
 
 (*                        basic getters                            *)
 
