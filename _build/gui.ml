@@ -2,20 +2,20 @@ open Graphics
 open Enemy
 open Player
 
-(** The abstract type of values representing stage of GUI game *)
+(** The abstract type of values representing stage of GUI game *)
 type stage = 
   |Combat
   |Normal
 
-(** The abstract type of values representing interactive events *)
+(** The abstract type of values representing interactive events *)
 type box = 
   | Action_button of (int*int*int*int)*(string*string)
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
   | Bnone
 
-(** The abstract type of values representing triggers of each interactive 
-   events *)
+(** The abstract type of values representing triggers of each interactive 
+    events *)
 type trigger = 
     Guide of string
   |Command of string
@@ -25,7 +25,7 @@ type trigger =
   |Order of string*string
   |Tnone
 
-(** The abstract type of values representing items on the ground *)
+(** The abstract type of values representing items on the ground *)
 type item_ground=
   |None
   |Weapon

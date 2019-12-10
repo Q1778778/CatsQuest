@@ -129,8 +129,8 @@ module Enemy: EnemySig = struct
     exp: int;
     skills: skills list;
     initial_hp: int;
-    count: int;
     (*dynamic fields *)
+    mutable count: int;
     mutable level: int;
     mutable pos: int * int;
     mutable hp: int;
