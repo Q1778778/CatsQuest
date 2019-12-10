@@ -455,9 +455,10 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
       if String.length json >= 12
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "weapons"
-      then json |> Yojson.Basic.from_file 
-           |> to_list 
-           |> weapon_array_builder ~loc_array ~col ~row
+      then let jsons_list |> Yojson.Basic.from_file 
+           |> to_list = in
+      let expected_w_models = random_list_with_fixed_length jsons_list number in
+        weapon_array_builder ~loc_array ~col ~row expected_w_models
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
 
@@ -553,21 +554,20 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 15  in
   let map_size_array = main_map_size_array ~map_array in
   let map_col_row_array = main_map_col_row ~map_array in
-  let final_number_array = 
-    random_int_array_for_enemies_and_items map_size_array number in
+  let final_number_array_e = 
+    random_int_array_for_enemies_and_items map_size_array 15 in
   let all_enemies = 
-    main_engine_enemy ~map_col_row_array ~loc_array final_number_array in
-  let final_number_array_1 = 
-    random_int_array_for_enemies_and_items map_size_array number in
+    main_engine_enemy ~map_col_row_array ~loc_array final_number_array_e in
+  let final_number_array_w = 
+    random_int_array_for_enemies_and_items map_size_array 10 in
   let all_weapons = 
-    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_1 in
-  let final_number_array_2 = 
-    random_int_array_for_enemies_and_items map_size_array 20 in
+    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_w in
+  let final_number_array_f = 
+    random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
-    main_engine_food ~map_col_row_array ~loc_array final_number_array_2 in
+    main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
   map_array,loc_array, number, map_size_array, map_col_row_array, 
   final_number_array, all_enemies, all_foods, all_weapons
 
