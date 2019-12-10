@@ -6,6 +6,83 @@ open Foods
 open Maps
 open Weapons
 
+(**Test Plan: 
+
+   All the basic functionality of the model objects - player, enemy, branched 
+   map,food, weapon - is developed via OUnit, while any testing involving the 
+   GUI is done manually. 
+
+   We first test the functionality of the player module, making sure that 
+   each player state is updated correctly after applying these functions. 
+   We first tested (via blackbox) that moving the player in all four directions
+   updates the player to its correct position, and attempting to move the 
+   player out of the map does not change the player's location. We then attempt 
+   to advance the player to the next level before having enough experience,
+   in which no update should be made to the player. We then increase the 
+   player's experience by just enough so that the player would advance to the
+   next level, and test that the player's level has incremented, and that his 
+   experience and health has updated accordingly. We then change the 
+   player's health by a certain amount to check whether the player's health
+   has increased or decreased by the correct amount; in boundary cases, when 
+   increasing a player's health to more than his maximum health, the player's 
+   health is his maximum health; similarly when his health gets decreased to 
+   0 or a negative value, his health essentially becomes zero. 
+   Most of these test units are tested via black box testing, with some 
+   glass box testing aspects associated to it for more complex 
+   operations (i.e. advancing the player to next level changes his current 
+   level, experience, and health). 
+   [TODO: What tests were omitted and why]
+   [TODO: Why this testing approach demonstrates correctness]
+
+   We then added the enemy test suite. We first tested whether reducing the
+   enemy's hp level by a certain amount resulted in the correct hp level. We
+   then ensure that the list skills of the enemy are nonempty (there must be
+   skills that enemies possess). We also checked that the enemy level does 
+   not change under any circumstances, as it is a static field. We mostly 
+   used black box testing to test that these properties hold. 
+   [TODO: What tests were omitted and why]
+   [TODO: Why this testing approach demonstrates correctness]
+
+   Next, we tested the food states via black box testing. 
+   For the food objects, we tested that when the food gets moved to a different 
+   location its strength and health value does not get changed. These are the 
+   only properties tested for the food objects, since these are the only values 
+   that matter for food model objects. All the other info for the food - name,
+   description, gainables, id - do not change under any circumstance, yet we 
+   did not need to test this since there are no functions that mutate these 
+   properties. This demonstrates correctness since it covers all possible 
+   updates to the food information. 
+
+   We follow a similar approach for testing the weapon states as 
+   stated in the above paragraph. We specifically
+   tested that the weapon names and strength are consistent when the 
+   weapon moves to a different location on the map, and that location of the
+   weapon gets updated properly. All other info for the weapon - description, 
+   id, gainables - do not change under any circumstance as no other code within
+   the module references them other than the getter methods. This demonstrates
+   correctness since it covers all possible updates to the weapon information. 
+
+   For the branched map tests, we first made sure that switching to one of the
+   branched maps changes to a nonzero index (index = 0 indicates the main map),
+   and the name of the map is no longer "main". We then made sure that when 
+   searching finding the set of weapons in the current map through 
+   all sets of weapons, the index of the set of weapons is also non-zero 
+   (weapon set at index 0 indicates the weapons in the main map). We made sure
+   the same thing was true for finding the set of foods and enemies through 
+   all sets of foods and enemies (we have used parallel arrays for these
+   sets). We then made sure that switching back to the  main map produces 0 as the 
+   indices mentioned above. 
+   [TODO: What tests were omitted and why]
+   [TODO: Why this testing approach demonstrates correctness]
+
+   Finally, we tested the engine state. [TODO explain the test suite]
+   [TODO: What tests were omitted and why]
+   [TODO: Why correctness is demonstrated]
+
+   All implementation involving the GUI is tested manually. 
+   [TODO: Explain more]
+*)
+
 (**[get_player s] returns [t] if the player at state [s] yields [Player t].
    Otherwise, fails with "died" *)
 let get_player s = 
