@@ -7,7 +7,7 @@
     "gainables": []
   },
   {
-    "name": "Coffee",
+    "name": "coffee",
     "description": "Who doesn't want to enjoy this cute coffee?.",
     "strength": 30,
     "health": 20,
@@ -15,7 +15,7 @@
       {
         "name": "fire",
         "description": "Fire is the natural tools to defeat evils",
-        "cd": 1,
+        "cd": 2,
         "strength": 20
       }
     ]

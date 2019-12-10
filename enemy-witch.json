@@ -20,8 +20,8 @@
     {
       "name": "divine trial",
       "description": "The final day has come and all evils will be purified",
-      "cd": 2,
-      "strength": 30
+      "cd": 1,
+      "strength": 25
     }
   ]
 }
