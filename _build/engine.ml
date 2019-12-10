@@ -957,8 +957,8 @@ let filter_out_index_list list pos =
   adder pos [] list
 
 
-(**[delete_map_pos s pos name] deletes the items of the item arrays 
-   at index [pos] in state [s] with map name as [name]. *)
+(**[delete_map_pos s pos] deletes the items of the item arrays 
+   at index [pos] in state [s]. *)
 let delete_map_pos s pos name = 
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
