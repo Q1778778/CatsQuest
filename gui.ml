@@ -707,11 +707,10 @@ let action_button_helper status stage (x,y,w,h) (c,t) =
   if x < status.mouse_x && (x + w) > status.mouse_x &&
      y < status.mouse_y && (y + h) > status.mouse_y && status.button
   then (if stage = Normal then 
-          parse (Order(c,t)) else 
-          (match c with 
-           |"skill" -> 
-             parse  (Attack t)
-           |_ -> ())) else ()
+          parse (Order(c,t)) else if c="skill" then
+          parse  (Attack t) else
+          ()) else 
+    ()
 
 (** [fensor stage] detects the interactive events from keyboard and mouse
     and perform action according to the events and [stage]
