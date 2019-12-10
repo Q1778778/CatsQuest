@@ -420,11 +420,11 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "foods"
       then 
-      let j_lists = json 
-           |> Yojson.Basic.from_file 
-           |> to_list in
-    let expected_food_models =
-      random_list_with_fixed_length j_lists number in
+        let j_lists = json 
+                      |> Yojson.Basic.from_file 
+                      |> to_list in
+        let expected_food_models =
+          random_list_with_fixed_length j_lists number in
         food_array_builder ~loc_array ~col ~row expected_food_models
       else read_food handler in
   read_food (Unix.opendir ".")
