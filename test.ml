@@ -226,15 +226,15 @@ let state11_level = get_level state
 let _ = Player.advance_level (get_player state)
 let state11'_experience = get_experience state
 let state11'_level = get_level state
-let state11'_health = get_health state
-let _ = print_int state11'_health
+let state11'_health = get_health state (* 100 *)
+
 (* increase experience enough to advance *)
 let _ = Player.increase_experience (get_player state) 
     (state |> get_player |> Player.level_up_expereince)
 let state12_experience = get_experience state 
 let state12_level = get_level state 
-let state12_health = get_health state
-let _ = print_int state12_health
+let state12_health = get_health state (* 130 *)
+
 (* move right towards rightmost column, upmost row *)
 let _ = 
   for i = 1 to (map_cols state) + 15 do 
@@ -251,12 +251,13 @@ let state15_loc = get_pos state
 let _ = Player.reduce_health (state |> get_player) 12 
 
 let state_f3_health = get_health state
-let _ = print_int state_f3_health
+
 
 (* increase health to max *)
-let _ = Player.increase_health (get_player state) (get_max_health state)
-let state_f2_health = get_health state
-let _ = print_int state_f2_health
+let check_health = get_max_health state
+let _ = Player.increase_health (get_player state) check_health
+let state_f2_health = get_health state (* 118 *)
+
 
 (* reduce health -> 0, DIED *)
 let _ = Player.reduce_health (get_player state) (get_max_health state)
@@ -271,7 +272,6 @@ let one_e = get_first_alive_enemy_at_index new_s 0
 
 let init_1_hp = Enemy.get_hp one_e
 
-let _ = print_int init_1_hp
 
 let init_1_level = Enemy.get_level one_e
 let skill_list_1 = 
@@ -281,7 +281,6 @@ let _ = Enemy.reduce_hp one_e 10
 
 let init_2_hp = Enemy.get_hp one_e
 
-let _ = print_int init_2_hp
 
 let init_2_level = Enemy.get_level one_e
 let skill_list_2 = 
@@ -332,7 +331,9 @@ let new_e_sec_level = new_e_sec_e |> Enemy.get_level
 let new_e_sec_health = new_e_sec_e |> Enemy.get_hp
 let new_e_sec_pos = new_e_sec_e |> Enemy.get_pos
 
-let _ = delete_one_enemy_from_map_index new_e new_e_fir_e 0
+let e_loc = Enemy.get_pos new_e_fir_e
+let _ = Player.switch_loc (new_e |> get_player) e_loc
+let _ = delete_one_enemy_from_state new_e
 
 let new_exp = new_e |> get_player |> Player.experience
 
@@ -434,20 +435,20 @@ let player_state_tests = [
   make_test "upper right bound" state15_loc 
     (map_cols state, map_rows state);
 
-  make_test "health before advanced level" state11'_health (init_health + 35);
+  make_test "health before advanced level" state11'_health init_health;
 
-  make_test "health after advanced level" state12_health (init_health + 70);
+  make_test "health after advanced level" state12_health (init_health + 30);
 
-  make_test "reduce health by 12" state_f3_health (init_health + 58);
+  make_test "reduce health by 12" state_f3_health 118;
 
-  make_test "increase all health" state_f2_health (get_max_health state);
+  make_test "increase all health" state_f2_health check_health;
 
   make_test "reduce all health" state_f_health 0;
 ]
 
 (** Test suite for enemy states  *)
 let enemy_state_tests = [
-  make_test "reduce enemy hp" (init_2_hp - init_1_hp) 10;
+  make_test "reduce enemy hp" (init_1_hp - init_2_hp) 10;
 
   make_test "always ensure the skills output of enemies are valid"
     (skill_list_2) true;
