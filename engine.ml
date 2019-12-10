@@ -228,10 +228,7 @@ let filter_one_element_out_from_array array pos =
    [s] with the corresponding name [name]. *)
 let get_map_index_by_name s name = 
   let rec search acc = function 
-    | [] -> print_int (Array.length s.all_enemies);
-      print_int (Array.length s.all_foods);
-      print_int (List.length s.all_maps);
-      failwith "invalid map name"
+    | [] ->failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search (acc+1) d in 
   search 0 s.all_maps
@@ -570,7 +567,7 @@ let helper_init () =
   let final_number_array_2 = 
     random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
-    main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
+    main_engine_food ~map_col_row_array ~loc_array final_number_array_2 in
   map_array, all_enemies, all_foods, all_weapons
 
 (** [init ()] is the init state of the entire game. 
@@ -963,12 +960,12 @@ let filter_out_index_list list pos =
 (**[delete_map_pos s pos] deletes the items of the item arrays 
    at index [pos] in state [s]. *)
 let delete_map_pos s pos = 
-  let map = List.nth s.branched_map_info pos in
+  let map = (List.nth s.branched_map_info pos) |> snd in
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
-    List.filter (fun (_, map_name) -> map_name <> map.name) s.branched_map_info;
+    List.filter (fun (_, map_name) -> map_name <> map) s.branched_map_info;
   s.all_maps <- filter_out_index_list s.all_maps pos
 
 
@@ -1007,6 +1004,7 @@ let transfer_player_to_branch_map s =
 (**[check_branch_map_status s] returns whether the player at state [s] has 
    finished his current branched map. *)
 let check_branch_map_status s = 
+  s.current_map.name <> "main" &&
   Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
 
 
@@ -1015,7 +1013,7 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
-    let map_pos = get_map_index_by_name s map_name in
+    let map_pos = get_map_index_by_name s s.current_map.name in
     let col',row' = s.player_old_loc in
     s.current_map <- List.hd s.all_maps;
     Player.switch_loc (get_player s) (col'+1, row'+1);
