@@ -6,6 +6,9 @@ module type P = sig
   (** The abstract type of values representing a player. *)
   type t
 
+  (** The exception type of an unknown skill. *)
+  exception Unknownskill of string
+
   (** [constructor s h l e ()] constructs a new player module located at
       row 1, col 1, with strength [s], health [h], experience [e], 
       at level [l]. *)
@@ -146,7 +149,6 @@ module Player : P = struct
     mutable skills: skill list;
   }
 
-  (** The exception type of an unknown skill. *)
   exception Unknownskill of string
 
   (** [skill_constructor n d s] constructs a new skill of 
@@ -217,14 +219,17 @@ module Player : P = struct
     then t.health <- max
     else t.health <- t.health + hp
 
+
   let increase_strength t st =
     let incr = st / 4 in
     List.iter (fun s -> (s.strength <- s.strength + incr);) t.skills
+
 
   let reduce_health p h = 
     let new_health = 
       if p.health - h >= 0 then p.health - h else 0 
     in p.health <- new_health
+
 
   let reduce_strength p str = 
     let temp_minus = str / (List.length p.skills) in
@@ -233,7 +238,9 @@ module Player : P = struct
         if temp <= 0 then skill.strength <- 0
         else skill.strength <- temp) p.skills
 
+
   let level_up_expereince p = 30 + 30 * p.level
+
 
   let advance_level p = 
     let experience_qual = level_up_expereince p in 
@@ -246,9 +253,11 @@ module Player : P = struct
     else 
       ()
 
+
   let increase_experience p e = 
     p.experience <- p.experience + e;
     advance_level p
+
 
   let get_skill_by_skill_name t name = 
     match List.filter (fun x -> x.name = name ) t.skills with
@@ -256,8 +265,10 @@ module Player : P = struct
                      (Printf.sprintf "skill name %s does not exist" name))
     | h::_ -> h
 
+
   let available_skills_list t =
     List.filter (fun skill -> skill.cd = 0) t.skills
+
 
   let skill_name skill = skill.name
 
@@ -271,12 +282,14 @@ module Player : P = struct
   let assert_skill_name_NOT_in_list t name =
     (List.filter (fun s -> s.name = name) t.skills) = []
 
+
   let update_skill t skill_lst = 
     let new_skill_list = 
       t.skills @ 
       (List.filter 
          (fun s -> assert_skill_name_NOT_in_list t s.name) skill_lst) in
     t.skills <- new_skill_list
+
 
   let switch_loc t loc = t.location <- loc
 
@@ -285,8 +298,10 @@ module Player : P = struct
                 if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     s.cd <- s.old_cd
 
+
   let get_all_skill_format s =  
     List.map (fun skill -> (skill.name, skill.cd)) s.skills
 end
 
+(** skill is a representation of player skills *)
 type skill = Player.skill (* export to other modules*)
