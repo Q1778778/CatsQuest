@@ -71,19 +71,19 @@ type state = {
    corresponding locations.  *)
 let branch_map_store = ref []
 
-(*look up the ref right above *)
 
 (**[update_branch_map_store (l,n)] updates [branch_map_store] by 
    appending [(l,n)] to the front of the list referenced 
    by [branch_map_store].  *)
-let update_branch_map_store (loc, name) =
+let update_branch_map_store (loc, name) = (*look at the ref right above *)
   let tmp = !branch_map_store in
   if List.mem (loc, name) tmp 
   then ()
   else branch_map_store := (loc, name) :: tmp
 
-(**[count ()] returns [c], the # of times this function has been called. 
-   Each time this function gets called, [c] gets incremented. *)
+(**[count ()] returns an #, which represents the # of times
+   this function has been called. Each time this function gets called,
+   the returns will be incremented. *)
 let count = 
   let counter = ref 0 in fun () -> (incr counter; !counter)
 
@@ -124,7 +124,8 @@ let choose_skill_random s =
   let first_name, _ , first_strength = List.hd skills in
   inner_chooser skills (first_name,first_strength)
 
-(**[contains s s1] is [true] if [s] contains substring [s1], [false] 
+
+(**[contains s s1] is true if [s] contains substring [s1], [false] 
    otherwise *)
 let contains s1 s2 =
   let rec counter count = 
@@ -137,6 +138,7 @@ let contains s1 s2 =
     then true
     else counter (count + 1) in
   counter 0
+
 
 (**[random_int_array_for_enemies_and_items arr num] returns a 
    probability-driven random int array with the number [num] and the 
@@ -156,6 +158,7 @@ let random_int_array_for_enemies_and_items ~map_size_array ~number =
   let tl = List.tl temp_random_number in
   number - total_sum 0 tl :: tl
   |> Array.of_list
+
 
 (**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , 
    (1, row), (col, row-1), (col-1, row-1), ...]] containing [n] elements,
@@ -179,6 +182,7 @@ let sorted_list loc_list col row length =
       else 
         inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in
   inner_looper col row [] length
+
 
 (**[unique_location_list locs col row n] returns [sorted_list col row n] if 
    [col < n/2] or [row < n/2], otherwise it returns a randomly constructed
@@ -206,6 +210,7 @@ let parse_dims s =
   let cols = List.nth (String.split_on_char ',' s) 1 in 
   cols |> int_of_string, rows |> int_of_string
 
+
 (**[filter_one_element_out_from_array arr pos] returns the array [arr] 
    without the element at index [pos]. 
    Requires: [0 <= pos < Array.length arr]*)
@@ -217,6 +222,29 @@ let filter_one_element_out_from_array array pos =
     else ()
   done;
   store.(0) |> List.rev |> Array.of_list
+
+
+(**[get_map_index_by_name s name] returns the index of the map in game state
+   [s] with the corresponding name [name]. *)
+let get_map_index_by_name s name = 
+  let rec search acc = function 
+    | [] -> failwith "invalid map name"
+    | h::d -> if h.name = name then acc else
+        search (acc+1) d in 
+  search 0 s.all_maps
+
+
+(**[main_map_size_array map_array] is the list of total sizes 
+   (product of dimensions) of all the maps in [map_array] *)
+let main_map_size_array ~map_array : int array = 
+  Array.map (fun map -> let x, y = size map in x * y) map_array
+
+
+(**[main_map_col_row map_array] is the list of size dimensions of all the maps 
+   in [map_array] *)
+let main_map_col_row ~map_array = 
+  Array.map (fun map -> map.size) map_array
+
 
 
 (*                        models builder                         *)
@@ -262,7 +290,7 @@ let enemy_skill_constructor skills =
       Enemy.single_skill_constructor ~skill_name ~skill_strength
         ~skill_probability) skills
 
-(**[single_enemy_builder j col row] constructs a new enemy represented 
+(**[single_enemy_builder j (col, row)] constructs a new enemy represented 
    by the json [j] at location [(col, row)] *)
 let single_enemy_builder j (col, row) =
   Enemy (
@@ -356,6 +384,7 @@ let food_array_builder ~loc_array ~col ~row jsons: food_item array =
     (unique_location_list ~loc_array ~col ~row ~number) 
   |> Array.of_list
 
+
 (**[main_engine_food_for_single_map locs num cols rows] reads the file 
    ["foods.json"] from the current directory, and returns the food array parsed 
    from that file, with dimensions [cols] by [rows] and [num] elements, 
@@ -376,6 +405,7 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
       else read_food handler in
   read_food (Unix.opendir ".")
 
+
 (**[main_engine_food dims locs nums] calls [main_engine_food_for_single_map] 
    for each map dimension in [dims], location in [locs], and final number in 
    [nums], and returns the mapped 2d food array with this information.  *)
@@ -384,6 +414,7 @@ let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
     (fun number (col, row) -> 
        main_engine_food_for_single_map loc_array number col row)
     final_number_array map_col_row_array
+
 
 (**[weapon_array_builder locs cols rows j_arr] constructs a new weapon array 
    represented by the json array [j_arr] with the dimensions [cols] by [rows], 
@@ -403,10 +434,12 @@ let weapon_array_builder ~loc_array ~col ~row jsons: weapon_item array =
     (unique_location_list ~loc_array ~col ~row ~number)
   |> Array.of_list
 
+
 (**[main_engine_weapon_for_single_map locs cols rows num] reads the file 
    ["weapons.json"] in the current directory and returns the parsed weapon 
    item array with dimensions [cols] by [rows] and [num] elements, without
    the locations in [locs]. 
+
    Raises: [Failure "weapons.json is not in current directory"] if the 
    the current directory does not contain the file ["weapons.json"] *)
 let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
@@ -425,10 +458,12 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
 
-(**[main_engine_weapon map_dims locs nums] calls 
-   [main_engine_weapon_for_single_map] for each dimension in [map_dims], 
-   each location in [locs] and each final number in [nums], and returns the 
-   mapped 2d weapon array with this information. *)
+
+(**[main_engine_weapon map_col_row_array loc_array final_number_array] calls 
+   [main_engine_weapon_for_single_map] for each dimension in 
+   [map_col_row_array], each location in [loc_array] 
+   and each final number in [final_number_array], and returns a proper 
+   2d weapon array with this information. *)
 let main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array = 
   Array.map2 
     (fun number (col, row) -> 
@@ -453,6 +488,7 @@ let map_param_array_builder jsons flag : ((int * int) * map_param) list =
       (* i don't think the later check is necessary *)
       (col,row), MapParam.single_map_element_constructor ~name ~link)
 
+
 (**[build_one_map s] returns the constructed map from the json file name [s].
    Requires: [s] must be in the form ["map-param*.json"] where ["*"] denotes
    any string. *)
@@ -464,8 +500,10 @@ let build_one_map s =
   let all_map_param = map_param_array_builder picture_lists (name = "main") in
   map_constructor ~size ~name ~all_map_param, size
 
+
 (**[reformat_output_map comb_list] is the array representation of 
    [comb_list]. 
+
    Raises: [Failure "no main map in this directory"] if the main map does not 
    exist in this directory. *)
 let reformat_output_map comb_list : current_map array * (int * int) array =
@@ -479,9 +517,11 @@ let reformat_output_map comb_list : current_map array * (int * int) array =
       else looper (map::finished_map) (loc::finished_loc) d in
   looper [] [] comb_list
 
+
 (**[main_engine_map_param ()] reads all files in the current directory 
    with the format ["map-param*.json"] where ["*"] can be any string, 
    and returns the parsed map representation. 
+
    Raises: [Failure "no map-param.json is in current directory"] if there
    is no file with the format ["map-param*.json"] *)
 let main_engine_map_param () : (current_map array) * (int * int) array = 
@@ -500,15 +540,8 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
       else read_map handler list in 
   read_map (Unix.opendir ".") []
 
-(**[main_map_size_array maps] is the list of total sizes 
-   (product of dimensions) of all the maps in [maps] *)
-let main_map_size_array ~map_array : int array = 
-  Array.map (fun map -> let x, y = size map in x * y) map_array
 
-(**[main_map_col_row maps] is the list of size dimensions of all the maps in 
-   [maps] *)
-let main_map_col_row ~map_array = 
-  Array.map (fun map -> map.size) map_array
+
 
 (*                       initiate the game                           *)
 
@@ -533,6 +566,7 @@ let helper_init () =
     main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in 
   map_array,loc_array, number, map_size_array, map_col_row_array, 
   final_number_array, all_enemies, all_foods, all_weapons
+
 
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
@@ -565,8 +599,10 @@ let init () : state =
 (**[game_state] is the initial game state *)
 let game_state = init ()
 
+
 (**[change_player p s] changes the player in game state [s] to [p] *)
 let change_player player s = s.player <- player
+
 
 (**[get_player s] returns the player if the player in game state [s]
    is alive. 
@@ -576,8 +612,10 @@ let get_player s =
   | Player p -> p
   | Died -> raise PlayerDied
 
+
 (**[get_enemies s] is all the enemies in game state [s] *)
 let get_enemies s = s.all_enemies_in_current_map
+
 
 (**[check_enemy s store] checks whether there is an enemy at the player
    location at states [s], and if so, appends the enemy in [store] and 
@@ -592,6 +630,7 @@ let check_enemy s store =
     | _ -> ()
   done
 
+
 (**[check_enemy_in_current_loc s] is [(true, str)] if there exists an 
    enemy at the current location of the player at state [s], and 
    [(false, "")] otherwise. *)
@@ -603,8 +642,10 @@ let check_enemy_in_current_loc s =
   with SuccessExit ->
     true, store.(0)
 
+
 (**[get_map s] is the current map in game state [s] *)
 let get_map s = s.current_map
+
 
 (**[find_one_map_by_name s name] is the map with its name as [name] from
    all maps in [s]
@@ -612,11 +653,14 @@ let get_map s = s.current_map
 let find_one_map_by_name s map_name =
   List.find (fun map -> map.name = map_name) s.all_maps
 
+
 (**[get_current_map_name s] is the name of the current map in game state [s] *)
 let get_current_map_name s = s.current_map.name
 
+
 (**[get_current_map_size s] is the size of the current map in game state [s] *)
 let get_current_map_size s = s.current_map.size
+
 
 (**[reduce_player_health s hp] reduces the health of player at state [s] by 
    [hp]. If calling this function makes the player's health 0 or negative,
@@ -629,8 +673,6 @@ let reduce_player_health s hp =
     else Player.reduce_health t hp
   | _ -> ()
 
-(*map-param related methods *)
-
 
 
 (*                          move player                           *)
@@ -642,12 +684,14 @@ let move_player_left s =
   | Died -> ()
   | Player t -> Player.move_left t s.current_map
 
+
 (** [move_player_right s] change the current pos (col', row') of player 
     in state [s] to (col'+1, row') within the map boundaries.*)
 let move_player_right s = 
   match s.player with
   | Died -> ()
   | Player t -> Player.move_right t s.current_map 
+
 
 (** [move_player_up s] change the current pos (col', row') of player 
     in state [s] to (col', row'+1) within the map boundaries.*)
@@ -663,6 +707,8 @@ let move_player_down s =
   | Died -> ()
   | Player t -> Player.move_down t s.current_map
 
+(**[strengthen_whole_map s] will strengthen every living enemy in all maps in
+   state [s]*)
 let strengthen_whole_map s =
   let strengthen_one_enemy_array e_arr = 
     for i = 0 to Array.length e_arr - 1 do
@@ -671,6 +717,8 @@ let strengthen_whole_map s =
       | Enemy e -> Enemy.strengthen e;
     done in
   Array.iter (fun arr -> strengthen_one_enemy_array arr;) s.all_enemies
+
+
 
 (*                       change game state                        *)
 
@@ -688,6 +736,7 @@ let delete_one_enemy_from_state s =
       strengthen_whole_map s;
     | _ -> ()
   done
+
 
 (**[take_one_food s] takes food from the player's current location at state
    [s], if any, and adds it to the first empty slot in the player's food 
@@ -712,6 +761,7 @@ let take_one_food s index safe =
     | _ -> ()
   done
 
+
 (**[take_one_food_in_current_location s] takes food on player's current 
    location at state [s],  if any, to the first empty slot in player's food 
    inventory. *)
@@ -723,6 +773,7 @@ let take_one_food_in_current_location s =
     s.all_foods_in_current_map.(!index) <- (!safe);
   with SuccessExit ->
     ()
+
 
 (**[drop_one_food s pos] drops the food at index [pos] of the player's 
    food inventory to the player's current location at state [s]. 
@@ -738,7 +789,6 @@ let drop_one_food s pos =
         raise SuccessExit
       | _ -> ()
     done;
-    (* no empty slot *)
     s.all_foods_in_current_map <- Array.append 
         [| food |] s.all_foods_in_current_map; in
   match s.food_inventory.(pos) with
@@ -746,6 +796,7 @@ let drop_one_food s pos =
     s.food_inventory.(pos) <- Eaten;
     search_food_array s f (s |> get_player |> Player.location);
   | Eaten -> ()
+
 
 (**[drop_one_food_to_current_location s pos] drops the food at index [pos] 
    of the player's food inventory to the player's current location at state 
@@ -755,6 +806,7 @@ let drop_one_food_to_current_location s pos =
     drop_one_food s pos
   with SuccessExit ->
     ()
+
 
 (**[eat_one_food_in_inventory s pos] eats the food from the player's current
    location, if any, with the player increasing health and strength and the 
@@ -772,7 +824,6 @@ let eat_one_food_in_inventory s pos =
     eat_food f player;
     s.food_inventory.(pos) <- Eaten;
   | _ -> ()
-
 
 
 (**[equip_one_weapon s] will check player's inventory and equip player with
@@ -803,6 +854,7 @@ let equip_one_weapon s index safe =
     | _ -> ()
   done
 
+
 (**[equip_weapon_in_current_loc s] will update the weapon inventory of 
    game state [s] if there is any empty slot and weapon in player's current 
    location will be equipped in that slot.  *)
@@ -814,6 +866,7 @@ let equip_weapon_in_current_loc s =
     s.all_weapons_in_current_map.(!index) <- !safe
   with SuccessExit ->
     ()
+
 
 (**[drop_one_weapon s pos] drops the weapon at index [pos] of the player's 
    weapon inventory to the player's current location at state [s]. 
@@ -843,6 +896,7 @@ let drop_one_weapon s pos =
     search_weapon_array s w (player |> Player.location);
   | _ -> ()
 
+
 (**[drop_one_weapon_to_current_location s pos] drops the weapon at index 
    [pos] of the player's weapon inventory to the player's current location 
    at state [s]. 
@@ -869,6 +923,7 @@ let check_food_on_loc_and_return_name_list s loc =
   done;
   store.(0)
 
+
 (**[check_weapon_on_loc_and_return_name_list s loc] returns a list of 
    weapon names (possibly empty) that are at the location [loc] 
    in the current map in state [s] *)
@@ -894,6 +949,7 @@ let check_item_on_player_ground s =
     check_weapon_on_loc_and_return_name_list s loc
   )
 
+
 (**[delete_map_pos s pos name] deletes the items of the item arrays 
    at index [pos] in state [s], along with the map named [name]. *)
 let delete_map_pos s pos name = 
@@ -918,15 +974,6 @@ let check_current_linked_map s =
     with Not_found ->
       false, ""
 
-(**[get_map_index_by_name s name] returns the index of the map in game state
-   [s] with the corresponding name [name]. *)
-let get_map_index_by_name s name = 
-  let rec search acc = function 
-    | [] -> failwith "invalid map name"
-    | h::d -> if h.name = name then acc else
-        search (acc+1) d in 
-  search 0 s.all_maps
-
 
 (**[transfer_player_to_branch_map s] transfers the player at state [s] to the
    branch map. *)
@@ -945,10 +992,12 @@ let transfer_player_to_branch_map s =
     (* the init pos of player in branched map is (1,1) *)
     Player.switch_loc (get_player s) (1,1)
 
+
 (**[check_branch_map_status s] returns whether the player at state [s] has 
    finished his current branched map. *)
 let check_branch_map_status s = 
   Array.for_all (fun enemy -> enemy = Deleted) s.all_enemies_in_current_map
+
 
 (**[transfer_player_to_main_map s] transfers the player at state [s] to the 
    main map and changes to the corresponding configurations in the map. *)
@@ -968,9 +1017,6 @@ let transfer_player_to_main_map s =
   else
     ()
 
-(**[renew_one_player s] renews the main engine player at state [s]. *)
-let renew_one_player s =
-  s.player <- main_engine_player ()
 
 (**[list_of_entrance_loc_to_branch_map s] is the list of entrance locations
    to the branch map named [s]. *)
@@ -981,23 +1027,26 @@ let list_of_entrance_loc_to_branch_map s =
     s.branched_map_info |> List.split |> fst
 
 
-(*            System Instruction             *)
+
+(*                           System Instruction                               *)
 
 (** [sys_json] is the json that represent file "instr.json"*)
-let sys_json=Yojson.Basic.from_file "instr.json"
+let sys_json = Yojson.Basic.from_file "instr.json"
+
 
 (**[main_map_instr] is the instruction in which the player has entered the 
    main map. *)
 let main_map_instr s = (* player *)
   let loc = Player.location (get_player s) in
   if (List.filter (fun (ent, _) -> ent = loc) s.branched_map_info) <> []
-  then sys_json|>member "main_map_instr_to_branch" |>to_string
-  else sys_json|>member "main_map_else" |>to_string
+  then sys_json |> member "main_map_instr_to_branch" |> to_string
+  else sys_json |> member "main_map_else" |> to_string
+
 
 (**[branch_map_instr] is the instruction in which the player has entered
    a branched map.   *)
 let branch_map_instr = 
-  sys_json|>member "branch_map_instr" |>to_string
+  sys_json |> member "branch_map_instr" |> to_string
 
 
 (**[string_of_loc (col,row)] is [" (col, row) "] *)
@@ -1023,6 +1072,7 @@ let enemy_instr_helper s store =
   done;
   raise (Failure "All enemies are dead in this map. Congratulations! ")
 
+
 (**[enemy_instr s] is the instruction regarding enemies at state [s] *)
 let enemy_instr s =
   let store = ref "" in
@@ -1031,6 +1081,7 @@ let enemy_instr s =
   with 
   | SuccessExit -> !store
   | Failure s -> s
+
 
 (**[food_instr_helper s store] loads the instruction regarding foods at 
    state [s]. [store] keeps track of what the instruction is. 
@@ -1051,6 +1102,7 @@ let food_instr_helper s store =
   done;
   raise (Failure "There are no food in this map now/")
 
+
 (**[food_instr s] is the instruction regarding foods at state [s] *)
 let food_instr s =
   let store = ref "" in
@@ -1059,6 +1111,7 @@ let food_instr s =
   with 
   | SuccessExit -> !store
   | Failure s -> s
+
 
 (**[weapon_instr_helper s store] loads the instruction regarding weapons at 
    state [s]. [store] keeps track of what the instruction is. 
@@ -1079,6 +1132,7 @@ let weapon_instr_helper s store =
   done;
   raise (Failure "There are no weapon in this map now/")
 
+
 (**[weapon_instr s] is the instruction regarding weapons at state [s] *)
 let weapon_instr s =
   let store = ref "" in
@@ -1087,6 +1141,7 @@ let weapon_instr s =
   with 
   | SuccessExit -> !store
   | Failure s -> s
+
 
 (**[system_instr s] is the instruction to the player at state [s] *)
 let system_instr s =
@@ -1099,6 +1154,7 @@ let system_instr s =
   let food_ins = food_instr s in
   let weapon_ins = weapon_instr s in
   basic_instr ^ "\n" ^ enemy_ins ^ "\n" ^ food_ins ^ "\n" ^ weapon_ins
+
 
 (**[check_wins s] returns whether the player at state [s] is in the 
    winning state.  *)
