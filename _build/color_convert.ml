@@ -68,64 +68,33 @@ let image_convert json name=
   let matrix=images_of_json (Yojson.Basic.from_file json) in 
   (array_color (List.find (fun x->x.name=name) matrix).matrix)
 
-
-(**[enemy_stab] is the image data extracted from ["punch_enemy.json"]  *)
-let enemy_stab=images_of_json (Yojson.Basic.from_file "punch_enemy.json")
-
-(**[enemy_s] is the image data extracted from ["scar.json"]  *)
-let enemy_s=images_of_json (Yojson.Basic.from_file "scar.json")
-
-(**[cat] is the image data extracted from ["cute cat.json"]  *)
-let cat=
-  images_of_json (Yojson.Basic.from_file "cute cat.json")
-
-(**[player] is the image data extracted from ["player_image.json"]  *)
-let player=images_of_json (Yojson.Basic.from_file "player_image.json")
-
-(**[minion] is the image data extracted from ["minion-image.json"]  *)
-let minion=images_of_json (Yojson.Basic.from_file "minion-image.json")
-
-(**[player_combat] is the image data extracted from ["player_combat.json"]  *)
-let player_combat=images_of_json (Yojson.Basic.from_file "player_combat.json")
-
-(**[stab] is the image data extracted from ["stab.json"]  *)
-let stab=images_of_json (Yojson.Basic.from_file "stab.json")
-
 (**[enemy_punch] is the RGB color 2d matrix represented by the image 
    ["stab"] *)
-let enemy_punch=(array_color (List.find (fun x->x.name="stab") enemy_stab)
-                             .matrix)
+let enemy_punch=image_convert "punch_enemy.json" "stab"
 
 (**[enemy_scar] is the RGB color 2d matrix represented by the image 
    ["scar-200"] *)
-let enemy_scar=(array_color (List.find (fun x->x.name="scar-200") enemy_s)
-                            .matrix)
+let enemy_scar=image_convert "scar.json""scar-200"
 
 (**[cute_cat] is the RGB color 2d matrix represented by the image 
    ["cute cat"] *)
-let cute_cat= 
-  (array_color (List.find (fun x->x.name="cute cat") cat).matrix)
+let cute_cat= image_convert"cute cat.json" "cute cat"
 
 (**[the_player] is the RGB color 2d matrix represented by the image 
    ["player"] *)
-let the_player= 
-  (array_color (List.find (fun x->x.name="player") player).matrix)
+let the_player= image_convert "player_image.json" "player"
 
 (**[the_minion] is the RGB color 2d matrix represented by the image 
    ["minion"] *)
-let the_minion=(array_color (List.find (fun x->x.name="minion") minion)
-                            .matrix)
+let the_minion=image_convert "minion-image.json" "minion"
 
 (**[player_in_combat] is the RGB color 2d matrix represented by the image 
    ["player_combat"] *)
-let player_in_combat=
-  (array_color (List.find (fun x->x.name="player_combat") player_combat)
-               .matrix)
+let player_in_combat=image_convert"player_combat.json" "player_combat"
 
 (**[the_stab] is the RGB color 2d matrix represented by the image 
    ["stab"] *)
-let the_stab=
-  (array_color (List.find (fun x->x.name="stab") stab).matrix)
+let the_stab=image_convert"stab.json" "stab"
 
 (**[sand_120] is the RGB color 2d matrix represented by the image 
    ["sand-120"] *)
