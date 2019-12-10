@@ -980,6 +980,7 @@ let list_of_entrance_loc_to_branch_map s =
 
 (*            System Instruction             *)
 
+(** [sys_json] is the json that represent file "instr.json"*)
 let sys_json=Yojson.Basic.from_file "instr.json"
 
 (**[main_map_instr] is the instruction in which the player has entered the 
