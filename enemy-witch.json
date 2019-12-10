@@ -1,18 +1,18 @@
 {
   "name": "witch",
   "description": "Witch lives in a cave and she usually stays inside forest.\n Be ware of her magic powers!",
-  "HP": 70,
+  "HP": 50,
   "level": 3,
-  "experience": 30,
+  "experience": 50,
   "skills": [
     {
       "name": "fire ball",
-      "strength": 50,
-      "probability": 0.3
+      "strength": 40,
+      "probability": 0.2
     },
     {
       "name": "curses",
-      "strength": 30,
+      "strength": 25,
       "probability": 1.0
     }
   ],
@@ -21,7 +21,7 @@
       "name": "divine trial",
       "description": "The final day has come and all evils will be purified",
       "cd": 1,
-      "strength": 25
+      "strength": 30
     }
   ]
 }

@@ -129,8 +129,8 @@ module Enemy: EnemySig = struct
     exp: int;
     skills: skills list;
     initial_hp: int;
-    count: int;
     (*dynamic fields *)
+    mutable count: int;
     mutable level: int;
     mutable pos: int * int;
     mutable hp: int;
@@ -210,7 +210,7 @@ module Enemy: EnemySig = struct
     t.level <- t.level + 1
 
   let strengthen t = 
-    increase_health t 10;
+    increase_health t 5;
     increase_strength t 5;
     increase_level t;
     t.count <- t.count + 1;
