@@ -227,14 +227,14 @@ let _ = Player.advance_level (get_player state)
 let state11'_experience = get_experience state
 let state11'_level = get_level state
 let state11'_health = get_health state
-
+let _ = print_int state11'_health
 (* increase experience enough to advance *)
 let _ = Player.increase_experience (get_player state) 
     (state |> get_player |> Player.level_up_expereince)
 let state12_experience = get_experience state 
 let state12_level = get_level state 
 let state12_health = get_health state
-
+let _ = print_int state12_health
 (* move right towards rightmost column, upmost row *)
 let _ = 
   for i = 1 to (map_cols state) + 15 do 
@@ -249,11 +249,14 @@ let state15_loc = get_pos state
 
 (* reduce health by 12 *)
 let _ = Player.reduce_health (state |> get_player) 12 
+
 let state_f3_health = get_health state
+let _ = print_int state_f3_health
 
 (* increase health to max *)
 let _ = Player.increase_health (get_player state) (get_max_health state)
 let state_f2_health = get_health state
+let _ = print_int state_f2_health
 
 (* reduce health -> 0, DIED *)
 let _ = Player.reduce_health (get_player state) (get_max_health state)
@@ -267,6 +270,9 @@ let new_s = init ()
 let one_e = get_first_alive_enemy_at_index new_s 0
 
 let init_1_hp = Enemy.get_hp one_e
+
+let _ = print_int init_1_hp
+
 let init_1_level = Enemy.get_level one_e
 let skill_list_1 = 
   Enemy.get_all_skills_name_prob_and_strength_to_assoc_list one_e <> []
@@ -274,6 +280,9 @@ let skill_list_1 =
 let _ = Enemy.reduce_hp one_e 10
 
 let init_2_hp = Enemy.get_hp one_e
+
+let _ = print_int init_2_hp
+
 let init_2_level = Enemy.get_level one_e
 let skill_list_2 = 
   Enemy.get_all_skills_name_prob_and_strength_to_assoc_list one_e <> []
@@ -307,8 +316,6 @@ let init_2w_name = Weapon.get_name one_w
 let init_2w_strength = Weapon.get_strength one_w
 let w_new_loc = Weapon.get_loc one_w
 
-(** Branched map state update tests *)
-
 
 (** Engine update tests *)
 let new_e = init ()
@@ -328,6 +335,31 @@ let new_e_sec_pos = new_e_sec_e |> Enemy.get_pos
 let _ = delete_one_enemy_from_map_index new_e new_e_fir_e 0
 
 let new_exp = new_e |> get_player |> Player.experience
+
+let branch_map_num = new_e |> list_of_entrance_loc_to_branch_map |> List.length
+
+let w1 = get_first_available_weapon_at_index new_e 0
+let w1_loc = Weapon.get_loc w1
+let _ = Player.switch_loc (new_e |> get_player) w1_loc
+let _ = equip_weapon_in_current_loc new_e
+let equip_result = new_e.weapon_inventory.(0) <> Empty
+let _ = drop_one_weapon_to_current_location new_e 0
+let drop_w_result = new_e.weapon_inventory.(0) = Empty
+
+let f1 = get_first_available_food_at_index new_e 0
+let f1_loc = Food.get_loc f1
+let _ = Player.switch_loc (new_e |> get_player) f1_loc
+let _ = take_one_food_in_current_location new_e
+let take_result = new_e.food_inventory.(0) <> Eaten
+let _ = drop_one_food_to_current_location new_e 0
+let drop_f_result = new_e.food_inventory.(0) = Eaten
+let _ = take_one_food_in_current_location new_e
+
+(* eat food *)
+let _ = Player.reduce_health (new_e |> get_player) 20
+let before_eating_food = new_e |> get_player |> Player.health
+let _ = eat_one_food_in_inventory new_e 0
+let eat_food_health = new_e |> get_player |> Player.health
 
 
 (** Branched map tests *)
@@ -506,6 +538,26 @@ let engine_state_tests = [
 
   make_test "delete enemy would automatically increase the exp of player"
     (new_exp > init_experience) true; 
+  
+  make_test "the length of branch map is correct"
+    branch_map_num 3;
+   
+  (* drop and take *)
+  make_test "successfully equip one weapon"
+    equip_result true;
+
+  make_test "successfully drop one weapon"
+    drop_w_result true;
+
+  make_test "successfully take one food"
+    take_result true;
+
+  make_test "successfully drop one food"
+    drop_f_result true; 
+      
+  make_test "successfully eat one food"
+    (eat_food_health > before_eating_food) true; 
+]
 ]
 
 (** All the test suites  *)
