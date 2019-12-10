@@ -476,10 +476,11 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
       if String.length json >= 12
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "weapons"
-      then let jsons_list |> Yojson.Basic.from_file 
-           |> to_list = in
-      let expected_w_models = random_list_with_fixed_length jsons_list number in
-        weapon_array_builder ~loc_array ~col ~row expected_w_models
+      then (let jsons_list = json |> Yojson.Basic.from_file 
+                             |> to_list in
+            let expected_w_models = 
+              random_list_with_fixed_length jsons_list number in
+            weapon_array_builder ~loc_array ~col ~row expected_w_models)
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
 
@@ -612,9 +613,6 @@ let init () : state =
     all_weapons = all_weapons;
     all_enemies = all_enemies;
   }
-
-
-
 
 (*                        basic getters                            *)
 
