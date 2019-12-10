@@ -19,7 +19,7 @@ open Weapons
    player out of the map does not change the player's location. We then attempt 
    to advance the player to the next level before having enough experience,
    in which no update should be made to the player. We then increase the 
-   player's experience by just enough so that the player would advance to the
+   player's experience so that the player would advance to the
    next level, and test that the player's level has incremented, and that his 
    experience and health has updated accordingly. We then change the 
    player's health by a certain amount to check whether the player's health
@@ -31,8 +31,17 @@ open Weapons
    glass box testing aspects associated to it for more complex 
    operations (i.e. advancing the player to next level changes his current 
    level, experience, and health). 
-   [TODO: What tests were omitted and why]
-   [TODO: Why this testing approach demonstrates correctness]
+   
+   We omitted the tests for testing player's skills changes during game.
+   Player's skill contains a cd which limits the times player could use this
+   skill. However, we don't want to expose cd to the engine (instead we write 
+   other functions to automate the selctions and export of player's avaiable
+   skills). In addition, player's gainable skills are collected in game
+   which depends on the random location of weapons, foods, and enemies. 
+   For example, player's skill strength will be incremented by defeating one
+   enemy but it is difficult to "determine" which enemy is defeated in player's
+   current location. Instead, we manually test skills in our GUI to ensure 
+   the correctness.
 
    We then added the enemy test suite. We first tested whether reducing the
    enemy's hp level by a certain amount resulted in the correct hp level. We
@@ -40,8 +49,10 @@ open Weapons
    skills that enemies possess). We also checked that the enemy level does 
    not change under any circumstances, as it is a static field. We mostly 
    used black box testing to test that these properties hold. 
-   [TODO: What tests were omitted and why]
-   [TODO: Why this testing approach demonstrates correctness]
+   
+   We omited the tests for system's automatic selection of enemy's skills
+   by probability. We believed this part is better fitted in gui (when
+   we played the real game) instead of hardcoding in unit tests.
 
    Next, we tested the food states via black box testing. 
    For the food objects, we tested that when the food gets moved to a different 
@@ -72,15 +83,18 @@ open Weapons
    all sets of foods and enemies (we have used parallel arrays for these
    sets). We then made sure that switching back to the  main map produces 0 as the 
    indices mentioned above. 
-   [TODO: What tests were omitted and why]
-   [TODO: Why this testing approach demonstrates correctness]
 
-   Finally, we tested the engine state. [TODO explain the test suite]
-   [TODO: What tests were omitted and why]
-   [TODO: Why correctness is demonstrated]
-
+  Finally, we tested the engine state. We took one food 
+  and weapon randomly from the main map. Equipping would increment player's 
+  skill strength and health (but the exact incrementation depends on
+  which food or weapon we took). Since we had already tested the correctness of
+  weapon and food, we only needed to test whether player's health, exp, and 
+  strength really increased. After all, engine is responsible to update 
+  in-game player's status and we wanted to check the correctness of such
+  updates.
+  
    All implementation involving the GUI is tested manually. 
-   [TODO: Explain more]
+  
 *)
 
 (**[get_player s] returns [t] if the player at state [s] yields [Player t].
