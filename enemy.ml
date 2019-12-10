@@ -215,7 +215,7 @@ module Enemy: EnemySig = struct
 
   let strengthen t = 
     increase_health t health_increment;
-    increase_strength t 5;
+    increase_strength t 3;
     increase_level t;
     t.count <- t.count + 1;
 end
