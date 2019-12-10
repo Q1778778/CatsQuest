@@ -22,6 +22,7 @@ type trigger=
   |Order of string*string
   |Tnone
 
+(** [clist] is type for messages and refreshing*)
 type clist=
   { mutable fbutton : box list;
     mutable dialog: box;
@@ -36,25 +37,39 @@ type clist=
     mutable player_level: int;
   }
 
+(** [cd_skill] represents player's gainable skills*)
 type cd_skill={
   mutable fire: int;
   mutable trial: int;
   mutable punishment: int;
 }
 
+(**[Not_such_enemy] is raised when there is an invalid enemy name*)
 exception Not_such_enemy of string
 
-let cplace= {fbutton=[];dialog=Bnone; irefresh=false;
-             difficulty="empty";enemy_to_combat="none";dialog_in_progress=false;
-             item_selected=None;item_ground=false;
+(**[cplace] represents the initial display window when game starts*)
+let cplace= {fbutton=[];
+            dialog=Bnone;
+            irefresh=false;
+             difficulty="empty";
+             enemy_to_combat="none";
+             dialog_in_progress=false;
+             item_selected=None;
+             item_ground=false;
              message_display="welcome to the game";
-             skills=[];player_level=1}
+             skills=[];
+             player_level=1}
 
-let cd_store={fire= -1;trial= -1;punishment= -1}
+(**[cd_store] is the default player's skill state*)
+let cd_store={
+            fire= -1;
+            trial= -1;
+            punishment= -1}
 
-
+(**[lblue] is the color of light blue*)
 let lblue=Graphics.rgb 82 219 255
 
+(**[grey] is the color of grey*)
 let grey=Graphics.rgb 192 192 192
 
 (** [whitebox_draw a b c d width] draws a whitebox with lowerleft point at [a,b]
@@ -68,6 +83,7 @@ let whitebox_draw a b c d width=
   Graphics.lineto a d;
   Graphics.lineto a b
 
+(**[text_draw_dialog words] draws a text box with [words] on the given window*)
 let text_draw_dialog text=
   if String.length text<120 then
     (Graphics.moveto 200 260;
@@ -91,7 +107,8 @@ let text_draw_dialog text=
 
 (** [dialog text npc name] draws a dialog box, showing [text] on screen with 
     picture [npc] shown at upper-left corner with [name]
-    Requires: [text] and [name] are string,
+    
+    Requires: 
     [npc] is a color matrix*)
 let dialog text npc name=
   Graphics.set_color white;
@@ -113,21 +130,23 @@ let get_player_health ()=
   let s= Engine.get_player(Engine.game_state) in
   (Player.max_health s, Player.health s)
 
-
+(**[get_player_level ()] is the player's current level*)
 let get_player_level ()=
   let s= Engine.get_player(Engine.game_state) in
   (Player.level s)
 
-
+(**[get_player_experience ()] is the player's current experience*)
 let get_player_expeience ()=
   let s= Engine.get_player(Engine.game_state) in
   (Player.experience s)
 
-
+(**[player_reduce_health hp] reduces the health of player by [hp]*)
 let player_reduce_health int=
   let s= Engine.get_player(Engine.game_state) in
   (Player.reduce_health s int)
 
+(**[experience_bar ()] displays the player's current experience on a given 
+window*)
 let experience_bar ()=
   Graphics.set_color black;
   whitebox_draw 130 20 150 190 5;
@@ -138,6 +157,7 @@ let experience_bar ()=
   Graphics.fill_rect 130 20 20 (170*(get_player_expeience())/upper_bound);
   ()
 
+(**[health_bar ()] displays the player's current health on a given window*)
 let health_bar ()=
   Graphics.set_color black;
   whitebox_draw 100 730 300 750 5;
@@ -153,6 +173,8 @@ let health_bar ()=
   Graphics.moveto 120 735;
   Graphics.draw_string"Health:"
 
+(**[enemy_health_bar e] displays the current health of
+  enemy [e] on a given window*)
 let enemy_health_bar enemy=
   let health=Enemy.get_hp enemy in
   let max_hp= Enemy.get_max_hp enemy in
@@ -168,6 +190,7 @@ let enemy_health_bar enemy=
   Graphics.moveto 850 515;
   Graphics.draw_string (Enemy.get_name enemy^" Health:")
 
+(**[status_bar ()] displays the player and his level on the given window*)
 let status_bar ()=
   Graphics.set_color black;
   Graphics.set_line_width 5;
@@ -178,6 +201,8 @@ let status_bar ()=
   Graphics.moveto 10 175;
   Graphics.draw_string ("The Hero Level: "^string_of_int (get_player_level()))
 
+(**[box_drawing_helper ()] draws the weapon and food inventory 
+  on the given window *)
 let box_drawing_helper ()=
   Graphics.set_color black;
   Graphics.moveto 200 50;
@@ -197,6 +222,7 @@ let box_drawing_helper ()=
   Action_box ((460,120,60,60),("food",2))::
   cplace.fbutton
 
+(**[draw_inventory ()] draws player's inventory on a given window *)
 let draw_inventory ()=
   whitebox_draw 460 120 520 180 3;
   let fb=box_drawing_helper() in 
@@ -211,27 +237,31 @@ let draw_inventory ()=
   cplace.fbutton<- fb
 
 
-let down_row_info int string=
-  Graphics.moveto (545-int*10) 175;
-  Graphics.draw_string string
-
 let info_bar()=
   whitebox_draw 540 10 900 190 3;
   Graphics.moveto 545 120;
   Graphics.draw_string cplace.message_display
 
-
+(**[draw_a_image image x y] draws the [image] on position [(x,y)] on screen*)
 let draw_a_image image x y=
   let p=Graphics.make_image image in
   Graphics.draw_image p x y
 
+(**[string_cal text tcolor x y w h]
+   prints text with [color] and text-color [tcolor] in the center of the box
+    with lower-left point at [x,y] and with width[w] height [h] *)
 let string_cal text tcolor x y w h=
   let pixel=(String.length text)-1 in
   (Graphics.moveto (x+w/2-pixel*3) (y+h/2);
    Graphics.set_color tcolor;
    Graphics.draw_string text)
 
-(** require: [text] is a non-empty string*)
+(**[create_button text color tcolor x y w h trigger] 
+  displays a button with color tcolor in the center of the box
+  with lower-left point at [x,y] and with width[w] height [h].
+  [trigger] will be passed to the parser to handle another events.
+
+require: [text] is a non-empty string*)
 let create_button text color tcolor x y w h trigger=
   Graphics.set_color color;
   Graphics.fill_rect x y w h;
