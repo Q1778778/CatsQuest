@@ -382,11 +382,15 @@ let rec get_one_enemy id lst =
     or 0 if there is no skill with [name]
     Require: [name] is a string*)
 let skill_damage name = 
-  let state = Engine.get_player(Engine.game_state) in
-  let skill = name|> Player.get_skill_by_skill_name state in 
-  let skill_bool = List.mem skill (Player.available_skills_list state) in 
-  if skill_bool then 
-    (Player.choose_skill skill;
+  let player = Engine.get_player(Engine.game_state) in
+  let skill = name|> Player.get_skill_by_skill_name player in 
+  let skill_lst=Player.get_all_skill_format player in 
+  let rec skill_bool_matcher =function 
+    |(name2,int)::t when name2=name ->int=0 
+    |h::t->skill_bool_matcher t 
+    |[]->false in 
+  if skill_bool_matcher skill_lst then 
+    (Player.choose_skill player skill;
      Player.skill_strength skill) else 0
 
 (** [enemy_skill_image name] draws the image representing skill with
