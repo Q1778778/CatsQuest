@@ -140,10 +140,10 @@ let contains s1 s2 =
   counter 0
 
 
-(**[random_int_array_for_enemies_and_items arr num] returns a 
+(**[random_int_array_for_enemies arr num] returns a 
    probability-driven random int array with the number [num] and the 
    location array [arr] *)
-let random_int_array_for_enemies_and_items map_size_array number =
+let random_int_array_for_enemies map_size_array number =
   let round f = truncate (f +. 0.5) in
   let raw_prob = map_size_array |> Array.to_list in
   let rec total_sum num = function
@@ -159,6 +159,24 @@ let random_int_array_for_enemies_and_items map_size_array number =
   number - total_sum 0 tl :: tl
   |> Array.of_list
 
+(**[random_int_array_for_items arr num] returns a 
+   probability-driven random int array with the number [num] and the 
+   location array [arr] *)
+let random_int_array_for_items map_size_array items =
+  let round f = truncate (f +. 0.5) in
+  let raw_prob = map_size_array |> Array.to_list in
+  let rec total_sum num = function
+    | [] -> num
+    | h::d -> total_sum (num + h) d in
+  let sum = total_sum 0 raw_prob in
+  let float_sum = float_of_int sum in
+  let float_num = float_of_int items in
+  let temp_random_number = (*the probability oper here is pretty messy *)
+    List.map (fun s -> 
+        (float_of_int s) /. float_sum *. float_num |> round) raw_prob in 
+  let tl = List.tl temp_random_number in
+  items - total_sum 0 tl :: tl
+  |> Array.of_list
 
 (**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , 
    (1, row), (col, row-1), (col-1, row-1), ...]] containing [n] elements,
@@ -228,9 +246,9 @@ let filter_one_element_out_from_array array pos =
    [s] with the corresponding name [name]. *)
 let get_map_index_by_name s name = 
   let rec search acc = function 
-    | [] -> print_int (List.length s.all_maps);
-      print_int (Array.length s.all_enemies);
-      print_string name;
+    | [] -> print_int (Array.length s.all_enemies);
+      print_int (Array.length s.all_foods);
+      print_int (List.length s.all_maps);
       failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search (acc+1) d in 
@@ -950,16 +968,26 @@ let check_item_on_player_ground s =
     check_weapon_on_loc_and_return_name_list s loc
   )
 
+let filter_out_index_list list pos = 
+  let rec adder count finished remains = 
+    match remains with
+    | [] -> finished |> List.rev
+    | h::d -> if count = 0 
+      then (finished |> List.rev) @ d
+      else adder (count - 1) (h::finished) d in 
+  adder pos [] list
 
-(**[delete_map_pos s pos name] deletes the items of the item arrays 
-   at index [pos] in state [s], along with the map named [name]. *)
-let delete_map_pos s pos name = 
+
+(**[delete_map_pos s pos] deletes the items of the item arrays 
+   at index [pos] in state [s]. *)
+let delete_map_pos s pos = 
+  let map = List.nth s.branched_map_info pos in
   s.all_enemies <- filter_one_element_out_from_array s.all_enemies pos;
   s.all_foods <- filter_one_element_out_from_array s.all_foods pos;
   s.all_weapons <- filter_one_element_out_from_array s.all_weapons pos;
   s.branched_map_info <- 
-    List.filter (fun (_, map_name) -> map_name <> name) s.branched_map_info;
-  s.all_maps <- List.filter (fun m -> m.name <> name) s.all_maps
+    List.filter (fun (_, map_name) -> map_name <> map.name) s.branched_map_info;
+  s.all_maps <- filter_out_index_list s.all_maps pos
 
 
 (**[check_current_linked_map s] returns [(false, "")] if the current map in 
@@ -1005,7 +1033,6 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
-    let map_name = get_current_map_name s in
     let map_pos = get_map_index_by_name s map_name in
     let col',row' = s.player_old_loc in
     s.current_map <- List.hd s.all_maps;
@@ -1014,7 +1041,7 @@ let transfer_player_to_main_map s =
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
     s.current_map_in_all_maps <- 0;
-    delete_map_pos s map_pos map_name
+    delete_map_pos s map_pos
   else
     ()
 
