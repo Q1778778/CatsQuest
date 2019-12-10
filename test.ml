@@ -93,8 +93,11 @@ open Weapons
   in-game player's status and we wanted to check the correctness of such
   updates.
   
-   All implementation involving the GUI is tested manually. 
-  
+  All implementation involving the GUI is tested manually. 
+  Our game involves in switch of a lot of game states (branch map to map), and
+  we tested our game by 'make play' on our gui. We believe unit tests ensured
+  our basic functionalities in our backend should be correct, while gui testing
+  ensured our backend integration is correct. 
 *)
 
 (**[get_player s] returns [t] if the player at state [s] yields [Player t].
