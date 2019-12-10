@@ -228,7 +228,10 @@ let filter_one_element_out_from_array array pos =
    [s] with the corresponding name [name]. *)
 let get_map_index_by_name s name = 
   let rec search acc = function 
-    | [] -> failwith "invalid map name"
+    | [] -> print_int (List.length s.all_maps);
+      print_int (Array.length s.all_enemies);
+      print_string name;
+      failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search (acc+1) d in 
   search 0 s.all_maps
@@ -340,7 +343,7 @@ let main_engine_ememy_for_single_map ~loc_array ~number ~col ~row =
    current directory with the corresponding locations in [loc_arr] and 
    numbers in [num_arr], and returns a mapped 2d array with this information *)
 let main_engine_enemy 
-    ~map_col_row_array ~loc_array ~final_number_array : enemy array array =
+    ~map_col_row_array ~loc_array final_number_array : enemy array array =
   Array.map2
     (fun number (col, row) -> 
        main_engine_ememy_for_single_map loc_array number col row)
@@ -398,10 +401,13 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
       if String.length json >= 10
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "foods"
-      then json 
-           |> Yojson.Basic.from_file 
-           |> to_list 
-           |> food_array_builder ~loc_array ~col ~row
+      then 
+        let j_lists = json 
+                      |> Yojson.Basic.from_file 
+                      |> to_list in
+        let expected_food_models =
+          random_list_with_fixed_length j_lists number in
+        food_array_builder ~loc_array ~col ~row expected_food_models
       else read_food handler in
   read_food (Unix.opendir ".")
 
@@ -409,7 +415,7 @@ let main_engine_food_for_single_map ~loc_array ~number ~col ~row =
 (**[main_engine_food dims locs nums] calls [main_engine_food_for_single_map] 
    for each map dimension in [dims], location in [locs], and final number in 
    [nums], and returns the mapped 2d food array with this information.  *)
-let main_engine_food ~map_col_row_array ~loc_array ~final_number_array =
+let main_engine_food ~map_col_row_array ~loc_array final_number_array =
   Array.map2
     (fun number (col, row) -> 
        main_engine_food_for_single_map loc_array number col row)
@@ -452,19 +458,20 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
       if String.length json >= 12
       && String.sub json (pos-5) 5 = ".json" 
       && contains json "weapons"
-      then json |> Yojson.Basic.from_file 
-           |> to_list 
-           |> weapon_array_builder ~loc_array ~col ~row
+      then (let jsons_list = json |> Yojson.Basic.from_file 
+                             |> to_list in
+            let expected_w_models = 
+              random_list_with_fixed_length jsons_list number in
+            weapon_array_builder ~loc_array ~col ~row expected_w_models)
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
-
 
 (**[main_engine_weapon map_col_row_array loc_array final_number_array] calls 
    [main_engine_weapon_for_single_map] for each dimension in 
    [map_col_row_array], each location in [loc_array] 
    and each final number in [final_number_array], and returns a proper 
    2d weapon array with this information. *)
-let main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array = 
+let main_engine_weapon ~map_col_row_array ~loc_array final_number_array = 
   Array.map2 
     (fun number (col, row) -> 
        main_engine_weapon_for_single_map loc_array col row number)
@@ -550,27 +557,26 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 15  in
   let map_size_array = main_map_size_array ~map_array in
   let map_col_row_array = main_map_col_row ~map_array in
-  let final_number_array = 
-    random_int_array_for_enemies_and_items map_size_array number in
+  let final_number_array_e = 
+    random_int_array_for_enemies_and_items map_size_array 15 in
   let all_enemies = 
-    main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array in
+    main_engine_enemy ~map_col_row_array ~loc_array final_number_array_e in
+  let final_number_array_w = 
+    random_int_array_for_enemies_and_items map_size_array 10 in
   let all_weapons = 
-    main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in
-  let final_number_array = 
-    random_int_array_for_enemies_and_items map_size_array 40 in
+    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_w in
+  let final_number_array_f = 
+    random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
-    main_engine_food ~map_col_row_array ~loc_array ~final_number_array in
-  map_array,loc_array, number, map_size_array, map_col_row_array, 
-  final_number_array, all_enemies, all_foods, all_weapons
+    main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
+  map_array, all_enemies, all_foods, all_weapons
 
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
 let init () : state =
-  let map_array,loc_array, number, map_size_array, map_col_row_array, 
-      final_number_array, all_enemies, all_foods, all_weapons = 
+  let map_array, all_enemies, all_foods, all_weapons = 
     helper_init () in 
   {
     player = main_engine_player ();
@@ -588,9 +594,6 @@ let init () : state =
     all_weapons = all_weapons;
     all_enemies = all_enemies;
   }
-
-
-
 
 (*                        basic getters                            *)
 

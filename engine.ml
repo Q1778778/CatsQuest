@@ -228,7 +228,10 @@ let filter_one_element_out_from_array array pos =
    [s] with the corresponding name [name]. *)
 let get_map_index_by_name s name = 
   let rec search acc = function 
-    | [] -> failwith "invalid map name"
+    | [] -> print_int (List.length s.all_maps);
+      print_int (Array.length s.all_enemies);
+      print_string name;
+      failwith "invalid map name"
     | h::d -> if h.name = name then acc else
         search (acc+1) d in 
   search 0 s.all_maps
@@ -462,7 +465,6 @@ let main_engine_weapon_for_single_map ~loc_array ~col ~row ~number =
             weapon_array_builder ~loc_array ~col ~row expected_w_models)
       else read_weapon handler in
   read_weapon (Unix.opendir ".")
-
 
 (**[main_engine_weapon map_col_row_array loc_array final_number_array] calls 
    [main_engine_weapon_for_single_map] for each dimension in 
