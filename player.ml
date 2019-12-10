@@ -110,7 +110,7 @@ module type P = sig
   val get_skill_by_skill_name: t -> string -> skill
 
   (**[available_skills_list p] is the skills that the player [p] posesses. *)
-  val available_skills_list: t-> skill list
+  val available_skills_list: t -> skill list
 
   (**[skill_name s] is the name of the skill [s]. *)
   val skill_name: skill -> string
@@ -121,8 +121,8 @@ module type P = sig
   (**[skill_description s] is the description of the skill [s]. *)
   val skill_description: skill -> string
 
-  (**[choose_skill s] will update the cd of skill [s]*)
-  val choose_skill: skill -> unit
+  (**[choose_skill p s] will update the cd of skill [s] in player [p]*)
+  val choose_skill: t -> skill -> unit
 
   (**[get_all_skill_format s] is a list of (skill name, skill cd)*)
   val get_all_skill_format : t -> (string * int) list
@@ -257,8 +257,6 @@ module Player : P = struct
     | h::_ -> h
 
   let available_skills_list t =
-    List.iter (fun skill -> let new_cd = skill.cd - 1 in
-                if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     List.filter (fun skill -> skill.cd = 0) t.skills
 
   let skill_name skill = skill.name
@@ -282,7 +280,9 @@ module Player : P = struct
 
   let switch_loc t loc = t.location <- loc
 
-  let choose_skill s = 
+  let choose_skill t s = 
+    List.iter (fun skill -> let new_cd = skill.cd - 1 in
+                if new_cd < 0 then () else skill.cd <- new_cd) t.skills;
     s.cd <- s.old_cd
 
   let get_all_skill_format s =  
