@@ -2,8 +2,8 @@
   {
     "name": "bread",
     "description": "This bread is smiling at you and wants to be eaten!.",
-    "strength": 10,
-    "health": 10,
+    "strength": 20,
+    "health": 20,
     "gainables": []
   },
   {
