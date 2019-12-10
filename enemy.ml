@@ -136,6 +136,10 @@ module Enemy: EnemySig = struct
     mutable hp: int;
   }
 
+  (**[health_increment] is the health incr. 
+    to this enemy once other enemy is killed *)
+  let health_increment = 5
+
   (* getters are defined here *)
   let get_id s = s.id
 
@@ -151,7 +155,7 @@ module Enemy: EnemySig = struct
 
   let get_pos s = s.pos
 
-  let get_max_hp s= s.count * 10 + s.initial_hp
+  let get_max_hp s= s.count * health_increment + s.initial_hp
 
   let get_gainable_skill s = s.gainables
 
@@ -210,7 +214,7 @@ module Enemy: EnemySig = struct
     t.level <- t.level + 1
 
   let strengthen t = 
-    increase_health t 5;
+    increase_health t health_increment;
     increase_strength t 5;
     increase_level t;
     t.count <- t.count + 1;
