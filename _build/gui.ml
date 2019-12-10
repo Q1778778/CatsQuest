@@ -433,7 +433,7 @@ let enemy_mon id =
 let game_over_mon () = 
   let (max,health) = get_player_health()in
   if health <=0 then 
-    (dialog "Game over" Color_convert.cute_cat "cute cat"; 
+    (dialog "Game over. click to exit" Color_convert.cute_cat "cute cat"; 
      let _ = Graphics.wait_next_event [Button_down] in 
      Graphics.close_graph()) else ()
 

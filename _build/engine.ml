@@ -550,23 +550,22 @@ let main_engine_map_param () : (current_map array) * (int * int) array =
 let helper_init () = 
   let map_array, loc_array = main_engine_map_param () in
   (*this number can be either artificially set or stored in json.*)
-  let number = 15  in
+  let number = 30  in
   let map_size_array = main_map_size_array ~map_array in
   let map_col_row_array = main_map_col_row ~map_array in
   let final_number_array = 
     random_int_array_for_enemies_and_items ~map_size_array ~number in
-  let final_number_array_2 = 
-    random_int_array_for_enemies_and_items ~map_size_array ~number:20 in
   let all_enemies = 
     main_engine_enemy ~map_col_row_array ~loc_array ~final_number_array in
-  let all_foods = 
-    main_engine_food ~map_col_row_array ~loc_array ~final_number_array:
-      final_number_array_2 in
   let all_weapons = 
-    main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in 
+    main_engine_weapon ~map_col_row_array ~loc_array ~final_number_array in
+  let number = 60 in
+  let final_number_array = 
+    random_int_array_for_enemies_and_items ~map_size_array ~number in
+  let all_foods = 
+    main_engine_food ~map_col_row_array ~loc_array ~final_number_array in
   map_array,loc_array, number, map_size_array, map_col_row_array, 
   final_number_array, all_enemies, all_foods, all_weapons
-
 
 (** [init ()] is the init state of the entire game. 
       Invariant: the first map of all maps must be main map !!! *)
