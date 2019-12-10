@@ -771,7 +771,7 @@ let skill_mon () =
     when player got upgraded*)
 let level_mon int = 
   if int<>cplace.player_level then
-    (dialog ("you defeated the enemy and you are upgraded to level" ^ 
+    (dialog ("you defeated the enemy and you are upgraded to level " ^ 
              (string_of_int int) ^ ".") Color_convert.cute_cat
        "cute cat";cplace.player_level <- int;
      let _ = Graphics.wait_next_event[Button_down]in ()) else ()

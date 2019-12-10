@@ -1003,10 +1003,10 @@ let check_branch_map_status s =
 let transfer_player_to_main_map s =
   if check_branch_map_status s
   then 
-    let map_pos = get_map_index_by_name s s.current_map.name in
-    let col',row' = s.player_old_loc in
+    let map_name = s.current_map.name in
+    let map_pos = get_map_index_by_name s map_name in
     s.current_map <- List.hd s.all_maps;
-    Player.switch_loc (get_player s) (col'+1, row'+1);
+    Player.switch_loc (get_player s) s.player_old_loc;
     s.all_enemies_in_current_map <- s.all_enemies.(0);
     s.all_foods_in_current_map <- s.all_foods.(0);
     s.all_weapons_in_current_map <- s.all_weapons.(0);
