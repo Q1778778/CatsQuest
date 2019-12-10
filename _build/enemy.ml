@@ -128,6 +128,8 @@ module Enemy: EnemySig = struct
     gainables: Player.skill list;
     exp: int;
     skills: skills list;
+    initial_hp: int;
+    count: int;
     (*dynamic fields *)
     mutable level: int;
     mutable pos: int * int;
@@ -149,7 +151,7 @@ module Enemy: EnemySig = struct
 
   let get_pos s = s.pos
 
-  let get_max_hp s=s.max_hp
+  let get_max_hp s= s.count * 10 + s.initial_hp
 
   let get_gainable_skill s = s.gainables
 
@@ -190,6 +192,8 @@ module Enemy: EnemySig = struct
       level = level;
       pos = pos;
       hp = hp;
+      initial_hp = hp;
+      count = 0;
       max_hp = max_hp;
       skills = skills;
       gainables = gainables;
@@ -209,4 +213,5 @@ module Enemy: EnemySig = struct
     increase_health t 10;
     increase_strength t 5;
     increase_level t;
+    t.count <- t.count + 1;
 end

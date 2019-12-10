@@ -8,40 +8,40 @@ open Weapons
 (*some constructors below required an id, which is created by the functions *)
 (*instead of contained in json                                              *)
 
-(** The abstract type of values representing an enemy in the game engine *)
+(** The abstract type of values representing an enemy in the game engine *)
 type enemy = 
   | Enemy of Enemy.t
   | Deleted
 
-(** The abstract type of values representing a player in the game engine *)
+(** The abstract type of values representing a player in the game engine *)
 type player = 
   | Player of Player.t 
   | Died
 
-(** The abstract type of values representing a food item in the game engine *)
+(** The abstract type of values representing a food item in the game engine *)
 type food_item = 
   | Food of Food.food
   | Eaten (*once a weapon or food has been taken, this weapon becomes null *)
 
-(** The abstract type of values representing a weapon item in the game engine*)
+(** The abstract type of values representing a weapon item in the game engine*)
 type weapon_item =
   | Weapon of  Weapon.weapon
   | Empty
 
-(** The abstract type of values representing a map param in the game engine *)
+(** The abstract type of values representing a map param in the game engine *)
 type map_param = MapParam.map_param
 
-(** The abstract type of values representing the current map state *)
+(** The abstract type of values representing the current map state *)
 type current_map = Maps.t
 
-(** The exception type of a successful food ate or weapon equipped.
-   Used to notify that an operation is successful. *)
+(** The exception type of a successful food ate or weapon equipped.
+    Used to notify that an operation is successful. *)
 exception SuccessExit
 
 (**The exception type of a player who is dead *)
 exception PlayerDied
 
-(** The abstract type of values representing the current game state *)
+(** The abstract type of values representing the current game state *)
 type state = {
   mutable player: player;
   mutable food_inventory: food_item array;
@@ -82,8 +82,8 @@ let update_branch_map_store (loc, name) =
   then ()
   else branch_map_store := (loc, name) :: tmp
 
-(**[count ()] returns [c], the # of times this function has been called. 
-   Each time this function gets called, [c] gets incremented. *)
+(**[count ()] returns [c], the # of times this function has been called. 
+   Each time this function gets called, [c] gets incremented. *)
 let count = 
   let counter = ref 0 in fun () -> (incr counter; !counter)
 
