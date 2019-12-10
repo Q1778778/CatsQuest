@@ -1103,6 +1103,5 @@ let system_instr s =
 (**[check_wins s] returns whether the player at state [s] is in the 
    winning state.  *)
 let check_wins s =  
-  List.length s.all_maps = 1 
-  || (Array.for_all (fun e -> e = Deleted) s.all_enemies_in_current_map 
-      && s.current_map_in_all_maps = 0) 
+  Array.for_all (fun map -> Array.for_all (fun e -> e = Deleted) map)
+    s.all_enemies
