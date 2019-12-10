@@ -3,6 +3,8 @@
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules gui.ml > gui.ml.depends # cached
 # Target: color_convert.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:color_convert.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules color_convert.ml > color_convert.ml.depends # cached
+# Target: color_convert.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o color_convert.cmo color_convert.ml # cached
 # Target: enemy.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:enemy.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules enemy.ml > enemy.ml.depends # cached
 # Target: player.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:player.ml, ocaml, ocamldep, quiet, traverse }
@@ -10,29 +12,27 @@ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package
 # Target: maps.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:maps.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules maps.ml > maps.ml.depends # cached
 # Target: maps.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:maps.cmo, file:maps.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o maps.cmo maps.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o maps.cmo maps.ml # cached
 # Target: player.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml # cached
+# Target: enemy.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:enemy.cmo, file:enemy.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o enemy.cmo enemy.ml # cached
 # Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:engine.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends # cached
-# Target: enemy.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:enemy.cmo, file:enemy.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o enemy.cmo enemy.ml
 # Target: foods.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:foods.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules foods.ml > foods.ml.depends # cached
+# Target: foods.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:foods.cmo, file:foods.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o foods.cmo foods.ml # cached
 # Target: weapons.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:weapons.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules weapons.ml > weapons.ml.depends # cached
-# Target: foods.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:foods.cmo, file:foods.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o foods.cmo foods.ml
 # Target: weapons.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:weapons.cmo, file:weapons.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o weapons.cmo weapons.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o weapons.cmo weapons.ml # cached
+# Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml # cached
 # Target: map_builder.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), extension:ml, file:map_builder.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules map_builder.ml > map_builder.ml.depends # cached
-# Target: color_convert.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:color_convert.cmo, file:color_convert.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o color_convert.cmo color_convert.ml
-# Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml
 # Target: map_builder.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:map_builder.cmo, file:map_builder.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o map_builder.cmo map_builder.ml
+ocamlfind ocamlc -c -package oUnit -package yojson -package ANSITerminal -package graphics -o map_builder.cmo map_builder.ml # cached
 # Target: gui.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, extension:cmo, extension:ml, file:gui.cmo, file:gui.ml, implem, ocaml, quiet, thread, traverse }
 ocamlfind ocamlc -c -thread -package oUnit -package yojson -package ANSITerminal -package graphics -o gui.cmo gui.ml # cached
 # Target: gui.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, dont_link_with, extension:byte, file:gui.byte, link, ocaml, program, quiet, thread, traverse }
