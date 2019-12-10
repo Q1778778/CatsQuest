@@ -1,55 +1,84 @@
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:0:init.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:0:init is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:0:init.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:2:RL.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:2:RL is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:2:RL.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:4:RLLD = RL.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:4:RLLD = RL is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:4:RLLD = RL.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:6:RLUU.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:6:RLUU is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:6:RLUU.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:8:advance level failed.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:8:advance level failed is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:8:advance level failed.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:10:increase exp.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:10:increase exp is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:10:increase exp.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:12:increase exp to advance 2.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:12:increase exp to advance 2 is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:12:increase exp to advance 2.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:14:health before advanced level.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:14:health before advanced level is successful.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:14:health before advanced level.
-2019-12-10T00:51:51+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:16:reduce health by 12.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 E: Test test suite for A2:16:reduce health by 12 has failed.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 E: not equal in test test suite for A2:16:reduce health by 12.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 E: Raised at file "src/oUnitAssert.ml", line 45, characters 8-27
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 E: Called from file "src/oUnitRunner.ml", line 46, characters 13-26
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 E: 
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:16:reduce health by 12.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:21:always ensure the skills output of enemies are valid.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:21:always ensure the skills output of enemies are valid is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:21:always ensure the skills output of enemies are valid.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:23:food's gainable strength should never be changed when we move food.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:23:food's gainable strength should never be changed when we move food is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:23:food's gainable strength should never be changed when we move food.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:25:change food's location.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:25:change food's location is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:25:change food's location.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:27:weapon's strength should be consistent throughout moving.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:27:weapon's strength should be consistent throughout moving is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:27:weapon's strength should be consistent throughout moving.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:29:successfully strengthen enemy's health after play.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:29:successfully strengthen enemy's health after play is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:29:successfully strengthen enemy's health after play.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:31:enemy's pos shouldn't be changed after strengthening.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:31:enemy's pos shouldn't be changed after strengthening is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:31:enemy's pos shouldn't be changed after strengthening.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:32:sucessfully transfer to branch map.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:32:sucessfully transfer to branch map is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:32:sucessfully transfer to branch map.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:33:sucessfully transfer to branch map.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:33:sucessfully transfer to branch map is successful.
-2019-12-10T00:51:52+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:33:sucessfully transfer to branch map.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:0:init.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:0:init is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:0:init.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:2:RL.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:2:RL is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:2:RL.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:4:RLLD = RL.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:4:RLLD = RL is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:4:RLLD = RL.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:6:RLUU.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:6:RLUU is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:6:RLUU.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:8:advance level failed.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:8:advance level failed is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:8:advance level failed.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:10:increase exp.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:10:increase exp is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:10:increase exp.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:12:increase exp to advance 2.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:12:increase exp to advance 2 is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:12:increase exp to advance 2.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:14:health before advanced level.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:14:health before advanced level is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:14:health before advanced level.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:16:reduce health by 12.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:16:reduce health by 12 is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:16:reduce health by 12.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:18:reduce all health.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:18:reduce all health is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:18:reduce all health.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:20:always ensure the skills output of enemies are valid.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:20:always ensure the skills output of enemies are valid is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:20:always ensure the skills output of enemies are valid.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:22:enemy level is a static field and it shouldn't be changed.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:22:enemy level is a static field and it shouldn't be changed is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:22:enemy level is a static field and it shouldn't be changed.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:24:food's gainable health should never be changed when we move food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:24:food's gainable health should never be changed when we move food is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:24:food's gainable health should never be changed when we move food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:26:weapon's name should be consistent throughout moving.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:26:weapon's name should be consistent throughout moving is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:26:weapon's name should be consistent throughout moving.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:28:weapon's new location should be correct after moving.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:28:weapon's new location should be correct after moving is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:28:weapon's new location should be correct after moving.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:31:sucessfully transfer to branch map. Weapon index updated.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:31:sucessfully transfer to branch map. Weapon index updated is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:31:sucessfully transfer to branch map. Weapon index updated.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:32:sucessfully transfer to branch map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:32:sucessfully transfer to branch map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:32:sucessfully transfer to branch map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:35:sucessfully transfer to main map. Enemy index updated.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:35:sucessfully transfer to main map. Enemy index updated is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:35:sucessfully transfer to main map. Enemy index updated.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:37:sucessfully transfer to main map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:37:sucessfully transfer to main map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:37:sucessfully transfer to main map. 
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:39:sucessfully transfer to main map.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as enemy.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:39:sucessfully transfer to main map.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as enemy is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:39:sucessfully transfer to main map.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I:     Weapon shared the same index as enemy.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:41:successfully strengthen enemy's level after play.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:41:successfully strengthen enemy's level after play is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:41:successfully strengthen enemy's level after play.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:43:delete enemy would automatically increase the exp of player.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:43:delete enemy would automatically increase the exp of player is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:43:delete enemy would automatically increase the exp of player.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:45:successfully equip one weapon.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:45:successfully equip one weapon is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:45:successfully equip one weapon.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:46:successfully drop one weapon.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:46:successfully drop one weapon is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:46:successfully drop one weapon.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Start test test suite for A2:49:successfully eat one food.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: Test test suite for A2:49:successfully eat one food is successful.
+2019-12-10T04:16:58+00:00 soumizus-MacBook-puro.local#01 I: End test test suite for A2:49:successfully eat one food.

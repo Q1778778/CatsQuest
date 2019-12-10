@@ -162,16 +162,16 @@ let get_first_available_weapon_at_index s pos =
     !store |> get_weapon
 
 (**[delete_one_enemy_from_map_index s e pos] delete the enemy object [e]
-from map indexed [pos] in game state [s]*)
+   from map indexed [pos] in game state [s]*)
 let delete_one_enemy_from_map_index s enemy pos = 
   let deleter () =
-  for i = 0 to Array.length s.all_enemies.(pos) - 1 do
-    match s.all_enemies.(pos).(i) with
-    | Enemy e when e = enemy -> 
-      s.all_enemies.(pos).(i) <- Deleted;
-      raise SuccessExit
-    | _ -> ()
-  done in
+    for i = 0 to Array.length s.all_enemies.(pos) - 1 do
+      match s.all_enemies.(pos).(i) with
+      | Enemy e when e = enemy -> 
+        s.all_enemies.(pos).(i) <- Deleted;
+        raise SuccessExit
+      | _ -> ()
+    done in
   try
     deleter ()
   with SuccessExit ->
@@ -485,7 +485,7 @@ let weapon_state_tests = [
 
 (** Test suite for branched map states  *)
 let branched_map_tests = [
-    (* branched map *)
+  (* branched map *)
   make_test "sucessfully transfer to branch map. Map index updated"
     (new_e_index <> 0) true;
 
@@ -502,7 +502,7 @@ let branched_map_tests = [
   make_test "sucessfully transfer to branch map.
     Weapon shared the same index as enemy"
     new_e_weapon new_e_enemy;
-  
+
   (* main map *)
   make_test "sucessfully transfer to main map. Map index updated"
     new_e_index_1 0;
@@ -539,10 +539,10 @@ let engine_state_tests = [
 
   make_test "delete enemy would automatically increase the exp of player"
     (new_exp > init_experience) true; 
-  
+
   make_test "the length of branch map is correct"
     branch_map_num 3;
-   
+
   (* drop and take *)
   make_test "successfully equip one weapon"
     equip_result true;
@@ -555,11 +555,11 @@ let engine_state_tests = [
 
   make_test "successfully drop one food"
     drop_f_result true; 
-      
+
   make_test "successfully eat one food"
     (eat_food_health > before_eating_food) true; 
 ]
-]
+
 
 (** All the test suites  *)
 let suite =
