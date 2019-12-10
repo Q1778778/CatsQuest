@@ -22,6 +22,7 @@
 <code class="code"><span class="keyword">sig</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;skill<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
+&nbsp;&nbsp;<span class="keyword">exception</span>&nbsp;<span class="constructor">Unknownskill</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;constructor&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;?strength:int&nbsp;<span class="keywordsign">-&gt;</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;?health:int&nbsp;<span class="keywordsign">-&gt;</span><br>
@@ -54,6 +55,6 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;skill_name&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.skill&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;skill_strength&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.skill&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;skill_description&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.skill&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;choose_skill&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.skill&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;choose_skill&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.skill&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_all_skill_format&nbsp;:&nbsp;<span class="constructor">Player</span>.<span class="constructor">P</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(string&nbsp;*&nbsp;int)&nbsp;list<br>
 <span class="keyword">end</span></code></body></html>

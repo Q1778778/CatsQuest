@@ -231,7 +231,7 @@
 </td></tr>
 <tr><td><a href="Player.P.html#VALchoose_skill">choose_skill</a> [<a href="Player.P.html">Player.P</a>]</td>
 <td><div class="info">
-<p><code class="code">choose_skill s</code> will update the cd of skill <code class="code">s</code></p>
+<p><code class="code">choose_skill p s</code> will update the cd of skill <code class="code">s</code> in player <code class="code">p</code></p>
 
 </div>
 </td></tr>
@@ -333,14 +333,15 @@
 <td></td></tr>
 <tr><td><a href="Engine.html#VALcontains">contains</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">contains s s1</code> is <code class="code">true</code> if <code class="code">s</code> contains substring <code class="code">s1</code>, <code class="code">false</code> 
+<p><code class="code">contains s s1</code> is true if <code class="code">s</code> contains substring <code class="code">s1</code>, <code class="code">false</code> 
    otherwise</p>
 
 </div>
 </td></tr>
 <tr><td><a href="Engine.html#VALcount">count</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">count ()</code> returns <code class="code">c</code>, the # of times this function has been called.</p>
+<p><code class="code">count ()</code> returns an #, which represents the # of times
+   this function has been called.</p>
 
 </div>
 </td></tr>
@@ -384,7 +385,7 @@
 <tr><td><a href="Engine.html#VALdelete_map_pos">delete_map_pos</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
 <p><code class="code">delete_map_pos s pos name</code> deletes the items of the item arrays 
-   at index <code class="code">pos</code> in state <code class="code">s</code>, along with the map named <code class="code">name</code>.</p>
+   at index <code class="code">pos</code> in state <code class="code">s</code> with map name as <code class="code">name</code>.</p>
 
 </div>
 </td></tr>
@@ -1128,6 +1129,12 @@
 
 </div>
 </td></tr>
+<tr><td><a href="Enemy.Enemy.html#VALhealth_increment">health_increment</a> [<a href="Enemy.Enemy.html">Enemy.Enemy</a>]</td>
+<td><div class="info">
+<p><code class="code">health_increment</code> is the health incr.</p>
+
+</div>
+</td></tr>
 <tr><td><a href="Engine.html#VALhelper_init">helper_init</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
 <p><code class="code">helper_init ()</code> is a helper function for <code class="code">init ()</code> that gets the 
@@ -1389,10 +1396,11 @@
 </td></tr>
 <tr><td><a href="Engine.html#VALmain_engine_weapon">main_engine_weapon</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">main_engine_weapon map_dims locs nums</code> calls 
-   <code class="code">main_engine_weapon_for_single_map</code> for each dimension in <code class="code">map_dims</code>, 
-   each location in <code class="code">locs</code> and each final number in <code class="code">nums</code>, and returns the 
-   mapped 2d weapon array with this information.</p>
+<p><code class="code">main_engine_weapon map_col_row_array loc_array final_number_array</code> calls 
+   <code class="code">main_engine_weapon_for_single_map</code> for each dimension in 
+   <code class="code">map_col_row_array</code>, each location in <code class="code">loc_array</code> 
+   and each final number in <code class="code">final_number_array</code>, and returns a proper 
+   2d weapon array with this information.</p>
 
 </div>
 </td></tr>
@@ -1407,8 +1415,8 @@
 </td></tr>
 <tr><td><a href="Engine.html#VALmain_map_col_row">main_map_col_row</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">main_map_col_row maps</code> is the list of size dimensions of all the maps in 
-   <code class="code">maps</code></p>
+<p><code class="code">main_map_col_row map_array</code> is the list of size dimensions of all the maps 
+   in <code class="code">map_array</code></p>
 
 </div>
 </td></tr>
@@ -1421,8 +1429,8 @@
 </td></tr>
 <tr><td><a href="Engine.html#VALmain_map_size_array">main_map_size_array</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">main_map_size_array maps</code> is the list of total sizes 
-   (product of dimensions) of all the maps in <code class="code">maps</code></p>
+<p><code class="code">main_map_size_array map_array</code> is the list of total sizes 
+   (product of dimensions) of all the maps in <code class="code">map_array</code></p>
 
 </div>
 </td></tr>
@@ -1696,12 +1704,6 @@
 
 </div>
 </td></tr>
-<tr><td><a href="Engine.html#VALrenew_one_player">renew_one_player</a> [<a href="Engine.html">Engine</a>]</td>
-<td><div class="info">
-<p><code class="code">renew_one_player s</code> renews the main engine player at state <code class="code">s</code>.</p>
-
-</div>
-</td></tr>
 <tr><td><a href="Player.P.html#VALrow">row</a> [<a href="Player.P.html">Player.P</a>]</td>
 <td><div class="info">
 <p><code class="code">row p</code> is the current row coordinate of player <code class="code">p</code>.</p>
@@ -1736,7 +1738,7 @@
 <td></td></tr>
 <tr><td><a href="Engine.html#VALsingle_enemy_builder">single_enemy_builder</a> [<a href="Engine.html">Engine</a>]</td>
 <td><div class="info">
-<p><code class="code">single_enemy_builder j col row</code> constructs a new enemy represented 
+<p><code class="code">single_enemy_builder j (col, row)</code> constructs a new enemy represented 
    by the json <code class="code">j</code> at location <code class="code">(col, row)</code></p>
 
 </div>
@@ -1886,7 +1888,12 @@
 <tr><td><a href="Enemy.Enemy.html#VALstrengthen">strengthen</a> [<a href="Enemy.Enemy.html">Enemy.Enemy</a>]</td>
 <td></td></tr>
 <tr><td><a href="Engine.html#VALstrengthen_whole_map">strengthen_whole_map</a> [<a href="Engine.html">Engine</a>]</td>
-<td></td></tr>
+<td><div class="info">
+<p><code class="code">strengthen_whole_map s</code> will strengthen every living enemy in all maps in
+   state <code class="code">s</code></p>
+
+</div>
+</td></tr>
 <tr><td><a href="Gui.html#VALstring_cal">string_cal</a> [<a href="Gui.html">Gui</a>]</td>
 <td><div class="info">
 <p><code class="code">string_cal text tcolor x y w h</code>

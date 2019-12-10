@@ -48,7 +48,7 @@
 
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing an enemy in the game engine </p>
+<p>The abstract type of values representing an enemy in the game engine</p>
 </div>
 </div>
 
@@ -71,7 +71,7 @@
 
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing a player in the game engine </p>
+<p>The abstract type of values representing a player in the game engine</p>
 </div>
 </div>
 
@@ -94,7 +94,7 @@
 
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing a food item in the game engine </p>
+<p>The abstract type of values representing a food item in the game engine</p>
 </div>
 </div>
 
@@ -117,7 +117,7 @@
 
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing a weapon item in the game engine</p>
+<p>The abstract type of values representing a weapon item in the game engine</p>
 </div>
 </div>
 
@@ -125,7 +125,7 @@
 <pre><span id="TYPEmap_param"><span class="keyword">type</span> <code class="type"></code>map_param</span> = <code class="type"><a href="Maps.MapParam.html#TYPEmap_param">Maps.MapParam.map_param</a></code> </pre>
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing a map param in the game engine </p>
+<p>The abstract type of values representing a map param in the game engine</p>
 </div>
 </div>
 
@@ -133,7 +133,7 @@
 <pre><span id="TYPEcurrent_map"><span class="keyword">type</span> <code class="type"></code>current_map</span> = <code class="type"><a href="Maps.html#TYPEt">Maps.t</a></code> </pre>
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing the current map state </p>
+<p>The abstract type of values representing the current map state</p>
 </div>
 </div>
 
@@ -141,8 +141,8 @@
 <pre><span id="EXCEPTIONSuccessExit"><span class="keyword">exception</span> SuccessExit</span></pre>
 <div class="info ">
 <div class="info-desc">
-<p> The exception type of a successful food ate or weapon equipped.
-   Used to notify that an operation is successful. </p>
+<p>The exception type of a successful food ate or weapon equipped.
+    Used to notify that an operation is successful.</p>
 </div>
 </div>
 
@@ -256,7 +256,7 @@
 
 <div class="info ">
 <div class="info-desc">
-<p> The abstract type of values representing the current game state </p>
+<p>The abstract type of values representing the current game state</p>
 </div>
 </div>
 
@@ -278,8 +278,9 @@
 
 <pre><span id="VALcount"><span class="keyword">val</span> count</span> : <code class="type">unit -> int</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">count ()</code> returns <code class="code">c</code>, the # of times this function has been called. 
-   Each time this function gets called, <code class="code">c</code> gets incremented. </p>
+<p><code class="code">count ()</code> returns an #, which represents the # of times
+   this function has been called. Each time this function gets called,
+   the returns will be incremented.</p>
 </div>
 </div>
 
@@ -315,12 +316,12 @@
 
 <pre><span id="VALcontains"><span class="keyword">val</span> contains</span> : <code class="type">string -> string -> bool</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">contains s s1</code> is <code class="code">true</code> if <code class="code">s</code> contains substring <code class="code">s1</code>, <code class="code">false</code> 
+<p><code class="code">contains s s1</code> is true if <code class="code">s</code> contains substring <code class="code">s1</code>, <code class="code">false</code> 
    otherwise</p>
 </div>
 </div>
 
-<pre><span id="VALrandom_int_array_for_enemies_and_items"><span class="keyword">val</span> random_int_array_for_enemies_and_items</span> : <code class="type">map_size_array:int array -> number:int -> int array</code></pre><div class="info ">
+<pre><span id="VALrandom_int_array_for_enemies_and_items"><span class="keyword">val</span> random_int_array_for_enemies_and_items</span> : <code class="type">int array -> int -> int array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">random_int_array_for_enemies_and_items arr num</code> returns a 
    probability-driven random int array with the number <code class="code">num</code> and the 
@@ -361,6 +362,27 @@
 </div>
 </div>
 
+<pre><span id="VALget_map_index_by_name"><span class="keyword">val</span> get_map_index_by_name</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_map_index_by_name s name</code> returns the index of the map in game state
+   <code class="code">s</code> with the corresponding name <code class="code">name</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALmain_map_size_array"><span class="keyword">val</span> main_map_size_array</span> : <code class="type">map_array:<a href="Maps.html#TYPEt">Maps.t</a> array -> int array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_map_size_array map_array</code> is the list of total sizes 
+   (product of dimensions) of all the maps in <code class="code">map_array</code></p>
+</div>
+</div>
+
+<pre><span id="VALmain_map_col_row"><span class="keyword">val</span> main_map_col_row</span> : <code class="type">map_array:<a href="Maps.html#TYPEt">Maps.t</a> array -> (int * int) array</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">main_map_col_row map_array</code> is the list of size dimensions of all the maps 
+   in <code class="code">map_array</code></p>
+</div>
+</div>
+
 <pre><span id="VALgainable_skill_constructor"><span class="keyword">val</span> gainable_skill_constructor</span> : <code class="type">Yojson.Basic.t list -> <a href="Player.Player.html#TYPEskill">Player.Player.skill</a> list</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">gainable_skill_constructor jsons</code> returns the list of gainable skills 
@@ -387,7 +409,7 @@
 
 <pre><span id="VALsingle_enemy_builder"><span class="keyword">val</span> single_enemy_builder</span> : <code class="type">Yojson.Basic.t -> int * int -> <a href="Engine.html#TYPEenemy">enemy</a></code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">single_enemy_builder j col row</code> constructs a new enemy represented 
+<p><code class="code">single_enemy_builder j (col, row)</code> constructs a new enemy represented 
    by the json <code class="code">j</code> at location <code class="code">(col, row)</code></p>
 </div>
 </div>
@@ -412,7 +434,7 @@
 </div>
 </div>
 
-<pre><span id="VALmain_engine_enemy"><span class="keyword">val</span> main_engine_enemy</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:int array -> <a href="Engine.html#TYPEenemy">enemy</a> array array</code></pre><div class="info ">
+<pre><span id="VALmain_engine_enemy"><span class="keyword">val</span> main_engine_enemy</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -> int array -> <a href="Engine.html#TYPEenemy">enemy</a> array array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">main_engine_enemy map_locs loc_arr num_arr</code> reads all enemy json files in 
    current directory with the corresponding locations in <code class="code">loc_arr</code> and 
@@ -436,7 +458,7 @@
 </div>
 </div>
 
-<pre><span id="VALmain_engine_food_for_single_map"><span class="keyword">val</span> main_engine_food_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       number:'a -> col:int -> row:int -> <a href="Engine.html#TYPEfood_item">food_item</a> array</code></pre><div class="info ">
+<pre><span id="VALmain_engine_food_for_single_map"><span class="keyword">val</span> main_engine_food_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       number:int -> col:int -> row:int -> <a href="Engine.html#TYPEfood_item">food_item</a> array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">main_engine_food_for_single_map locs num cols rows</code> reads the file 
    <code class="code">"foods.json"</code> from the current directory, and returns the food array parsed 
@@ -445,7 +467,7 @@
 </div>
 </div>
 
-<pre><span id="VALmain_engine_food"><span class="keyword">val</span> main_engine_food</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:'a array -> <a href="Engine.html#TYPEfood_item">food_item</a> array array</code></pre><div class="info ">
+<pre><span id="VALmain_engine_food"><span class="keyword">val</span> main_engine_food</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -> int array -> <a href="Engine.html#TYPEfood_item">food_item</a> array array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">main_engine_food dims locs nums</code> calls <code class="code">main_engine_food_for_single_map</code> 
    for each map dimension in <code class="code">dims</code>, location in <code class="code">locs</code>, and final number in 
@@ -461,23 +483,25 @@
 </div>
 </div>
 
-<pre><span id="VALmain_engine_weapon_for_single_map"><span class="keyword">val</span> main_engine_weapon_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       col:int -> row:int -> number:'a -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code></pre><div class="info ">
+<pre><span id="VALmain_engine_weapon_for_single_map"><span class="keyword">val</span> main_engine_weapon_for_single_map</span> : <code class="type">loc_array:(int * int) array -><br>       col:int -> row:int -> number:int -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">main_engine_weapon_for_single_map locs cols rows num</code> reads the file 
    <code class="code">"weapons.json"</code> in the current directory and returns the parsed weapon 
    item array with dimensions <code class="code">cols</code> by <code class="code">rows</code> and <code class="code">num</code> elements, without
-   the locations in <code class="code">locs</code>. 
-   Raises: <code class="code">Failure "weapons.json is not in current directory"</code> if the 
+   the locations in <code class="code">locs</code>.</p>
+
+<p>Raises: <code class="code">Failure "weapons.json is not in current directory"</code> if the 
    the current directory does not contain the file <code class="code">"weapons.json"</code></p>
 </div>
 </div>
 
-<pre><span id="VALmain_engine_weapon"><span class="keyword">val</span> main_engine_weapon</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -><br>       final_number_array:'a array -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
+<pre><span id="VALmain_engine_weapon"><span class="keyword">val</span> main_engine_weapon</span> : <code class="type">map_col_row_array:(int * int) array -><br>       loc_array:(int * int) array -> int array -> <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">main_engine_weapon map_dims locs nums</code> calls 
-   <code class="code">main_engine_weapon_for_single_map</code> for each dimension in <code class="code">map_dims</code>, 
-   each location in <code class="code">locs</code> and each final number in <code class="code">nums</code>, and returns the 
-   mapped 2d weapon array with this information.</p>
+<p><code class="code">main_engine_weapon map_col_row_array loc_array final_number_array</code> calls 
+   <code class="code">main_engine_weapon_for_single_map</code> for each dimension in 
+   <code class="code">map_col_row_array</code>, each location in <code class="code">loc_array</code> 
+   and each final number in <code class="code">final_number_array</code>, and returns a proper 
+   2d weapon array with this information.</p>
 </div>
 </div>
 
@@ -500,8 +524,9 @@
 <pre><span id="VALreformat_output_map"><span class="keyword">val</span> reformat_output_map</span> : <code class="type">(<a href="Engine.html#TYPEcurrent_map">current_map</a> * (int * int)) list -><br>       <a href="Engine.html#TYPEcurrent_map">current_map</a> array * (int * int) array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">reformat_output_map comb_list</code> is the array representation of 
-   <code class="code">comb_list</code>. 
-   Raises: <code class="code">Failure "no main map in this directory"</code> if the main map does not 
+   <code class="code">comb_list</code>.</p>
+
+<p>Raises: <code class="code">Failure "no main map in this directory"</code> if the main map does not 
    exist in this directory.</p>
 </div>
 </div>
@@ -510,27 +535,14 @@
 <div class="info-desc">
 <p><code class="code">main_engine_map_param ()</code> reads all files in the current directory 
    with the format <code class="code">"map-param*.json"</code> where <code class="code">"*"</code> can be any string, 
-   and returns the parsed map representation. 
-   Raises: <code class="code">Failure "no map-param.json is in current directory"</code> if there
+   and returns the parsed map representation.</p>
+
+<p>Raises: <code class="code">Failure "no map-param.json is in current directory"</code> if there
    is no file with the format <code class="code">"map-param*.json"</code></p>
 </div>
 </div>
 
-<pre><span id="VALmain_map_size_array"><span class="keyword">val</span> main_map_size_array</span> : <code class="type">map_array:<a href="Maps.html#TYPEt">Maps.t</a> array -> int array</code></pre><div class="info ">
-<div class="info-desc">
-<p><code class="code">main_map_size_array maps</code> is the list of total sizes 
-   (product of dimensions) of all the maps in <code class="code">maps</code></p>
-</div>
-</div>
-
-<pre><span id="VALmain_map_col_row"><span class="keyword">val</span> main_map_col_row</span> : <code class="type">map_array:<a href="Maps.html#TYPEt">Maps.t</a> array -> (int * int) array</code></pre><div class="info ">
-<div class="info-desc">
-<p><code class="code">main_map_col_row maps</code> is the list of size dimensions of all the maps in 
-   <code class="code">maps</code></p>
-</div>
-</div>
-
-<pre><span id="VALhelper_init"><span class="keyword">val</span> helper_init</span> : <code class="type">unit -><br>       <a href="Engine.html#TYPEcurrent_map">current_map</a> array * (int * int) array * int * int array *<br>       (int * int) array * int array * <a href="Engine.html#TYPEenemy">enemy</a> array array *<br>       <a href="Engine.html#TYPEfood_item">food_item</a> array array * <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
+<pre><span id="VALhelper_init"><span class="keyword">val</span> helper_init</span> : <code class="type">unit -><br>       <a href="Engine.html#TYPEcurrent_map">current_map</a> array * <a href="Engine.html#TYPEenemy">enemy</a> array array *<br>       <a href="Engine.html#TYPEfood_item">food_item</a> array array * <a href="Engine.html#TYPEweapon_item">weapon_item</a> array array</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">helper_init ()</code> is a helper function for <code class="code">init ()</code> that gets the 
    necessary information for the initial state.</p>
@@ -648,7 +660,13 @@
 </div>
 </div>
 
-<pre><span id="VALstrengthen_whole_map"><span class="keyword">val</span> strengthen_whole_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre>
+<pre><span id="VALstrengthen_whole_map"><span class="keyword">val</span> strengthen_whole_map</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">strengthen_whole_map s</code> will strengthen every living enemy in all maps in
+   state <code class="code">s</code></p>
+</div>
+</div>
+
 <pre><span id="VALdelete_one_enemy_from_state"><span class="keyword">val</span> delete_one_enemy_from_state</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">delete_one_enemy_from_state s</code> deletes the enemy with player's current
@@ -768,7 +786,7 @@
 <pre><span id="VALdelete_map_pos"><span class="keyword">val</span> delete_map_pos</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> int -> string -> unit</code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">delete_map_pos s pos name</code> deletes the items of the item arrays 
-   at index <code class="code">pos</code> in state <code class="code">s</code>, along with the map named <code class="code">name</code>.</p>
+   at index <code class="code">pos</code> in state <code class="code">s</code> with map name as <code class="code">name</code>.</p>
 </div>
 </div>
 
@@ -778,13 +796,6 @@
    state <code class="code">s</code> is not <code class="code">"main"</code> or if the player at state <code class="code">s</code> is not found in the 
    branced map info. Otherwise, <code class="code">(true, info)</code> is returned where <code class="code">info</code> is 
    the information in the branched map</p>
-</div>
-</div>
-
-<pre><span id="VALget_map_index_by_name"><span class="keyword">val</span> get_map_index_by_name</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> string -> int</code></pre><div class="info ">
-<div class="info-desc">
-<p><code class="code">get_map_index_by_name s name</code> returns the index of the map in game state
-   <code class="code">s</code> with the corresponding name <code class="code">name</code>.</p>
 </div>
 </div>
 
@@ -806,12 +817,6 @@
 <div class="info-desc">
 <p><code class="code">transfer_player_to_main_map s</code> transfers the player at state <code class="code">s</code> to the 
    main map and changes to the corresponding configurations in the map.</p>
-</div>
-</div>
-
-<pre><span id="VALrenew_one_player"><span class="keyword">val</span> renew_one_player</span> : <code class="type"><a href="Engine.html#TYPEstate">state</a> -> unit</code></pre><div class="info ">
-<div class="info-desc">
-<p><code class="code">renew_one_player s</code> renews the main engine player at state <code class="code">s</code>.</p>
 </div>
 </div>
 

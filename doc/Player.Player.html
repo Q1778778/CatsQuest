@@ -109,11 +109,6 @@
 
 
 <pre><span id="EXCEPTIONUnknownskill"><span class="keyword">exception</span> Unknownskill</span> <span class="keyword">of</span> <code class="type">string</code></pre>
-<div class="info ">
-<div class="info-desc">
-<p>The exception type of an unknown skill.</p>
-</div>
-</div>
 
 <pre><span id="VALskill_constructor"><span class="keyword">val</span> skill_constructor</span> : <code class="type">name:string -><br>       description:string -> strength:int -> cd:int -> <a href="Player.Player.html#TYPEskill">skill</a></code></pre><div class="info ">
 <div class="info-desc">
@@ -163,5 +158,5 @@
 
 <pre><span id="VALupdate_skill"><span class="keyword">val</span> update_skill</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Player.Player.html#TYPEskill">skill</a> list -> unit</code></pre>
 <pre><span id="VALswitch_loc"><span class="keyword">val</span> switch_loc</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> int * int -> unit</code></pre>
-<pre><span id="VALchoose_skill"><span class="keyword">val</span> choose_skill</span> : <code class="type"><a href="Player.Player.html#TYPEskill">skill</a> -> unit</code></pre>
+<pre><span id="VALchoose_skill"><span class="keyword">val</span> choose_skill</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> <a href="Player.Player.html#TYPEskill">skill</a> -> unit</code></pre>
 <pre><span id="VALget_all_skill_format"><span class="keyword">val</span> get_all_skill_format</span> : <code class="type"><a href="Player.Player.html#TYPEt">t</a> -> (string * int) list</code></pre></body></html>

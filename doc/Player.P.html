@@ -44,6 +44,13 @@
 </div>
 
 
+<pre><span id="EXCEPTIONUnknownskill"><span class="keyword">exception</span> Unknownskill</span> <span class="keyword">of</span> <code class="type">string</code></pre>
+<div class="info ">
+<div class="info-desc">
+<p>The exception type of an unknown skill.</p>
+</div>
+</div>
+
 <pre><span id="VALconstructor"><span class="keyword">val</span> constructor</span> : <code class="type">?strength:int -><br>       ?health:int -><br>       ?level:int -> ?experience:int -> ?loc:int * int -> unit -> <a href="Player.P.html#TYPEt">t</a></code></pre><div class="info ">
 <div class="info-desc">
 <p><code class="code">constructor s h l e ()</code> constructs a new player module located at
@@ -227,9 +234,9 @@
 </div>
 </div>
 
-<pre><span id="VALchoose_skill"><span class="keyword">val</span> choose_skill</span> : <code class="type"><a href="Player.P.html#TYPEskill">skill</a> -> unit</code></pre><div class="info ">
+<pre><span id="VALchoose_skill"><span class="keyword">val</span> choose_skill</span> : <code class="type"><a href="Player.P.html#TYPEt">t</a> -> <a href="Player.P.html#TYPEskill">skill</a> -> unit</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">choose_skill s</code> will update the cd of skill <code class="code">s</code></p>
+<p><code class="code">choose_skill p s</code> will update the cd of skill <code class="code">s</code> in player <code class="code">p</code></p>
 </div>
 </div>
 
