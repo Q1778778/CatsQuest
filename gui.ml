@@ -9,7 +9,6 @@ type stage=
 
 type box=
   | Action_button of (int*int*int*int)*(string*string)
-  | Action_circle of (int*int*int)*string
   | Action_box of (int*int*int*int)*(string*int)
   | Dialog_sense of string
   | Bnone
@@ -69,19 +68,7 @@ let whitebox_draw a b c d width=
   Graphics.lineto a d;
   Graphics.lineto a b
 
-(** [dialog text npc name] draws a dialog box, showing [text] on screen with 
-    picture [npc] shown at upper-left corner with [name]
-    Requires: [text] and [name] are string,
-    [npc] is a color matrix*)
-let dialog text npc name=
-  Graphics.set_color white;
-  Graphics.fill_rect 150 100 900 200;
-  Graphics.set_color black;
-  whitebox_draw 150 100 1050 300 4;
-  let pnpc=Graphics.make_image npc in
-  Graphics.draw_image pnpc 150 304;
-  Graphics.moveto 175 275;
-  Graphics.draw_string (name^":");
+let text_draw_dialog text=
   if String.length text<120 then
     (Graphics.moveto 200 260;
      Graphics.draw_string text)
@@ -100,7 +87,22 @@ let dialog text npc name=
         Graphics.moveto 200 245;
         Graphics.draw_string text2;
         Graphics.moveto 200 230;
-        Graphics.draw_string text3);
+        Graphics.draw_string text3)
+
+(** [dialog text npc name] draws a dialog box, showing [text] on screen with 
+    picture [npc] shown at upper-left corner with [name]
+    Requires: [text] and [name] are string,
+    [npc] is a color matrix*)
+let dialog text npc name=
+  Graphics.set_color white;
+  Graphics.fill_rect 150 100 900 200;
+  Graphics.set_color black;
+  whitebox_draw 150 100 1050 300 4;
+  let pic_npc=Graphics.make_image npc in
+  Graphics.draw_image pic_npc 150 304;
+  Graphics.moveto 175 275;
+  Graphics.draw_string (name^":");
+  text_draw_dialog text;
   Graphics.moveto 920 120;
   Graphics.draw_string "Click to continue #";
   cplace.dialog<-Dialog_sense name
@@ -141,13 +143,13 @@ let health_bar ()=
   whitebox_draw 100 730 300 750 5;
   Graphics.set_color white;
   Graphics.fill_rect 100 730 200 20;
-  let (m,h)=get_player_health() in
+  let (max,health)=get_player_health() in
   Graphics.set_color red;
-  let hp=if h*200/m>=0 then h*200/m else 0 in
+  let hp=if health*200/max>=0 then health*200/max else 0 in
   Graphics.fill_rect 100 730 (hp) 20;
   Graphics.set_color black;
   Graphics.moveto 180 735;
-  Graphics.draw_string ((string_of_int h)^"/"^string_of_int m);
+  Graphics.draw_string ((string_of_int health)^"/"^string_of_int max);
   Graphics.moveto 120 735;
   Graphics.draw_string"Health:"
 
@@ -176,7 +178,7 @@ let status_bar ()=
   Graphics.moveto 10 175;
   Graphics.draw_string ("The Hero Level: "^string_of_int (get_player_level()))
 
-let draw_inventory ()=
+let box_drawing_helper ()=
   Graphics.set_color black;
   Graphics.moveto 200 50;
   Graphics.draw_string "weapons:";
@@ -187,14 +189,17 @@ let draw_inventory ()=
   Graphics.draw_string "foods:";
   whitebox_draw 260 120 320 180 3;
   whitebox_draw 360 120 420 180 3;
+  Action_box ((260,20,60,60),("weapon",0))::
+  Action_box ((360,20,60,60),("weapon",1))::
+  Action_box ((460,20,60,60),("weapon",2))::
+  Action_box ((260,120,60,60),("food",0))::
+  Action_box ((360,120,60,60),("food",1))::
+  Action_box ((460,120,60,60),("food",2))::
+  cplace.fbutton
+
+let draw_inventory ()=
   whitebox_draw 460 120 520 180 3;
-  let fb=Action_box ((260,20,60,60),("weapon",0))::
-         Action_box ((360,20,60,60),("weapon",1))::
-         Action_box ((460,20,60,60),("weapon",2))::
-         Action_box ((260,120,60,60),("food",0))::
-         Action_box ((360,120,60,60),("food",1))::
-         Action_box ((460,120,60,60),("food",2))::
-         cplace.fbutton in 
+  let fb=box_drawing_helper() in 
   if Option.is_some cplace.item_selected then 
     let (t,i,c)=Option.get cplace.item_selected in 
     match t with 
@@ -234,13 +239,16 @@ let create_button text color tcolor x y w h trigger=
   Action_button ((x,y,w,h),trigger)
 
 let normal_four_botton c=
-  let first=create_button "Guide cat" red black 920 105 130 85 ("dialog","first") in
+  let first=create_button "Guide cat" red black
+      920 105 130 85 ("dialog","first") in
   let second=if Option.is_some cplace.item_selected then
       (let (t,i,n)=Option.get cplace.item_selected in
        create_button "use" 
-         magenta black 1060 105 130 85 ("use",n)) else (create_button "use" 
-                                                          grey white 1060 105 130 85 ("","second")) in
-  let third=if (cplace.item_ground)then create_button "pick up" blue black 920 10 130 85("weapon","pick") else
+         magenta black 1060 105 130 85 ("use",n)) else 
+      (create_button "use" 
+         grey white 1060 105 130 85 ("","second")) in
+  let third=if (cplace.item_ground)then 
+      create_button "pick up" blue black 920 10 130 85("weapon","pick") else
       create_button "pick up" grey white 920 10 130 85("weapon","pick") in
   let fourth=if (Option.is_some cplace.item_selected)then create_button "drop" 
         green black 1060 10 130 85 ("drop","second") else 
@@ -249,45 +257,46 @@ let normal_four_botton c=
 
 
 let draw_cd ()=
-  let (fire,trial,punishment)=(cd_store.fire,cd_store.trial,cd_store.punishment)in 
+  let (fire,trial,punishment)=
+    (cd_store.fire,cd_store.trial,cd_store.punishment) in 
   let max=max (max fire trial) punishment in
   let lst=List.filter (fun int->int>0)[fire;trial;punishment] in 
   if max <=0 then () else let length=List.length cplace.skills in 
     if length >=3 then
       let message="Available in "^string_of_int max^" round." in 
       string_cal message black 1060 0 130 85 else
-      let min_lst=List.fold_left (fun a b->min a b) 5 lst in 
-      let message="Available in "^string_of_int min_lst^" round." in 
+      let min_in_lst=List.fold_left (fun a b->min a b) 5 lst in 
+      let message="Available in "^string_of_int min_in_lst^" round." in 
       if length=1 then
         (string_cal message black 1060 95 130 85) else
         string_cal message black 9200 0 130 85
 
-let combat_four_botton int =
-  let fskill=(List.nth (cplace.skills) 0) in
-  if int=4 then
-    (let forskill=(List.nth (cplace.skills) 3) in
-     let forth=create_button  forskill 
-         lblue black 1060 10 130 85 ("skill", forskill)in
-     cplace.fbutton<-([forth])) else 
+let botton_drawing_helper int =
+  if int=4 then (let four_skill=(List.nth (cplace.skills) 3) in
+                 let fourth_botton=create_button four_skill 
+                     lblue black 1060 10 130 85 ("skill", four_skill)in
+                 cplace.fbutton<-([fourth_botton])) else 
     (let _=create_button "None" 
          grey black 1060 10 130 85 ("skill","None") in ());
-  if int>=3 then 
-    (let tskill=(List.nth (cplace.skills) 2) in
-     let third=create_button tskill
-         lblue black 920 10 130 85("skill", tskill) in
-     cplace.fbutton<-(third::cplace.fbutton)) else
+  if int>=3 then (let thd_skill=(List.nth (cplace.skills) 2) in
+                  let third_botton=create_button thd_skill
+                      lblue black 920 10 130 85("skill", thd_skill) in
+                  cplace.fbutton<-(third_botton::cplace.fbutton)) else
     (let _=create_button "None" 
          grey black 920 10 130 85 ("skill","None") in ());
-  if int>=2 then (
-    let sskill=(List.nth (cplace.skills) 1) in
-    let second=create_button sskill
-        lblue black 1060 105 130 85 ("skill",sskill)in
-    cplace.fbutton<-(second::cplace.fbutton)) else
+  if int>=2 then ( let sec_skill=(List.nth (cplace.skills) 1) in
+                   let second_botton=create_button sec_skill
+                       lblue black 1060 105 130 85 ("skill",sec_skill)in
+                   cplace.fbutton<-(second_botton::cplace.fbutton)) else
     (let _=create_button "None"
-         grey black 1060 105 130 85 ("skill","None") in ());
-  (let first=create_button fskill
-       lblue black 920 105 130 85 ("skill",fskill) in
-   cplace.fbutton<-(first::cplace.fbutton))
+         grey black 1060 105 130 85 ("skill","None") in ())
+
+let combat_four_botton int =
+  let fst_skill=(List.nth (cplace.skills) 0) in
+  botton_drawing_helper int;
+  (let first_botton=create_button fst_skill
+       lblue black 920 105 130 85 ("skill",fst_skill) in
+   cplace.fbutton<-(first_botton::cplace.fbutton))
 
 let combat_botton_helper ()=
   cplace.fbutton<-[];
@@ -300,13 +309,6 @@ let rec find_enemy_image_data name (lst:Color_convert.eimage list)=
   |h::t->find_enemy_image_data name t 
   |[]->failwith "can not find the image"
 
-
-let radius_circle x y r rx ry=
-  let dx=x-rx in 
-  let dy=y-ry in 
-  let distance=sqrt(float_of_int(dx*dx+dy*dy))in 
-  float_of_int r>=distance
-
 let enemy_list()=Array.to_list(( Engine.game_state).all_enemies_in_current_map)
 
 let rec get_one_enemy id lst=
@@ -316,9 +318,9 @@ let rec get_one_enemy id lst=
   |[]->raise (Not_such_enemy id)
 
 let skill_damage name=
-  let s= Engine.get_player(Engine.game_state) in
-  let skill= name|> Player.get_skill_by_skill_name s in 
-  let skill_bool=List.mem skill (Player.available_skills_list s) in 
+  let state= Engine.get_player(Engine.game_state) in
+  let skill= name|> Player.get_skill_by_skill_name state in 
+  let skill_bool=List.mem skill (Player.available_skills_list state) in 
   if skill_bool then 
     (Player.choose_skill skill;
      Player.skill_strength skill) else 0
@@ -349,8 +351,8 @@ let enemy_mon id=
   if hp<=0 then false else true
 
 let game_over_mon ()=
-  let (m,h)=get_player_health()in
-  if h<=0 then 
+  let (max,health)=get_player_health()in
+  if health<=0 then 
     (dialog "Game over" Color_convert.cute_cat "cute cat"; 
      let _=Graphics.wait_next_event [Button_down] in 
      Graphics.close_graph()) else ()
@@ -376,6 +378,17 @@ let skill_info_helper ()=
   enemy_health_bar the_enemy;
   draw_a_image Color_convert.player_in_combat 10 205
 
+let enemy_skill_drawing_helper ()=
+  skill_info_helper();
+  Thread.delay 0.3;
+  let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
+  enemy_skill the_enemy;
+  clear_graph();
+  skill_info_helper();
+  draw_a_image Color_convert.player_in_combat 10 205;
+  game_over_mon()
+
+
 let skill_helper name=
   Graphics.clear_graph(); 
   Graphics.moveto 850 500;
@@ -390,33 +403,32 @@ let skill_helper name=
   Thread.delay 1.5;
   Graphics.clear_graph(); 
   if enemy_mon cplace.enemy_to_combat then
-    (skill_info_helper();
-     Thread.delay 0.3;
-     let the_enemy=get_one_enemy cplace.enemy_to_combat (enemy_list()) in
-     enemy_skill the_enemy;
-     clear_graph();
-     skill_info_helper();
-     draw_a_image Color_convert.player_in_combat 10 205;
-     game_over_mon()) else 
+    enemy_skill_drawing_helper() else 
     ()
+
+let food_check s i=
+  let food=Array.to_list (Engine.game_state).food_inventory in 
+  match List.nth food i with 
+  |Engine.Eaten ->()
+  |Engine.Food f->
+    cplace.item_selected <-Some ("food",i,Foods.Food.get_name f);
+    cplace.message_display<-Foods.Food.get_description f;
+    cplace.irefresh<-true
+
+let weapon_check s i=
+  let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
+  match List.nth weapon i with 
+  |Engine.Empty->()
+  |Engine.Weapon w->
+    cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w);
+    cplace.message_display<-Weapons.Weapon.get_description w;
+    cplace.irefresh<-true
 
 let item_check s i=
   if s="food" then 
-    let food=Array.to_list (Engine.game_state).food_inventory in 
-    match List.nth food i with 
-    |Engine.Eaten ->()
-    |Engine.Food f->
-      cplace.item_selected <-Some ("food",i,Foods.Food.get_name f);
-      cplace.message_display<-Foods.Food.get_description f;
-      cplace.irefresh<-true
+    food_check s i
   else
-    let weapon=Array.to_list (Engine.game_state).weapon_inventory in 
-    match List.nth weapon i with 
-    |Engine.Empty->()
-    |Engine.Weapon w->
-      cplace.item_selected <-Some ("weapon",i,Weapons.Weapon.get_name w);
-      cplace.message_display<-Weapons.Weapon.get_description w;
-      cplace.irefresh<-true
+    weapon_check s i
 
 let draw_inventory_item_helper name=
   match name with 
@@ -426,28 +438,30 @@ let draw_inventory_item_helper name=
   |"dagger"->Color_convert.dagger_80
   |_->Color_convert.cute_cat
 
+let rec draw_food foods int : unit =
+  match foods with
+  |h::t->(match h with 
+      |Engine.Eaten->draw_food t (int+1)
+      |Engine.Food f->let name=Foods.Food.get_name f in 
+        let pic= draw_inventory_item_helper name in 
+        draw_a_image pic (260+(int*100)) 120;
+        draw_food t (int+1))
+  |[]->() 
+
+let rec draw_weapon weapons int : unit =
+  match weapons with
+  |h::t->(match h with 
+      |Engine.Empty->draw_weapon t (int+1)
+      |Engine.Weapon w->let name=Weapons.Weapon.get_name w in 
+        let pic= draw_inventory_item_helper name in 
+        draw_a_image pic (260+(int*100)) 20;
+        draw_weapon t (int+1))
+  |[]->()
+
 let item_draw ()=
   let food=Array.to_list (Engine.game_state).food_inventory in 
-  let rec draw_food foods int : unit =
-    match foods with
-    |h::t->(match h with 
-        |Engine.Eaten->draw_food t (int+1)
-        |Engine.Food f->let name=Foods.Food.get_name f in 
-          let pic= draw_inventory_item_helper name in 
-          draw_a_image pic (260+(int*100)) 120;
-          draw_food t (int+1))
-    |[]->() in 
   draw_food food 0;
   let weapons=Array.to_list (Engine.game_state).weapon_inventory in 
-  let rec draw_weapon weapons int : unit =
-    match weapons with
-    |h::t->(match h with 
-        |Engine.Empty->draw_weapon t (int+1)
-        |Engine.Weapon w->let name=Weapons.Weapon.get_name w in 
-          let pic= draw_inventory_item_helper name in 
-          draw_a_image pic (260+(int*100)) 20;
-          draw_weapon t (int+1))
-    |[]->() in 
   draw_weapon weapons 0
 
 
@@ -486,61 +500,65 @@ let rec parse  c=
   |Order (c,t)->order_helper c t
   |Tnone->()
 
+and order_drop_helper c=
+  if Option.is_some cplace.item_selected then 
+    (let (trigger,int,name)=Option.get cplace.item_selected in 
+     match trigger with 
+     |"weapon"->
+       Engine.drop_one_weapon_to_current_location Engine.game_state int;
+       cplace.item_selected<-None;
+       cplace.irefresh<-true;
+       cplace.message_display<-"you have dropped down "^name
+     |"food"->
+       Engine.drop_one_food_to_current_location Engine.game_state int;
+       cplace.item_selected<-None;
+       cplace.irefresh<-true;
+       cplace.message_display<-"you have dropped down "^name
+     |_->() ) else ()
 
-and  order_helper c t=
-  (if c="dialog" then parse (Guide t)  else if 
-     c="weapon" then (match ground_probe () with
-      |"Weapon"-> 
-        (if not (weapon_full_mon()) then 
-           cplace.message_display<-"you have picked up a weapon" else 
-           cplace.message_display<-"you inventory is full");
-        Engine.equip_weapon_in_current_loc Engine.game_state;
-        cplace.irefresh<-true
-      |"Food"->
-        (if not (food_full_mon()) then 
-           cplace.message_display<-"you have picked up a food" else 
-           cplace.message_display<-"you inventory is full");
-        Engine.take_one_food_in_current_location Engine.game_state;
-        cplace.irefresh<-true
-      |_->()) else if
-     c="use" then (let (t,i,n)=Option.get cplace.item_selected in 
-                   match t with 
-                   |"food"->Engine.eat_one_food_in_inventory Engine.game_state i;
-                     cplace.item_selected<-None;cplace.irefresh<-true;
-                     cplace.message_display<-"You ate "^n^ " and recovered health"
-                   |_->()) else if 
-     c="drop" then (if Option.is_some cplace.item_selected then 
-                      (let (t,i,n)=Option.get cplace.item_selected in 
-                       match t with 
-                       |"weapon"->
-                         Engine.drop_one_weapon_to_current_location Engine.game_state i;
-                         cplace.item_selected<-None;
-                         cplace.irefresh<-true;
-                         cplace.message_display<-"you have dropped down "^n
-                       |"food"->
-                         Engine.drop_one_food_to_current_location Engine.game_state i;
-                         cplace.item_selected<-None;
-                         cplace.irefresh<-true;
-                         cplace.message_display<-"you have dropped down "^n
-                       |_->() ) else ())
-   else
-     parse  (Command t))
+and order_pick_helper c=
+  match ground_probe () with
+  |"Weapon"-> 
+    (if not (weapon_full_mon()) then 
+       cplace.message_display<-"you have picked up a weapon" else 
+       cplace.message_display<-"you inventory is full");
+    Engine.equip_weapon_in_current_loc Engine.game_state;
+    cplace.irefresh<-true
+  |"Food"->
+    (if not (food_full_mon()) then 
+       cplace.message_display<-"you have picked up a food" else 
+       cplace.message_display<-"you inventory is full");
+    Engine.take_one_food_in_current_location Engine.game_state;
+    cplace.irefresh<-true
+  |_->()
+
+and order_helper c t=
+  match c with 
+  |"dialog"->parse (Guide t)
+  |"weapon"->order_pick_helper c
+  |"use"->(let (trigger,int,name)=Option.get cplace.item_selected in 
+           match trigger with 
+           |"food"->Engine.eat_one_food_in_inventory Engine.game_state int;
+             cplace.item_selected<-None;cplace.irefresh<-true;
+             cplace.message_display<-"You ate "^name^ " and recovered health"
+           |_->())
+  |"drop"->order_drop_helper c
+  |_->parse  (Command t)
 
 
 let tsensor(c:clist)=
   if not cplace.dialog_in_progress then () else
-    (let sta=Graphics.wait_next_event [Button_down] in 
+    (let status=Graphics.wait_next_event [Button_down] in 
      let sense b s=
        match b with
        |Action_button _->() 
        |Dialog_sense s->parse  (Next_con s)
        |Bnone->() 
-       |Action_box _->()
-       |Action_circle _->()in
-     let _=sense (c.dialog) sta in ())
+       |Action_box _->()in
+     let _=sense (c.dialog) status in ())
 
-let ksensor sta=
-  let key=sta.key in 
+let ksensor status=
+  let key=status.key in 
   match key with 
   |'a'
   |'A'->Engine.move_player_down Engine.game_state; cplace.irefresh<-true
@@ -552,30 +570,32 @@ let ksensor sta=
   |'S'->Engine.move_player_left Engine.game_state; cplace.irefresh<-true
   |_->()
 
+let action_button_helper s i (x,y,w,h) (c,t)=
+  (if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
+      (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
+     =true then (if i=Normal then 
+                   parse (Order(c,t)) else 
+                   (match c with 
+                    |"skill"->
+                      parse  (Attack t)
+                    |_->())) else ())
+
 let rec fensor (c:clist) i=
-  let sta=Graphics.wait_next_event [Button_down;Key_pressed] in 
+  let status=Graphics.wait_next_event [Button_down;Key_pressed] in 
   let sense b (s:Graphics.status)=
     match b with
-    |Action_button ((x,y,w,h),(c,t))->
-      (if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
-          (y<s.mouse_y)&&((y+h)>s.mouse_y)&&s.button)
-         =true then (if i=Normal then 
-                       parse (Order(c,t)) else 
-                       (match c with 
-                        |"skill"->
-                          parse  (Attack t)
-                        |_->())) else ())
-    |Action_box ((x,y,w,h),(st,i))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
-                                       (y<s.mouse_y)&&((y+h)>s.mouse_y)&&
-                                       s.button) then
-        (
-          parse (Item (st,i))) else ()
-    |Action_circle ((x,y,r),t)->()
+    |Action_button ((x,y,w,h),(command,trigger))->
+      action_button_helper s i (x,y,w,h) (command,trigger)
+    |Action_box ((x,y,w,h),(string,int))->if((x<s.mouse_x)&&((x+w)>s.mouse_x)&&
+                                             (y<s.mouse_y)&&((y+h)>s.mouse_y)&&
+                                             s.button) then
+        (parse (Item (string,int))) else ()
     |Dialog_sense s->()
     |_->fensor c i in
-  if sta.button then (let _=List.rev_map (fun butt->sense butt sta) c.fbutton in 
-                      ()) else 
-    ksensor sta
+  if status.button then 
+    (let _=List.rev_map (fun butt->sense butt status) c.fbutton in 
+     ()) else 
+    ksensor status
 
 
 let clear_screen ()=
@@ -583,15 +603,15 @@ let clear_screen ()=
 
 let cd_mon ()=
   let cd_lst=Player.get_all_skill_format(Engine.get_player Engine.game_state) in 
-  let update_cd s int=
-    match s with 
+  let update_cd skill int=
+    match skill with 
     |"fire"->cd_store.fire<-int
     |"divine trial"->cd_store.trial<-int
     |"divine punishment"->cd_store.punishment<-int
     |_->() in 
   let rec update_cd_matcher lst=
     match lst with 
-    |(s,i)::t-> update_cd s i; update_cd_matcher t 
+    |(skill,int)::t-> update_cd skill int; update_cd_matcher t 
     |[]->() in 
   update_cd_matcher cd_lst
 
@@ -606,8 +626,10 @@ let skill_mon ()=
 
 let level_mon int=
   if int<>cplace.player_level then
-    (dialog ("you defeated the enemy and you are upgraded to level"^ (string_of_int int)^".") Color_convert.cute_cat
-       "cute cat";cplace.player_level<-int; let _=Graphics.wait_next_event[Button_down]in ()) else ()
+    (dialog ("you defeated the enemy and you are upgraded to level"^
+             (string_of_int int)^".") Color_convert.cute_cat
+       "cute cat";cplace.player_level<-int;
+     let _=Graphics.wait_next_event[Button_down]in ()) else ()
 
 let rec combat id=
   skill_mon();
@@ -623,14 +645,16 @@ let rec combat id=
     let expeience=Enemy.get_experience the_enemy in
     (cplace.enemy_to_combat<-"none";
      cplace.message_display<-
-       ("you have defeated "^name^" and got "^(string_of_int expeience)^" points of expeience.");
+       ("you have defeated "^name^" and got "^
+        (string_of_int expeience)^" points of expeience.");
      Engine.delete_one_enemy_from_state Engine.game_state)
 
 let combat_mon()=if cplace.enemy_to_combat<>"none" then 
     let name=(get_one_enemy cplace.enemy_to_combat (enemy_list())
               |>Enemy.get_name) in
     (Graphics.clear_graph();
-     cplace.message_display<-"You entered combat with "^name^". It's your turn!";
+     cplace.message_display<-"You entered combat with "^name
+                             ^". It's your turn!";
      cplace.player_level<-get_player_level ();
      combat cplace.enemy_to_combat )
   else ()
@@ -647,8 +671,8 @@ let ground_mon ()=
   |Engine.Died->()
 
 let enemy_loc_mon()=
-  let (b,id)=Engine.check_enemy_in_current_loc Engine.game_state in 
-  if b then cplace.enemy_to_combat<-id else 
+  let (bool,id)=Engine.check_enemy_in_current_loc Engine.game_state in 
+  if bool then cplace.enemy_to_combat<-id else 
     ()
 
 let win_mon ()=
@@ -657,6 +681,13 @@ let win_mon ()=
      let _=Graphics.wait_next_event [Button_down] in 
      Graphics.close_graph()) else ()
 
+let normal_bars()=
+  status_bar ();
+  experience_bar();
+  health_bar ();
+  info_bar();
+  draw_inventory()
+
 
 let rec main () =
   try (cplace.fbutton<-[];
@@ -664,17 +695,11 @@ let rec main () =
        cplace.irefresh<-false;
        Engine.transfer_player_to_branch_map Engine.game_state;
        Engine.transfer_player_to_main_map Engine.game_state;
-       Map_builder.map_text_build();
-       Map_builder.draw_items();
-       Map_builder.draw_player();
-       status_bar ();
-       experience_bar();
+       Map_builder.draw();
+       normal_bars ();
        ground_mon();
        normal_four_botton cplace;
-       health_bar ();
-       info_bar();
        item_draw ();
-       draw_inventory();
        win_mon();
        fensor cplace Normal;
        tsensor cplace;
