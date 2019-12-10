@@ -623,7 +623,7 @@ let branched_map_tests = [
 (** Test suites for engine states *)
 let engine_state_tests = [
   make_test "successfully strengthen enemy's health after play"
-    new_e_sec_health (new_e_fir_health+10);
+    new_e_sec_health (new_e_fir_health+5);
 
   make_test "successfully strengthen enemy's level after play"
     new_e_sec_level (new_e_fir_level+1);

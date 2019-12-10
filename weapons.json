@@ -12,8 +12,8 @@
     "gainables": [
       {
         "name": "divine punishment",
-        "strength": 40,
-        "cd": 2,
+        "strength": 35,
+        "cd": 1,
         "description": "I am the representative of the goods!"
       }
     ]

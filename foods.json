@@ -16,7 +16,7 @@
         "name": "fire",
         "description": "Fire is the natural tools to defeat evils",
         "cd": 1,
-        "strength": 30
+        "strength": 35
       }
     ]
   }
