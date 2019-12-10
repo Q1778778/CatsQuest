@@ -140,10 +140,10 @@ let contains s1 s2 =
   counter 0
 
 
-(**[random_int_array_for_enemies arr num] returns a 
+(**[random_int_array_for_enemies_and_items arr num] returns a 
    probability-driven random int array with the number [num] and the 
    location array [arr] *)
-let random_int_array_for_enemies map_size_array number =
+let random_int_array_for_enemies_and_items map_size_array number =
   let round f = truncate (f +. 0.5) in
   let raw_prob = map_size_array |> Array.to_list in
   let rec total_sum num = function
@@ -159,24 +159,6 @@ let random_int_array_for_enemies map_size_array number =
   number - total_sum 0 tl :: tl
   |> Array.of_list
 
-(**[random_int_array_for_items arr num] returns a 
-   probability-driven random int array with the number [num] and the 
-   location array [arr] *)
-let random_int_array_for_items map_size_array items =
-  let round f = truncate (f +. 0.5) in
-  let raw_prob = map_size_array |> Array.to_list in
-  let rec total_sum num = function
-    | [] -> num
-    | h::d -> total_sum (num + h) d in
-  let sum = total_sum 0 raw_prob in
-  let float_sum = float_of_int sum in
-  let float_num = float_of_int items in
-  let temp_random_number = (*the probability oper here is pretty messy *)
-    List.map (fun s -> 
-        (float_of_int s) /. float_sum *. float_num |> round) raw_prob in 
-  let tl = List.tl temp_random_number in
-  items - total_sum 0 tl :: tl
-  |> Array.of_list
 
 (**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , 
    (1, row), (col, row-1), (col-1, row-1), ...]] containing [n] elements,
@@ -578,15 +560,15 @@ let helper_init () =
   (*this number can be either artificially set or stored in json.*)
   let map_size_array = main_map_size_array ~map_array in
   let map_col_row_array = main_map_col_row ~map_array in
-  let final_number_array_e = 
+  let final_number_array = 
     random_int_array_for_enemies_and_items map_size_array 15 in
   let all_enemies = 
-    main_engine_enemy ~map_col_row_array ~loc_array final_number_array_e in
-  let final_number_array_w = 
+    main_engine_enemy ~map_col_row_array ~loc_array final_number_array in
+  let final_number_array_1 = 
     random_int_array_for_enemies_and_items map_size_array 10 in
   let all_weapons = 
-    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_w in
-  let final_number_array_f = 
+    main_engine_weapon ~map_col_row_array ~loc_array final_number_array_1 in
+  let final_number_array_2 = 
     random_int_array_for_enemies_and_items map_size_array 12 in
   let all_foods = 
     main_engine_food ~map_col_row_array ~loc_array final_number_array_f in
