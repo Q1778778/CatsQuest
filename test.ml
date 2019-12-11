@@ -101,8 +101,10 @@ open Weapons
   All implementation involving the GUI is tested manually. 
   Our game involves in switch of a lot of game states (branch map to map), and
   we tested our game by 'make play' on our gui. We believe unit tests ensured
-  our basic functionalities in our backend should be correct, while gui testing
-  ensured our backend integration is correct. 
+  our basic functionalities in our backend should be correct (such as updating 
+  player, strengthening single enemy), while gui testing ensured our backend 
+  integration is correct. (such as switching one map, strengthening the whole
+  map)
 *)
 
 (**[get_player s] returns [t] if the player at state [s] yields [Player t].
