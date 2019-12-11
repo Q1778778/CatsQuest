@@ -93,6 +93,11 @@ open Weapons
   in-game player's status and we wanted to check the correctness of such
   updates.
   
+  Our tests are basially glass box. We tested backend models (player, foods,
+  weapons, and enemies) by testing the correctness of our interface functions.
+  Ex: increment player's health, equip one weapon. Each tests integrate some
+  simple but representative game state. We then test the engine heavily in GUI.
+
   All implementation involving the GUI is tested manually. 
   Our game involves in switch of a lot of game states (branch map to map), and
   we tested our game by 'make play' on our gui. We believe unit tests ensured
