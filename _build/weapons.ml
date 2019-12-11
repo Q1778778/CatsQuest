@@ -1,5 +1,7 @@
+(** The file in charge of Weapon*)
 open Player
 
+(** [W] is the interface for weapons*)
 module type W = sig 
   (** The abstract type of values representing weapons. *)
   type weapon
@@ -34,7 +36,10 @@ module type W = sig
   val get_gainables: weapon -> Player.skill list
 end
 
+(** [Weapon] is the abstract data type for weapons*)
 module Weapon : W = struct 
+  (** Documentation in W*)
+
   type weapon = {
     name : string;
     description : string;

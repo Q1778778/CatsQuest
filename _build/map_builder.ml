@@ -1,3 +1,5 @@
+(** The file in charge of Map building*)
+
 (** [purple_red] is color purple*)
 let purple_red = Graphics.rgb 140 67 86
 

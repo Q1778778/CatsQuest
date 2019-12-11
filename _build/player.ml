@@ -1,3 +1,4 @@
+(** [P] is the interface for player*)
 module type P = sig
 
   (** The abstract type of values representing a player's skill. *)
@@ -131,7 +132,9 @@ module type P = sig
   val get_all_skill_format : t -> (string * int) list
 end
 
+(** The abstraction data type representing a player*)
 module Player : P = struct
+  (** Documentation in P*)
 
   type skill = {
     name: string;
@@ -194,8 +197,6 @@ module Player : P = struct
 
   let row p = snd p.location
 
-  (** [move p m c r] changes the player state for which the player [p] 
-      moves in map [m];  *)
   let move p m col_diff row_diff = 
     let col' = col_diff + (col p) in
     let row' = row_diff + (row p) in 

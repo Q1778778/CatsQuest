@@ -1,3 +1,4 @@
+(** [MP] is the interace for maps*)
 module type MP = sig 
   (** The abstract type of values representing a map param. *)
   type map_param = {
@@ -25,6 +26,8 @@ end
 
 
 module MapParam : MP = struct 
+  (** Documentation in MP*)
+
   type map_param = {
     name: string; (*this represents a jpg name for this element*)
     link: string; (*link here represents another map file 

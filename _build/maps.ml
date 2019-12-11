@@ -1,3 +1,4 @@
+(** [MP] is the interace for maps*)
 module type MP = sig 
   (** The abstract type of values representing a map param. *)
   type map_param = {

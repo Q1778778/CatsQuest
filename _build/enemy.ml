@@ -1,5 +1,8 @@
+(** The file in charge of enemy*)
 open Player
 
+(** [EnemySig] is the interface for enemy module with every function
+    listed *)
 module type EnemySig = sig
 
   (** The abstract type of values representing an enemy. *)
@@ -108,7 +111,10 @@ module type EnemySig = sig
   val strengthen : t -> unit
 end
 
+(** [Enemy] is the abstraction type representating an enemy*)
 module Enemy: EnemySig = struct
+  (** Documentation in EnemySig*)
+
   exception UnknownSkill of string
 
   type skills = {
@@ -137,10 +143,11 @@ module Enemy: EnemySig = struct
   }
 
   (**[health_increment] is the health incr. 
-    to this enemy once other enemy is killed *)
+     to this enemy once other enemy is killed *)
   let health_increment = 5
 
   (* getters are defined here *)
+
   let get_id s = s.id
 
   let get_name s = s.name 
@@ -212,6 +219,7 @@ module Enemy: EnemySig = struct
 
   let increase_level t =
     t.level <- t.level + 1
+
 
   let strengthen t = 
     increase_health t health_increment;

@@ -1,3 +1,4 @@
+(** The file in charge of GUI*)
 open Graphics
 open Enemy
 open Player

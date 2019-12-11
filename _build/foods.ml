@@ -1,5 +1,7 @@
+(** The file in charge of food*)
 open Player
 
+(** [F] is the interface for foods*)
 module type F = sig 
   (** The abstract type of values representing foods. *)
   type food 
@@ -38,8 +40,10 @@ module type F = sig
   val get_gainables: food -> Player.skill list
 end
 
-
+(** [Food] is the data abstraction type representing food*)
 module Food : F = struct
+  (** Documentation in F*)
+
   type food = {
     name : string;
     description : string;
@@ -49,7 +53,7 @@ module Food : F = struct
     gainables: Player.skill list;
     mutable location : int * int;
   }
-
+  (** Constructor of a food *)
   let constructor 
       ~row ~col ~health ~description ~name ~id ~strength ~gainables = {
     name = name;

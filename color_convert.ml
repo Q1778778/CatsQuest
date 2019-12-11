@@ -1,3 +1,4 @@
+(** The file that initialize that graphic resources*)
 open Graphics
 open Yojson.Basic.Util
 

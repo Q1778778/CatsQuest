@@ -1,18 +1,19 @@
+(** The file that initialize that graphic resources*)
 open Graphics
 open Yojson.Basic.Util
 
-(** The abstract type of values representing an image with image json data*)
+(** The abstract type of values representing an image with image json data*)
 type oimage = {
   name: string;
   matrix: int list list list;
 }
 
-(** The abstract type of values representing multiple images *)
+(** The abstract type of values representing multiple images *)
 type images = {
   one_image: oimage list;
 }
 
-(** The abstract type of values representing an image with RGB data*)
+(** The abstract type of values representing an image with RGB data*)
 type eimage = {
   name_data:string;
   image_data: Graphics.color array array;
