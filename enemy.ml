@@ -115,8 +115,10 @@ end
 module Enemy: EnemySig = struct
   (** Documentation in EnemySig*)
 
+  (** The exception type of an unknown skill. *)
   exception UnknownSkill of string
 
+  (** The abstract type of values representing an enemy's skill. *)
   type skills = {
     skill_name: string;
     skill_probability: float;
@@ -125,6 +127,7 @@ module Enemy: EnemySig = struct
 
   (*i set these fields as mutable because there is a chance that we will modify
     it in MS2 *)
+  (** The abstract type of values representing an enemy. *)
   type t = {
     (*static fields *)
     id: string;
@@ -148,25 +151,36 @@ module Enemy: EnemySig = struct
 
   (* getters are defined here *)
 
+  (**[get_id e] returns the id # of the enemy [e]. *)
   let get_id s = s.id
 
+  (**[get_name e] returns the name of the enemy [e]. *)
   let get_name s = s.name 
 
+  (**[get_description e] returns the description of the enemy [e]. *)
   let get_description s = s.descr
 
+  (**[get_experience e] returns the experience amount of the enemy [e]. *)
   let get_experience s = s.exp
 
+  (**[get_level e] returns the current level that the enemy [e] is on. *)
   let get_level s = s.level
 
+  (**[get_hp e] returns the current hp amount of the enemy [e] *)
   let get_hp s = s.hp
 
+  (**[get_pos e] returns the current position of the enemy [e] *)
   let get_pos s = s.pos
 
+  (**[get_max_hp e] returns the maximum hp of the enemy [e] *)
   let get_max_hp s= s.count * health_increment + s.initial_hp
 
+  (**[get_gainable_skill t] is the gainable player skills list *)
   let get_gainable_skill s = s.gainables
 
   (* setters are defined here *)
+
+  (**[reduce_hp e d] reduces the enemy's hp amount by [d]. *)
   let reduce_hp s d =
     let tmp_hp = s.hp - d in
     if tmp_hp < 0 then s.hp <- 0
@@ -175,15 +189,25 @@ module Enemy: EnemySig = struct
   let get_all_skills_name s = 
     List.map (fun x -> x.skill_name) s.skills
 
+  (**[get_all_skills_name_prob_and_strength_to_assoc_list e] returns 
+       [[(n1,p1,s1); (n2,p2,s2); ... ]]
+       where [ni] is the name of an enemy [e]'s skill at index [i], 
+       [pi] is the skill probability of enemy [e]'s skill at index [i], and [si] 
+       is the strength of the enemy [e]'s particular skill at index [i],
+        for all [i] between 1 and [List.length s.skills], inclusive. *)
   let get_all_skills_name_prob_and_strength_to_assoc_list s = 
     List.map (fun x -> (x.skill_name, x.skill_probability, x.skill_strength)) 
       s.skills
 
+  (**[get_all_skills_name e] returns a list of all the skill names of 
+       the enemy [e].  *)
   let get_one_skill_strength_by_name s name = 
     try (match List.find (fun x -> x.skill_name = name) s.skills with 
         | a -> a.skill_strength) 
     with Not_found -> raise (UnknownSkill name)
 
+  (**[single_skill_constructor n s p] constructs a new skill with the name 
+       [n], strength [s] and skill probability [p]. *)
   let single_skill_constructor ~skill_name ~skill_strength ~skill_probability 
     :skills = 
     {
@@ -192,6 +216,9 @@ module Enemy: EnemySig = struct
       skill_probability = skill_probability;
     }
 
+  (**[constructor p l exp h id n d max_hp s] constructs a new enemy module 
+       located at position [p] with experience [exp], hp [hp], id # [id], 
+       name [n], maximum hp [max_hp] and a list of skills [s] at level [l]. *)
   let constructor ~pos ~level ~exp 
       ~hp ~id ~name  
       ~descr ~max_hp ~skills ~gainables =
@@ -210,17 +237,22 @@ module Enemy: EnemySig = struct
       gainables = gainables;
     }
 
+  (**[increase_health t hp] will increase health [hp] this enemy has*)
   let increase_health t hp = 
     t.hp <- t.hp + hp
 
+  (**[increase_strength t s] will increase strength [s] to every skill
+       this enemy [t] has*)
   let increase_strength t s =
     List.iter 
       (fun skill -> skill.skill_strength <- skill.skill_strength + s) t.skills
 
+  (**[increase_level t] will increase one level of enemy [t]*)
   let increase_level t =
     t.level <- t.level + 1
 
-
+  (**[strengthen t] will increase the health, strength, and level of this
+       enemy*)
   let strengthen t = 
     increase_health t health_increment;
     increase_strength t 3;

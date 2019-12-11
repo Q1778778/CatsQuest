@@ -44,6 +44,7 @@ end
 module Food : F = struct
   (** Documentation in F*)
 
+  (** The abstract type of values representing foods. *)
   type food = {
     name : string;
     description : string;
@@ -65,18 +66,25 @@ module Food : F = struct
     gainables = gainables;
   }
 
+  (**[get_name f] is the name of the food [f]  *)
   let get_name f = f.name
 
+  (**[get_description f] is the description of the food [f]  *)
   let get_description f = f.description
 
+  (**[get_strength f] is the strength of the food [f]  *)
   let get_strength f = f.strength
 
+  (**[get_health f] is the health of the food [f]  *)
   let get_health f = f.health
 
+  (**[get_loc f] is the location of the food [f]  *)
   let get_loc f = f.location
 
+  (**[set_loc f loc] sets the location of the food [f] to [loc]  *)
   let set_loc f loc = f.location <- loc
 
+  (**[get_gainables f] is the skill gainables of food [f] *)
   let get_gainables f = f.gainables
 end
 

@@ -35,13 +35,16 @@ module MapParam : MP = struct
                     linked map, link will be empty string ""*)
   }
 
+  (** Constructor of a map param *)
   let single_map_element_constructor ~name ~link = {
     link = link;
     name = name;
   }
 
+  (**[get_name mp] is the name of the map param [mp] *)
   let get_link param = param.link
 
+  (**[get_link mp] is the link of the map param [mp] *)
   let get_name param = param.name
 
 end
