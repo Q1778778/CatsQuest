@@ -1,3 +1,4 @@
+<<<<<<< HEAD:_build/default/src/user_interface/map_builder.ml
 (* #require "graphics";;
 #require "yojson";;
 #cd "../json_models";;
@@ -16,6 +17,9 @@ open Color_convert
 open Maps
 open Engine
 open Builder
+=======
+(** The file in charge of Map building*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:map_builder.ml
 
 (** [purple_red] is color purple*)
 let purple_red = Graphics.rgb 140 67 86

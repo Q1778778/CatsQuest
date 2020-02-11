@@ -1,3 +1,4 @@
+<<<<<<< HEAD:_build/default/src/user_interface/gui.ml
 (* #require "yojson";;
 #require "graphics";;
 #require "threads.posix";;
@@ -12,6 +13,9 @@
 #mod_use "../user_interface/color_convert.ml";;
 #mod_use "../user_interface/map_builder.ml";; *)
 
+=======
+(** The file in charge of GUI*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:gui.ml
 open Graphics
 open Enemy
 open Player

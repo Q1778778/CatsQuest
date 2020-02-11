@@ -1,8 +1,12 @@
+<<<<<<< HEAD:_build/default/src/user_interface/color_convert.ml
 (* #require "yojson";;
 #require "graphics";;
 #cd "../json_models" *)
 
 
+=======
+(** The file that initialize that graphic resources*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:color_convert.ml
 open Graphics
 open Yojson.Basic.Util
 

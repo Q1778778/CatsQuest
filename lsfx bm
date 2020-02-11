@@ -1,0 +1,343 @@
+[1mdiff --cc _build/_digests[m
+[1mindex 856a2e2,92de583..0000000[m
+mode 100644,100644..100755[m
+[1m--- a/_build/_digests[m
+[1m+++ b/_build/_digests[m
+[36m@@@ -1,30 -1,40 +1,73 @@@[m
+[32m++<<<<<<< HEAD[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/foods.ml": "\134\156!^\157\145\174\205\194\188$\187\159z\"\132"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/enemy.ml": "K\142?\026\007hu>\030C\030Z\217\141\2545"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/game_models/foods )": "\193\155~1\028\020\201^o\154g^\011ms\181"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/game_models/maps )": "\219\244\161\191{\015!/\181\133\221\182\139\027\134\228"[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/user_interface/color_convert )": "\127\128\r\2414L\238H\224\176\1327\1333\186\180"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/user_interface/color_convert.ml": "\127Pf\152\238@\215t\204\1317\016\156\025\2221"[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/game_models/player )": "\226\201\227_\215\167\143\177\188t\177\174\\e\1321"[m
+[32m +"Rule: ocaml dependencies ml (%=src/user_interface/map_builder )": "\197\201p?\197\n\223X\250\146\027\007c\215\228\173"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/weapons.ml": "\019t\152C\252\001\188_\239\170\231\171)\n\232\174"[m
+[32m +"Rule: ocaml dependencies ml (%=src/game_models/maps )": "\244\157\198\171dL4\245\249\246P\015\150o\164}"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/game_models/weapons )": " ?\130\203\242\b\231\151\133\215\133\149\184:\184%"[m
+[32m +"Rule: ocaml dependencies ml (%=src/game_models/weapons )": "\176FjL\250\011\182 o\254a\165\r\154\221\182"[m
+[32m +"Rule: ocaml dependencies ml (%=src/game_models/foods )": "\017\021(\149\208\006\152\157\195\024\194\140\236\131\138\177"[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/game_models/enemy )": "\171\199V\249\184\231\221\177\1694t.\2202\161\018"[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/game_models/maps )": ">\024\241\211\018\n \190\156li\255H\235\165P"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/game_models/enemy )": "^\187N\007BY*\171\224\230[?z{\026\020"[m
+[32m +"Rule: ocaml dependencies ml (%=src/game_models/enemy )": "\206\165\234\144X\232\193\190;\239\209\t\163r\190("[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/game_models/weapons )": "3\247\247\185\154\148\0176z\249\231\160\250\156\224\128"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/engine/engine.ml": "\179\000\0307\169\224\164\180\179\027y\226\148\n\133c"[m
+[32m +"Rule: ocaml: cmo* -> byte (%=src/game_models/foods )": "\137\026\166c\205\018j\212\165a\249\161\142\015\215w"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/game_models/player )": "\191\163IS\255\167\221\253O\196@\250\241\209dp"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/maps.ml": "\142\243v\206\217\206z\191\2194d03\021i\135"[m
+[32m +"Rule: ocaml dependencies ml (%=src/engine/builder )": "\195\133z\144\202\186>\129\225/'\217\017-\167u"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/player.ml": "J\167\217\164\147\129\234WY\148\014\171Bp\162\173"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/engine/builder.ml": "q<0p\194\021\221{c\169p\244\238\201=\210"[m
+[32m +"Rule: ocaml dependencies ml (%=src/user_interface/color_convert )": "\194\031\200\163`\173G\031I\220\188\217\178\226\002\162"[m
+[32m +"Rule: ocaml dependencies ml (%=src/engine/engine )": "\0067v\252\166\141\245@\251\191\248\160\208BE\198"[m
+[32m +"Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/user_interface/map_builder.ml": "7\131m\171\151\184\r\196\230U\159\167\027'\173\020"[m
+[32m +"Rule: ocaml dependencies ml (%=src/game_models/player )": "\184p\216\230\030\240\127y\208\238\020\196\014\228\030\146"[m
+[32m +"Rule: ocaml: ml -> cmo & cmi (%=src/user_interface/color_convert )": "\140w\n\191\184\182\162]\232\168F\251!\182\239\150"[m
+[32m++=======[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=foods )": "M\158\030L\156D9\151\186\254\232\189\0048\\|"[m
+[32m+ "Rule: ocaml dependencies ml (%=test )": "\164\198\248@\252TC\216\251J\017#z\222\186="[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=color_convert )": "\164\156\149Y\002\018\143^\255\023?\239nA\204U"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=engine )": "=\196?\206\138j\247\181q\018x\216\214\255\242\222"[m
+[32m+ "Rule: ocaml dependencies ml (%=map_builder )": "\201D\1623W\251\182\220'y[(U)\244\205"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=maps )": "*w\209\138\132\134\168c>|\157\172q\145\246S"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/player.ml": "\147wl\195\191\155dK\197k\253\162\217Gp\214"[m
+[32m+ "Rule: ocaml dependencies ml (%=gui )": "@F{M\n\\y8\141\153en\139\031\149\015"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=enemy )": "\194\005\227C\000\212'\183\187*\015_A\250\223`"[m
+[32m+ "Rule: ocaml dependencies ml (%=color_convert )": "\005a\243A\026\150\171\153f\192\132\184\174,\1478"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=maps )": "\252\128\227\217O\209\220 \"\0295\134\"}.\146"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=weapons )": "\243\242\179&\029n9\197\n\020\007e\152o\148\243"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=player )": "\146\173\028_\194c/\163\2339\128E\020\131A\210"[m
+[32m+ "Rule: ocaml dependencies ml (%=weapons )": "\165\232\131\230\247\155\020\229J\2268\246B\249b\028"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=player )": "\005N\2273\239\150\140`\196\193&\218\212SIn"[m
+[32m+ "Rule: ocaml dependencies ml (%=player )": "a\228\030\150\226pi\000\031Y\242X\183\205D\218"[m
+[32m+ "Rule: ocaml dependencies ml (%=engine )": "\160&\137v\213Y\tb\253\248+D\133\246\197\210"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/color_convert.ml": "\130\165O*\149N\239/\149\\\140#\189\175a\001"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/gui.ml": "Qq\215\225\011\155\135zo\183\177G\159\182\208\247"[m
+[32m+ "Rule: ocaml dependencies ml (%=foods )": "\156HF(\153\178.\158l\1638\2170elp"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=gui )": "\240\155yK\138>\0119\186\196\240\170\250\255\003\212"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/enemy.ml": "\t\003\202Cm1\149\146\252\2473M|8\240\192"[m
+[32m+ "Rule: ocaml dependencies ml (%=enemy )": "\138\176\134\247F\251 q\152\244a\\\127P\168{"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=foods )": "\184\196I|\142>\161L\147`\028\254\158\145\183\t"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=map_builder )": "\204\005\031\156o\131Z\155\133_\182\174}\249\235\174"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/test.ml": "DQv\157\203\205\022(\028\\1,\210<\133?"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=test )": "}\174\248\176\248\170\217\132\127N\160u\2137\1523"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/weapons.ml": "\130\249\135N\208}\141\172oKz\163;od\198"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=map_builder )": "\181\011\184%\000\222\211\165\162\244B\031f\228\171\143"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=engine )": "\208\194\178-\241\b\225\245R\166\147\142\167c9\167"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=color_convert )": "\151}\149\242\247T}\n\127\029H\005X\233k\012"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/map_builder.ml": "\216\192-&\210\132\1379\236\158\173)~\221hA"[m
+[32m+ "Rule: ocaml dependencies ml (%=maps )": "\227B\031\162\189\017\230\208\241\159\205\028\003\248\250x"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=enemy )": "\231\221\182-\135,+=\145\1459&\001NW&"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=gui )": "n\143\155\220K\194\159\233\209\210 \216#\221S\180"[m
+[32m+ "Rule: ocaml: cmo* -> byte (%=test )": "Ja\018z\028B\209l\021\133GKxR\219\164"[m
+[32m+ "Rule: ocaml: ml -> cmo & cmi (%=weapons )": "y\018\131\193)\139\0151L\225\182\214\027\014k\150"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/foods.ml": "\160\211p\142w'!\21637\207\251\204WU\255"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/engine.ml": "\004\177r;{\030_\n\248\193\141\022~\168\026\156"[m
+[32m+ "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/maps.ml": "\189-\148XE\173i\180\202\228\231\135\188\199\194\128"[m
+[32m++>>>>>>> 99df40a2dfd7af031496647d620c12498458826d[m
+[1mdiff --cc _build/_log[m
+[1mindex ff83643,00c3280..0000000[m
+mode 100644,100644..100755[m
+[1m--- a/_build/_log[m
+[1m+++ b/_build/_log[m
+[36m@@@ -1,2 -1,32 +1,36 @@@[m
+  ### Starting build.[m
+[32m++<<<<<<< HEAD[m
+[32m +# Compilation unsuccessful.[m
+[32m++=======[m
+[32m+ # Target: test.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:test.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules test.ml > test.ml.depends # cached[m
+[32m+ # Target: enemy.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:enemy.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules enemy.ml > enemy.ml.depends # cached[m
+[32m+ # Target: player.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:player.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules player.ml > player.ml.depends # cached[m
+[32m+ # Target: maps.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:maps.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules maps.ml > maps.ml.depends # cached[m
+[32m+ # Target: maps.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:maps.cmo, file:maps.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o maps.cmo maps.ml[m
+[32m+ # Target: player.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:player.cmo, file:player.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o player.cmo player.ml[m
+[32m+ # Target: engine.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:engine.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules engine.ml > engine.ml.depends # cached[m
+[32m+ # Target: enemy.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:enemy.cmo, file:enemy.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o enemy.cmo enemy.ml[m
+[32m+ # Target: foods.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:foods.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules foods.ml > foods.ml.depends # cached[m
+[32m+ # Target: weapons.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:weapons.ml, ocaml, ocamldep, quiet, traverse }[m
+[32m+ ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules weapons.ml > weapons.ml.depends # cached[m
+[32m+ # Target: foods.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:foods.cmo, file:foods.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o foods.cmo foods.ml[m
+[32m+ # Target: weapons.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:weapons.cmo, file:weapons.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o weapons.cmo weapons.ml[m
+[32m+ # Target: engine.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:engine.cmo, file:engine.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o engine.cmo engine.ml[m
+[32m+ # Target: test.cmo, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, compile, debug, extension:cmo, extension:ml, file:test.cmo, file:test.ml, implem, ocaml, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -c -g -package oUnit -package yojson -package ANSITerminal -package graphics -o test.cmo test.ml # cached[m
+[32m+ # Target: test.byte, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), byte, debug, dont_link_with, extension:byte, file:test.byte, link, ocaml, program, quiet, traverse }[m
+[32m+ ocamlfind ocamlc -linkpkg -g -package oUnit -package yojson -package ANSITerminal -package graphics maps.cmo player.cmo enemy.cmo foods.cmo weapons.cmo engine.cmo test.cmo -o test.byte[m
+[32m+ # Compilation successful.[m
+[32m++>>>>>>> 99df40a2dfd7af031496647d620c12498458826d[m
+[1mdiff --cc _build/default/src/engine/builder.ml[m
+[1mindex 294a932,51bb61e..0000000[m
+mode 100644,100644..100755[m
+[1m--- a/_build/default/src/engine/builder.ml[m
+[1m+++ b/_build/default/src/engine/builder.ml[m
+[36m@@@ -1,686 -1,1162 +1,1851 @@@[m
+[32m++<<<<<<< HEAD:_build/default/src/engine/builder.ml[m
+[32m +(* #require "yojson";;[m
+[32m +#mod_use "../game_models/maps.ml";;[m
+[32m +#mod_use "../game_models/player.ml";;[m
+[32m +#mod_use "../game_models/enemy.ml";;[m
+[32m +#mod_use "../game_models/foods.ml";;[m
+[32m +#mod_use "../game_models/weapons.ml";; *)[m
+[32m +[m
+[32m +open Maps[m
+[32m +open Player[m
+[32m +open Enemy[m
+[32m +open Foods[m
+[32m +open Weapons[m
+[32m +open Yojson.Basic.Util[m
+[32m +[m
+[32m +[m
+[32m +[m
+[32m +(******************************* In-game State ********************************)[m
+[32m +[m
+[32m +[m
+[32m +[m
+[32m +(*some constructors below required an id, which is created by the functions *)[m
+[32m +(*instead of contained in json                                              *)[m
+[32m +[m
+[32m +(** The abstract type of values representing an enemy in the game engine *)[m
+[32m +type enemy = [m
+[32m +  | Enemy of Enemy.t[m
+[32m +  | Deleted[m
+[32m +[m
+[32m +(** The abstract type of values representing a player in the game engine *)[m
+[32m +type player = [m
+[32m +  | Player of Player.t [m
+[32m +  | Died[m
+[32m +[m
+[32m +(** The abstract type of values representing a food item in the game engine *)[m
+[32m +type food_item = [m
+[32m +  | Food of Food.food[m
+[32m +  | Eaten (*once a weapon or food has been taken, this weapon becomes null *)[m
+[32m +[m
+[32m +(** The abstract type of values representing a weapon item in the game engine*)[m
+[32m +type weapon_item =[m
+[32m +  | Weapon of  Weapon.weapon[m
+[32m +  | Empty[m
+[32m +[m
+[32m +(** The abstract type of values representing a map param in the game engine *)[m
+[32m +type map_param = MapParam.map_param[m
+[32m +[m
+[32m +(** The abstract type of values representing the current map state *)[m
+[32m +type current_map = Maps.t[m
+[32m +[m
+[32m +(** The exception type of a successful food ate or weapon equipped.[m
+[32m +    Used to notify that an operation is successful. *)[m
+[32m +exception SuccessExit[m
+[32m +[m
+[32m +(**The exception type of a player who is dead *)[m
+[32m +exception PlayerDied[m
+[32m +[m
+[32m +[m
+[32m +(** The abstract type of values representing the current game state *)[m
+[32m +type state = {[m
+[32m +  mutable player: player;[m
+[32m +  mutable food_inventory: food_item array;[m
+[32m +  mutable weapon_inventory: weapon_item array;[m
+[32m +  mutable player_old_loc: (int * int);[m
+[32m +  mutable current_map_in_all_maps: int;[m
+[32m +[m
+[32m +  (* Array doesn't have a find function, so I use List instead *)[m
+[32m +  mutable branched_map_info: ((int * int) * string) list; [m
+[32m +  mutable current_map: current_map;[m
+[32m +  mutable all_enemies_in_current_map: enemy array;[m
+[32m +  mutable all_foods_in_current_map: food_item array;[m
+[32m +  mutable all_weapons_in_current_map: weapon_item array;[m
+[32m +[m
+[32m +  mutable all_maps: current_map list; (*persistent map *)[m
+[32m +  mutable all_foods: food_item array array;[m
+[32m +  mutable all_weapons: weapon_item array array;[m
+[32m +  (* each element represents an array of enemies in ONE map *)[m
+[32m +  mutable all_enemies: enemy array array; [m
+[32m +}[m
+[32m +[m
+[32m +[m
+[32m +[m
+[32m +(*------------------------------ helper methods ------------------------------*)[m
+[32m +[m
+[32m +(**[branch_map_store] keeps track of the list of item names and their [m
+[32m +   corresponding locations.  *)[m
+[32m +let branch_map_store = ref [][m
+[32m +[m
+[32m +(**[update_branch_map_store (l,n)] updates [branch_map_store] by [m
+[32m +   appending [(l,n)] to the front of the list referenced [m
+[32m +   by [branch_map_store].  *)[m
+[32m +let update_branch_map_store (loc, name) = (*look at the ref right above *)[m
+[32m +  let tmp = !branch_map_store in[m
+[32m +  if List.mem (loc, name) tmp [m
+[32m +  then ()[m
+[32m +  else branch_map_store := (loc, name) :: tmp[m
+[32m +[m
+[32m +[m
+[32m +(**[count ()] returns an #, which represents the # of times[m
+[32m +   this function has been called. Each time this function gets called,[m
+[32m +   the returns will be incremented. *)[m
+[32m +let count = [m
+[32m +  let counter = ref 0 in fun () -> (incr counter; !counter)[m
+[32m +[m
+[32m +[m
+[32m +(**[probabilty s] produces a bool based on probabilty [s][m
+[32m +   Requires:[m
+[32m +   [s] mod 0.1. 0.1 <= [s] <= 1.0*)[m
+[32m +let probability s = [m
+[32m +  (* 0 <= x <= 10 *)[m
+[32m +  let x = Int.to_float (Random.int 10) in[m
+[32m +  x <= s *. 10.0[m
+[32m +[m
+[32m +[m
+[32m +(**[random_choice lst] is a random object chosen from list [lst][m
+[32m +   Requires:[m
+[32m +   [lst] cannot be empty*)[m
+[32m +let random_choice list = [m
+[32m +  list |> List.length |> Random.int |> List.nth list[m
+[32m +[m
+[32m +[m
+[32m +(**[random_list_with_fixed_length lst len] is a randomly chosen list[m
+[32m +   with length [len] and its elements from [lst]*)[m
+[32m +let random_list_with_fixed_length list len =[m
+[32m +  List.map (fun _ -> random_choice list) [m
+[32m +    (Array.make len 0 |> Array.to_list)[m
+[32m +[m
+[32m +[m
+[32m +(**[contains s s1] is true if [s] contains substring [s1], [false] [m
+[32m +   otherwise *)[m
+[32m +let contains s1 s2 =[m
+[32m +  let rec counter count = [m
+[32m +    (*let re = Str.regexp_string s2[m
+[32m +      in try ignore (Str.search_forward re s1 0); true[m
+[32m +      with Not_found -> false*)[m
+[32m +    if String.length s1 - count < String.length s2 [m
+[32m +    then false[m
+[32m +    else if String.sub s1 count (String.length s2) = s2[m
+[32m +    then true[m
+[32m +    else counter (count + 1) in[m
+[32m +  counter 0[m
+[32m +[m
+[32m +[m
+[32m +(**[random_int_array_for_enemies_and_items arr num] returns a [m
+[32m +   probability-driven random int array with the number [num] and the [m
+[32m +   location array [arr] *)[m
+[32m +let random_int_array_for_enemies_and_items map_size_array number =[m
+[32m +  let round f = truncate (f +. 0.5) in[m
+[32m +  let raw_prob = map_size_array |> Array.to_list in[m
+[32m +  let rec total_sum num = function[m
+[32m +    | [] -> num[m
+[32m +    | h::d -> total_sum (num + h) d in[m
+[32m +  let sum = total_sum 0 raw_prob in[m
+[32m +  let float_sum = float_of_int sum in[m
+[32m +  let float_num = float_of_int number in[m
+[32m +  let temp_random_number = (*the probability oper here is pretty messy *)[m
+[32m +    List.map (fun s -> [m
+[32m +        (float_of_int s) /. float_sum *. float_num |> round) raw_prob in [m
+[32m +  let tl = List.tl temp_random_number in[m
+[32m +  number - total_sum 0 tl :: tl[m
+[32m +  |> Array.of_list[m
+[32m +[m
+[32m +[m
+[32m +(**[sorted_list locs col row n] is [List.rev [(col, row), (col-1, row), ... , [m
+[32m +   (1, row), (col, row-1), (col-1, row-1), ...]] containing [n] elements,[m
+[32m +   where none of the coordinates in [locs] get appended. [m
+[32m +   Requires: 0 <= [n] <= [col * row] *)[m
+[32m +let sorted_list loc_list col row length = [m
+[32m +  let rec inner_looper col' row' finished count = [m
+[32m +    if count = 0 then finished[m
+[32m +    else let r_loc = (col', row') in[m
+[32m +      let check = List.mem r_loc loc_list in[m
+[32m +      if check && col' = 1 && row' > 1 then[m
+[32m +        inner_looper col (row' - 1) finished count[m
+[32m +      else if check && col' <> 1 then (* col' != 1 *)[m
+[32m +        inner_looper (col'-1) (row') finished count[m
+[32m +      else if col' = 1 && row' > 1[m
+[32m +      then [m
+[32m +        inner_looper col (row'-1) ((col', row')::finished) (count - 1)[m
+[32m +      else if col'= 1 && row' = 1 && count = 1[m
+[32m +      then [m
+[32m +        failwith "impossible length"[m
+[32m +      else [m
+[32m +        inner_looper (col'-1) (row') ((col', row')::finished) (count - 1) in[m
+[32m +  inner_looper col row [] length[m
+[32m +[m
+[32m +[m
+[32m +(**[unique_location_list locs col row n] returns [sorted_list col row n] if [m
+[32m +   [col < n/2] or [row < n/2], otherwise it returns a randomly constructed[m
+[32m +   set-like list of [(col, row)] coordinates with length [n]. Note that [m
+[32m +   none of the elements in [locs] will be appended to the returned list. *)[m
+[32m +let unique_location_list ~loc_array ~col ~row ~number =[m
+[32m +  let loc_list = loc_array |> Array.to_list in[m
+[32m +  if  (List.length loc_list) + number > (col * row) - 4 then[m
+[32m +    (* small map. A sorted list is better for minimizing time complexity*)[m
+[32m +    sorted_list loc_list col row number [m
+[32m +  else[m
+[32m +    let rec constructor finished count =[m
+[32m +      if count = 0 then finished |> List.rev[m
+[32m +      else let r_loc = (1 + Random.int col, 1 + Random.int row) in[m
+[32m +        if List.mem r_loc finished || List.mem r_loc loc_list[m
+[32m +        then constructor finished count (* try again *)[m
+[32m +        else constructor (r_loc::finished) (count - 1) in[m
+[32m +    constructor [] number[m
+[32m +[m
+[32m +[m
+[32m +(**[parse_dims s] parses [s] and returns [(col, row)]. [m
+[32m +   Requires: [s] is in the form ["# cols, # rows"] *)[m
+[32m +let parse_dims s = [m
+[32m +  let rows = List.nth (String.split_on_char ',' s) 0 in [m
+[32m +  let cols = List.nth (String.split_on_char ',' s) 1 in [m
+[32m +  cols |> int_of_string, rows |> int_of_string[m
+[32m +[m
+[32m +[m
+[32m +(**[main_map_size_array map_array] is the list of total sizes [m
+[32m +   (pr

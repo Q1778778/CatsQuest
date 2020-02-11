@@ -1,7 +1,13 @@
+<<<<<<< HEAD:_build/src/game_models/enemy.ml
 (* #mod_use "player.ml";; *)
 
+=======
+(** The file in charge of enemy*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/enemy.ml
 open Player
 
+(** [EnemySig] is the interface for enemy module with every function
+    listed *)
 module type EnemySig = sig
 
   (** The abstract type of values representing an enemy. *)
@@ -110,9 +116,14 @@ module type EnemySig = sig
   val strengthen : t -> unit
 end
 
+(** [Enemy] is the abstraction type representating an enemy*)
 module Enemy: EnemySig = struct
+  (** Documentation in EnemySig*)
+
+  (** The exception type of an unknown skill. *)
   exception UnknownSkill of string
 
+  (** The abstract type of values representing an enemy's skill. *)
   type skills = {
     skill_name: string;
     skill_probability: float;
@@ -121,6 +132,7 @@ module Enemy: EnemySig = struct
 
   (*i set these fields as mutable because there is a chance that we will modify
     it in MS2 *)
+  (** The abstract type of values representing an enemy. *)
   type t = {
     (*static fields *)
     id: string;
@@ -172,6 +184,10 @@ module Enemy: EnemySig = struct
   let get_gainable_skill s = s.gainables
 
   (* setters are defined here *)
+<<<<<<< HEAD:_build/src/game_models/enemy.ml
+=======
+
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/enemy.ml
   (**[reduce_hp e d] reduces the enemy's hp amount by [d]. *)
   let reduce_hp s d =
     let tmp_hp = s.hp - d in
@@ -186,15 +202,26 @@ module Enemy: EnemySig = struct
   (**[get_all_skills_name_prob_and_strength_to_assoc_list e] returns 
        [[(n1,p1,s1); (n2,p2,s2); ... ]]
        where [ni] is the name of an enemy [e]'s skill at index [i], 
+<<<<<<< HEAD:_build/src/game_models/enemy.ml
        [pi] is the skill probability of enemy [e]'s skill at index [i], 
        and [si] is the strength of the enemy [e]'s particular skill at index [i], 
        for all [i] between 1 and [List.length s.skills], inclusive. *)
+=======
+       [pi] is the skill probability of enemy [e]'s skill at index [i], and [si] 
+       is the strength of the enemy [e]'s particular skill at index [i],
+        for all [i] between 1 and [List.length s.skills], inclusive. *)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/enemy.ml
   let get_all_skills_name_prob_and_strength_to_assoc_list s = 
     List.map (fun x -> (x.skill_name, x.skill_probability, x.skill_strength)) 
       s.skills
 
+<<<<<<< HEAD:_build/src/game_models/enemy.ml
   (**[get_one_skill_strength_by_name e n] returns the skill [s] if the enemy
        possesses the skill named [n]; otherwise, raises [UnknownSkill n]. *)
+=======
+  (**[get_all_skills_name e] returns a list of all the skill names of 
+       the enemy [e].  *)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/enemy.ml
   let get_one_skill_strength_by_name s name = 
     try (match List.find (fun x -> x.skill_name = name) s.skills with 
         | a -> a.skill_strength) 
