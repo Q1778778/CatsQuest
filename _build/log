@@ -1,0 +1,4 @@
+# dune build src/user_interface/gui.ml
+# OCAMLPARAM: unset
+$ /usr/bin/nproc > /tmp/dunea925b0.output 2> /dev/null
+$ /home/wentao/.opam/4.08.1/bin/ocamlc.opt -config > /tmp/dune810fc1.output
