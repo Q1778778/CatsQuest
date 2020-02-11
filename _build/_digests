@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 "Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/foods.ml": "\134\156!^\157\145\174\205\194\188$\187\159z\"\132"
 "Resource: /mnt/c/Users/Wentao/Desktop/3110/final-project/cs3110-Final-Project/src/game_models/enemy.ml": "K\142?\026\007hu>\030C\030Z\217\141\2545"
 "Rule: ocaml: ml -> cmo & cmi (%=src/game_models/foods )": "\193\155~1\028\020\201^o\154g^\011ms\181"
@@ -30,6 +31,8 @@
 "Rule: ocaml dependencies ml (%=src/game_models/player )": "\184p\216\230\030\240\127y\208\238\020\196\014\228\030\146"
 "Rule: ocaml: ml -> cmo & cmi (%=src/user_interface/color_convert )": "\140w\n\191\184\182\162]\232\168F\251!\182\239\150"
 =======
+=======
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d
 "Rule: ocaml: ml -> cmo & cmi (%=foods )": "M\158\030L\156D9\151\186\254\232\189\0048\\|"
 "Rule: ocaml dependencies ml (%=test )": "\164\198\248@\252TC\216\251J\017#z\222\186="
 "Rule: ocaml: ml -> cmo & cmi (%=color_convert )": "\164\156\149Y\002\018\143^\255\023?\239nA\204U"
@@ -70,4 +73,7 @@
 "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/foods.ml": "\160\211p\142w'!\21637\207\251\204WU\255"
 "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/engine.ml": "\004\177r;{\030_\n\248\193\141\022~\168\026\156"
 "Resource: /Users/soumizu/Documents/FILE/Cornell/CS 3110/Final Project/maps.ml": "\189-\148XE\173i\180\202\228\231\135\188\199\194\128"
+<<<<<<< HEAD
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d
+=======
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d

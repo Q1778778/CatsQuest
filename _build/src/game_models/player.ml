@@ -1,8 +1,12 @@
 <<<<<<< HEAD:_build/src/game_models/player.ml
+<<<<<<< HEAD:_build/src/game_models/player.ml
 (* #mod_use "maps.ml";; *)
 
 open Maps
 
+=======
+(** [P] is the interface for player*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:player.ml
 =======
 (** [P] is the interface for player*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:player.ml

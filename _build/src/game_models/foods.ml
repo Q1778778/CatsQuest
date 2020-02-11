@@ -1,6 +1,10 @@
 <<<<<<< HEAD:_build/src/game_models/foods.ml
+<<<<<<< HEAD:_build/src/game_models/foods.ml
 (* #mod_use "player.ml";; *)
 
+=======
+(** The file in charge of food*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:foods.ml
 =======
 (** The file in charge of food*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:foods.ml

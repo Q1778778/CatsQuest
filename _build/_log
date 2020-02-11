@@ -1,7 +1,10 @@
 ### Starting build.
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Compilation unsuccessful.
 =======
+=======
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d
 # Target: test.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:test.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package oUnit -package yojson -package ANSITerminal -package graphics -modules test.ml > test.ml.depends # cached
 # Target: enemy.ml.depends, tags: { package(ANSITerminal), package(graphics), package(oUnit), package(yojson), debug, extension:ml, file:enemy.ml, ocaml, ocamldep, quiet, traverse }

@@ -1,9 +1,13 @@
 <<<<<<< HEAD:_build/default/src/game_models/enemy.ml
+<<<<<<< HEAD:_build/default/src/game_models/enemy.ml
 (* #mod_use "player.ml";; *)
 
 =======
 (** The file in charge of enemy*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:enemy.ml
+=======
+(** The file in charge of enemy*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/enemy.ml
 open Player
 
 (** [EnemySig] is the interface for enemy module with every function

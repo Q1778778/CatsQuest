@@ -1,4 +1,5 @@
 <<<<<<< HEAD:_build/src/engine/builder.ml
+<<<<<<< HEAD:_build/src/engine/builder.ml
 #require "yojson";;
 #mod_use "../game_models/maps.ml";;
 #mod_use "../game_models/player.ml";;
@@ -686,6 +687,8 @@ let system_instr s  =
   basic_instr ^ "\n" ^ enemy_ins ^ "\n" ^ food_ins ^ "\n" ^ weapon_ins
 
 =======
+=======
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/engine.ml
 (** The file in charge of backend*)
 open Enemy
 open Player

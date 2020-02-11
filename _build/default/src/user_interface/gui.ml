@@ -1,4 +1,5 @@
 <<<<<<< HEAD:_build/default/src/user_interface/gui.ml
+<<<<<<< HEAD:_build/default/src/user_interface/gui.ml
 (* #require "yojson";;
 #require "graphics";;
 #require "threads.posix";;
@@ -16,6 +17,9 @@
 =======
 (** The file in charge of GUI*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:gui.ml
+=======
+(** The file in charge of GUI*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/gui.ml
 open Graphics
 open Enemy
 open Player

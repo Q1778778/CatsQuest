@@ -1,4 +1,5 @@
 <<<<<<< HEAD:_build/src/user_interface/map_builder.ml
+<<<<<<< HEAD:_build/src/user_interface/map_builder.ml
 (* #require "graphics";;
 #require "yojson";;
 #cd "../json_models";;
@@ -17,6 +18,9 @@ open Color_convert
 open Maps
 open Engine
 open Builder
+=======
+(** The file in charge of Map building*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/map_builder.ml
 =======
 (** The file in charge of Map building*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/map_builder.ml

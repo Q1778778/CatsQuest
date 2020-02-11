@@ -1,6 +1,10 @@
 <<<<<<< HEAD:_build/src/game_models/weapons.ml
+<<<<<<< HEAD:_build/src/game_models/weapons.ml
 (* #mod_use "player.ml";; *)
 
+=======
+(** The file in charge of Weapon*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/weapons.ml
 =======
 (** The file in charge of Weapon*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/weapons.ml

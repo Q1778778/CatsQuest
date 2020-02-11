@@ -1,9 +1,13 @@
 <<<<<<< HEAD:_build/src/user_interface/color_convert.ml
+<<<<<<< HEAD:_build/src/user_interface/color_convert.ml
 (* #require "yojson";;
 #require "graphics";;
 #cd "../json_models" *)
 
 
+=======
+(** The file that initialize that graphic resources*)
+>>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/color_convert.ml
 =======
 (** The file that initialize that graphic resources*)
 >>>>>>> 99df40a2dfd7af031496647d620c12498458826d:_build/color_convert.ml
