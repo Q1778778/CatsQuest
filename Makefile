@@ -14,7 +14,7 @@ GUI_FILE = src/user_interface/gui.ml
 COLOR_CONVERT_FILE = src/user_interface/color_convert.ml
 
 run:
-	utop -init src/user_interface/gui.ml
+	utop src/user_interface/gui.ml
 
 build:
 	bash build.sh
@@ -25,8 +25,8 @@ clean:
 play:
 	ocamlbuild -use-ocamlfind gui.byte && ./gui.byte
 
-test: 
-	ocamlbuild -use-ocamlfind -tag 'debug' test.byte && ./test.byte
+utest: 
+	utop test/test.ml
 
 docs: build
 	mkdir -p doc

@@ -1,0 +1,24 @@
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:4:RLLD = RL.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:4:RLLD = RL is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:4:RLLD = RL.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:10:increase exp.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:10:increase exp is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:10:increase exp.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:16:reduce health by 12.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:16:reduce health by 12 is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:16:reduce health by 12.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:22:enemy level is a static field and it shouldn't be changed.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:22:enemy level is a static field and it shouldn't be changed is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:22:enemy level is a static field and it shouldn't be changed.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:30:sucessfully transfer to branch map. Enemy index updated.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:30:sucessfully transfer to branch map. Enemy index updated is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:30:sucessfully transfer to branch map. Enemy index updated.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:36:sucessfully transfer to main map. Weapon index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:36:sucessfully transfer to main map. Weapon index updated is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:36:sucessfully transfer to main map. Weapon index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:42:enemy's pos shouldn't be changed after strengthening.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:42:enemy's pos shouldn't be changed after strengthening is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:42:enemy's pos shouldn't be changed after strengthening.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: Start test test suite for A2:48:successfully drop one food.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: Test test suite for A2:48:successfully drop one food is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#05 I: End test test suite for A2:48:successfully drop one food.

@@ -1,0 +1,27 @@
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:1:R.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:1:R is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:1:R.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:7:RLUUD.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:7:RLUUD is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:7:RLUUD.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:12:increase exp to advance 2.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:12:increase exp to advance 2 is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:12:increase exp to advance 2.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:19:reduce enemy hp.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:19:reduce enemy hp is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:19:reduce enemy hp.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:23:food's gainable strength should never be changed when we move food.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:23:food's gainable strength should never be changed when we move food is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:23:food's gainable strength should never be changed when we move food.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:28:weapon's new location should be correct after moving.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:28:weapon's new location should be correct after moving is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:28:weapon's new location should be correct after moving.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:34:sucessfully transfer to main map. Map index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:34:sucessfully transfer to main map. Map index updated is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:34:sucessfully transfer to main map. Map index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:40:successfully strengthen enemy's health after play.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:40:successfully strengthen enemy's health after play is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:40:successfully strengthen enemy's health after play.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: Start test test suite for A2:46:successfully drop one weapon.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: Test test suite for A2:46:successfully drop one weapon is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#02 I: End test test suite for A2:46:successfully drop one weapon.

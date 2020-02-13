@@ -1,7 +1,7 @@
 #require "yojson";;
 #require "graphics";;
 #require "threads.posix";;
-#cd "../json_models";;
+#cd "src/json_models";;
 #mod_use "../game_models/maps.ml";;
 #mod_use "../game_models/player.ml";;
 #mod_use "../game_models/enemy.ml";;

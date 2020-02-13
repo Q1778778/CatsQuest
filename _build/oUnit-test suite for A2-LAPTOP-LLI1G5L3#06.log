@@ -1,0 +1,24 @@
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:5:RLU.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:5:RLU is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:5:RLU.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:13:upper right bound.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:13:upper right bound is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:13:upper right bound.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:18:reduce all health.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:18:reduce all health is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:18:reduce all health.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:24:food's gainable health should never be changed when we move food.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:24:food's gainable health should never be changed when we move food is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:24:food's gainable health should never be changed when we move food.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:29:sucessfully transfer to branch map. Map index updated.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:29:sucessfully transfer to branch map. Map index updated is successful.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:29:sucessfully transfer to branch map. Map index updated.
+2020-02-13T19:08:38+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:35:sucessfully transfer to main map. Enemy index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:35:sucessfully transfer to main map. Enemy index updated is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:35:sucessfully transfer to main map. Enemy index updated.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:41:successfully strengthen enemy's level after play.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:41:successfully strengthen enemy's level after play is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:41:successfully strengthen enemy's level after play.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: Start test test suite for A2:47:successfully take one food.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: Test test suite for A2:47:successfully take one food is successful.
+2020-02-13T19:08:39+00:00 LAPTOP-LLI1G5L3#06 I: End test test suite for A2:47:successfully take one food.
