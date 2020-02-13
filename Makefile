@@ -13,6 +13,8 @@ MAP_BUILDER_FILE = src/user_interface/map_builder.ml
 GUI_FILE = src/user_interface/gui.ml
 COLOR_CONVERT_FILE = src/user_interface/color_convert.ml
 
+run:
+	utop -init src/user_interface/gui.ml
 
 build:
 	bash build.sh

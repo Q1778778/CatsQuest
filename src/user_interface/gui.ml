@@ -1,4 +1,4 @@
-(* #require "yojson";;
+#require "yojson";;
 #require "graphics";;
 #require "threads.posix";;
 #cd "../json_models";;
@@ -10,7 +10,7 @@
 #mod_use "../engine/builder.ml";;
 #mod_use "../engine/engine.ml";;
 #mod_use "../user_interface/color_convert.ml";;
-#mod_use "../user_interface/map_builder.ml";; *)
+#mod_use "../user_interface/map_builder.ml";;
 
 open Graphics
 open Enemy
