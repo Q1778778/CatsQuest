@@ -16,14 +16,11 @@ COLOR_CONVERT_FILE = src/user_interface/color_convert.ml
 run:
 	utop src/user_interface/gui.ml
 
-build:
-	bash build.sh
+checkenv:
+	bash checkenv.sh
 
 clean:
 	ocamlbuild -clean
-
-play:
-	ocamlbuild -use-ocamlfind gui.byte && ./gui.byte
 
 utest: 
 	utop test/test.ml
