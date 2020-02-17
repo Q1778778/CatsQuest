@@ -26,6 +26,7 @@ clean:
 	rm -rf *.byte
 	rm -rf *.cmo
 	rm -rf *.cmi
+	rm -rf .DS_Store
 
 utest: 
 	utop test/test.ml
