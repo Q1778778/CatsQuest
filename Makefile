@@ -13,14 +13,19 @@ MAP_BUILDER_FILE = src/user_interface/map_builder.ml
 GUI_FILE = src/user_interface/gui.ml
 COLOR_CONVERT_FILE = src/user_interface/color_convert.ml
 
-run:
-	utop src/user_interface/gui.ml
+play:
+	utop src/main/main.ml
 
 checkenv:
 	bash checkenv.sh
 
 clean:
-	ocamlbuild -clean
+	rm -rf */_build
+	rm -rf */_digest
+	rm -rf */_log
+	rm -rf *.byte
+	rm -rf *.cmo
+	rm -rf *.cmi
 
 utest: 
 	utop test/test.ml
